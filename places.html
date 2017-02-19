@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Place index</title>
+<link href="lib/article.css" rel="stylesheet">
+<script src="xdevt/place_db.js" type="application/javascript"></script>
+<script>
+function filter (str) {
+	str = str.toLowerCase()
+	str = str.replace(/\*/,'.*')
+	var total = 0
+	var names = document.querySelectorAll('#listrecord p')
+	for (var i=0;i<names.length;i++) {
+		if (! names[i].textContent.toLowerCase().match(str)) names[i].style.display = 'none'
+		else { names[i].style.display = 'block'; total++ }
+		}
+	document.getElementById('total').textContent = total
+	}
+	
+function secondFilter (str) {
+	str = str.toLowerCase()
+	total = 0
+	var match1 = document.getElementById('filter').value
+	var names = document.querySelectorAll('#listrecord a')
+	for (var i=0;i<names.length;i++) {
+		if (names[i].textContent.toLowerCase().match(match1) && names[i].textContent.toLowerCase().match(str)) {
+			names[i].style.display = 'inline'; total++
+			}
+		else { names[i].style.display = 'none'; }
+		}
+	document.getElementById('total').textContent = total
+	}
+</script>
+</head>
+<body>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Place index<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div><a href="#explanations">Total <span id="total"></span></a></div>
+  </div>
+  <div id="subsubsubbanner" style="text-transform: none;">
+    <div>You can use * as a wildcard character when filtering.<br/>For example, '<code>lak*ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>
+  </div>
+  <article>
+    <section id="listrecord">
+      <!--div class="record" id="listrecord">
+      </div-->
+    </section>
+    <div id="places">
+      <!--p class="recordTitle" id="explanations">Explanations regarding dates</p>
+      <p>Where the date  Note that the dates following each name are only token dates, associated with the name as part of its ID. In some cases these dates are pure guesswork, such as in the case where a father is known from a marriage record but no other information. In some cases the date may accurately reflect the birth date of the person. In others, that birth date may be ajusted in the light of new evidence in the actual records, but the date here will remain the same.<a target="_blank" href="https://maps.google.com/maps?q=53.8352112,-2.832418"></a></p-->
+    </div>
+  </article>
+</div>
+
+<script>
+var out = ''
+var total = 0
+places.sort()
+var placeIndex = {}	
+for (var i=0;i<places.length;i++) {
+	if (placeIndex[places[i][0]]) {
+		placeIndex[places[i][0]].list.push(places[i][2])
+		}
+	else {
+		placeIndex[places[i][0]] = {}
+		placeIndex[places[i][0]].location = places[i][0]
+		placeIndex[places[i][0]].a = places[i][1]
+		placeIndex[places[i][0]].list = [places[i][2]]
+		total++
+		}
+	}
+	
+for (var place in placeIndex) {
+	if (placeIndex[place].location != 'xxxx') {
+		out += '<p><a href="'+placeIndex[place].a+'" target="_blank">'+placeIndex[place].location+'</a>'
+		for (j=0;j<placeIndex[place].list.length;j++) {
+			out += ' <a class="detaillink" href="data/'+placeIndex[place].list[j]+'.html" target="_blank">'+placeIndex[place].list[j]+'</a>'
+			}
+		out += '</a></p>'
+		}
+	}
+document.getElementById('total').textContent = total
+
+document.getElementById('listrecord').innerHTML = out
+
+document.getElementById('filter').focus()
+</script>
+</body>
+</html>

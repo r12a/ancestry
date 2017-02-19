@@ -1,0 +1,82 @@
+RULES FOR CREATING DATA
+
+
+
+each record starts with a header, then contains a body which consists of any number of lines, each of which start with a keyword followed by ':'
+
+
+The header
+----------
+
+each header starts with §
+
+next comes one of:
+1. a word that describes a relationship, eg. father, son, daughter, step-son, ex-husband, etc.
+2. the words birth, marriage, or death
+3. the keywords census, notes, background, or history
+
+note: if you select Hide Relatives at the top of the page, data about all relationships will be hidden, except for son, daughter, husband, and wife
+
+ 
+ next comes one of:
+ 1. the words born, marries, or dies
+ 2. 'to ' plus a name (for marriage of the principal only)
+ 3. a person's id, to follow 'marries' only
+ 4. some text to complete the title after 'census: ', 'notes: ', 'background: ', or 'history: '
+ 
+ 
+ The body
+ --------
+ 
+The keyword before the body can be anything, but certain keywords have specific meanings.  Only the latter will cause information to be presented by default to the reader.
+
+Those keywords are the following:
+
+date: date of the event - should not include a year
+place: place of an event
+fid: father's id, must be followed by an id only
+focc: father's occupation
+bapplace: place of baptism/christening
+bapdate: date of baptism/christening 
+bapyear: year of baptism/christening
+formerly: mother's former name
+gid: groom's id, must be followed by an id only
+gage: groom's age, follow with just a number
+gocc: groom's occupation
+gfid: groom's father's id, must be followed by an id only
+gfocc: groom's father's occupation
+gstatus: groom's status, usually bachelor or widower
+bstatus: bride's status, usually spinster or widow
+gparish: where the groom was living at the time of marriage (otp is recognised as 'of this parish')
+bparish: where the bride was living at the time of marriage (otp is recognised as 'of this parish')
+length: length of marriage, usually X years
+by: whether married by 'banns' or 'licence'
+witnesses: a list of names of witnesses (put a & before the last)
+age: age of the person at death
+head: the name of the head in a census
+wife: the name of the wife of the head in a census
+child: the name of a child of the head in a census
+other: the name of someone who is neither head, wife or child in a census return
+relation: the relationship of the principal to the other people in a census return, should be either head, wife, child or other
+siblings: a list of ids, separated by commas, for each of the children in the principles family who are older than the principal and who are still alive
+text: the text of the record source (this isn't displayed in the summary)
+cause: cause of death
+occ: occupation
+gravestone: the text inscribed on a gravestone
+burplace: place of burial
+burdate: date of burial
+probate: the text of a probate summary
+
+you can have multiple instances of the following:
+note: note text that will be displayed in the summary, and hidden in the details
+fnote: footnotes, handled like note but displayed as a list item
+quote: a quotation, will be presented in italics in the summary
+gps: indicates the location of an event in the following form <location> http://maps.google.com/maps?q=<coords>
+	the coords should be like this 52.791261,-2.858108
+source: a source for the information in the record, should be of the following form
+	<source name and details> <url>
+record: an electronic data record such as a census, birth certificate, parish record, etc. that is available with the data. Has the form
+	<source type> url:records/<image filename>
+media: a scanned item available with this data. Could be a photo, memorabilia etc. Use same format as for record but use the appropriate directory name to replace 'record'
+
+
