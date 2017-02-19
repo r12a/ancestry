@@ -1,0 +1,42 @@
+body { font: 19.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;   background-color: #f8f7f3; }
+
+/* structural stuff */
+#parents, #children, #gparents { display: flex; flex-flow: row nowrap; width: 100%; }
+.gparent, .parent, .child, .spouse { display: flex; }
+#parents>div, #children>div, #gparents>div { flex: 1; }
+#person { text-align: center; margin: 3em; font-size: 130%; }
+.children { display: flex; flex-flow: row wrap; clear: both; justify-content: center; }
+.child { flex: 1; margin: 0.2em;  }
+
+/* presentation */
+.gparent, .parent, .child { text-align: left; border: 1px solid #ccc; margin: .5em; padding: 0.2em; background-color: #D1CAB0; background-color: #F0eee9;border-radius: 4px; font-size: 16px; }
+
+
+#topMenu { font-size: 80%; color: #666; background-color: #eee; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; top: 0; width: 100%; }
+#topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; font-weight: normal; }
+
+#main { padding: 2em; }
+
+.name { font-size: 120%; }
+.gparent .name { font-size: 110%; }
+
+#children>div { border: 1px solid #ccc; margin: .5em; padding: 0.5em; background-color: #F0eee9;border-radius: 6px; font-size: 16px;}
+
+.child { background-color: #D1CAB0; background-color: white;  flex: 0 12em;  }
+.child .name { font-size: 110%; }
+
+.dates, .occ, .showme, .sp { font-size: 80%; }
+
+a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; font-weight: normal; }
+.showme a { font-weight: normal; }
+
+.spouse { text-align: start; margin-left: 1em; padding-bottom: 2em; }
+.spouse .data { padding-left: 1em; }
+
+#person img { height: 150px; border-radius: 5px; }
+#parents img, #gparents img, .spouse img { height: 80px; margin-right: 0.3em; border-radius: 5px; }
+.child img { height: 50px; margin-right: 0.5em; border-radius: 5px; }
+
+
+#siblings { margin-top: 3em; text-align: center; cursor: pointer; }
+.noissue { color:#aaa; margin-top: 2em; }
