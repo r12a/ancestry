@@ -114,12 +114,12 @@ function dump (individual) {
 	records.push(cleanYear(person.b)+' § '+person.b+' Birth\nbirth: '+individual+'\n\n\n')
 	
 	// get birth & death years
-	var birth = person.b
+	var birth = person.b.replace('~','')
 	if (birth === '') {
 		var temp = individual.split('_')
 		birth = temp[temp.length-1]
 		}
-	var death = person.d
+	var death = person.d.replace('~','')
 	if (death === '') {
 		death = parseInt(birth) + 100
 		death = death.toString()
@@ -135,14 +135,18 @@ function dump (individual) {
 					sibling = parent.fg[i][j]
 					if (db[sibling].male) siblingType = 'brother'
 					else siblingType = 'sister'
-					console.log(sibling)
-					if (data[sibling] && data[sibling].birth.year) byear = data[sibling].birth.year
-					else byear = db[sibling].b
-					if (data[sibling] && data[sibling].death.year) dyear = data[sibling].death.year
-					else dyear = db[sibling].d
+		console.log(sibling, birth, death, db[sibling].b, db[sibling].d)
+					//if (data[sibling] && data[sibling].birth.year) byear = data[sibling].birth.year
+					//else byear = db[sibling].b
+					if (db[sibling].b && db[sibling].d !== '') byear = db[sibling].b.replace('~','')
+					else byear = ''
+					//if (data[sibling] && data[sibling].death.year) dyear = data[sibling].death.year
+					//else dyear = db[sibling].d
+					if (db[sibling].d && db[sibling].d !== '') dyear = db[sibling].d.replace('~','')
+					else dyear = ''
 					}
-				if (byear >= birth && byear <= death && sibling !== individual) records.push(cleanYear(byear)+' § '+byear+' '+siblingType+' born '+sibling+'\n\n')
-				if (dyear >= birth && dyear <= death && sibling !== individual) records.push(cleanYear(dyear)+' § '+dyear+' '+siblingType+' dies '+sibling+'\n\n')
+				if (byear >= birth && byear <= death && sibling !== individual) records.push(cleanYear(byear)+' § '+db[sibling].b+' '+siblingType+' born '+sibling+'\n\n')
+				if (dyear >= birth && dyear <= death && sibling !== individual) records.push(cleanYear(dyear)+' § '+db[sibling].d+' '+siblingType+' dies '+sibling+'\n\n')
 				}
 			}
 		}
