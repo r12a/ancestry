@@ -112,7 +112,7 @@ function dump (individual) {
 	out += '</head>\n\n<body><div id="summaryIn"><p>'+getName('', individual, 'gkf', false)+'.</p></div>\n<div id="links">\n</div>\n<div id="in">\n\n'
 
 	// get birth
-	records.push(cleanYear(person.b)+' § '+person.b+' Birth\nbirth: '+individual+'\n\n\n')
+	if (person.b) records.push(cleanYear(person.b)+' § '+person.b+' Birth\nbirth: '+individual+'\n\n\n')
 	
 	// get birth & death years
 	var birth = person.b.replace('~','')
@@ -122,8 +122,11 @@ function dump (individual) {
 		}
 	var death = person.d.replace('~','')
 	if (death === '') {
-		death = parseInt(birth) + 100
-		death = death.toString()
+		if (person.upto) death = person.upto
+		else {
+			death = parseInt(birth) + 80
+			death = death.toString()
+			}
 		}
 		
 	// get siblings
