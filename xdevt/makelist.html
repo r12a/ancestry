@@ -32,51 +32,51 @@ function dump (individual) {
 
 	
 	// get spouse(s)
+	out += '<!-- spouse(s) -->\n'
 	if (db[individual].fg) { 
-		out += '<!-- spouse(s) -->\n'
 		for (var i=0;i<db[individual].fg.length;i++) {
-			out += '<script src="'+db[individual].fg[i][1]+'.js" type="application/javascript"><\/script>\n'
+			if (db[db[individual].fg[i][1]] && db[db[individual].fg[i][1]].p) out += '<script src="'+db[individual].fg[i][1]+'.js" type="application/javascript"><\/script>\n'
 			}
 		}
 	
 	// get parents
+	out += '<!-- parents -->\n'
 	if (person.father || person.mother) {
-		out += '<!-- parents -->\n'
-		if (person.father) out += '<script src="'+person.father+'.js" type="application/javascript"><\/script>\n'
-		if (person.mother) out += '<script src="'+person.mother+'.js" type="application/javascript"><\/script>\n'
+		if (person.father && db[person.father] && db[person.father].p) out += '<script src="'+person.father+'.js" type="application/javascript"><\/script>\n'
+		if (person.mother && db[person.mother] && db[person.mother].p) out += '<script src="'+person.mother+'.js" type="application/javascript"><\/script>\n'
 		}
 
 	
 	// get grandparents
+	out += '<!-- grandparents -->\n'
 	if (db[person.father]) { 
-		out += '<!-- grandparents -->\n'
-			if (db[person.father].father) out += '<script src="'+db[person.father].father+'.js" type="application/javascript"><\/script>\n'
-			if (db[person.father].mother) out += '<script src="'+db[person.father].mother+'.js" type="application/javascript"><\/script>\n'
+			if (a = db[person.father].father) if (db[a] && db[a].p) out += '<script src="'+a+'.js" type="application/javascript"><\/script>\n'
+			if (a = db[person.father].mother) if (db[a] && db[a].p) out += '<script src="'+a+'.js" type="application/javascript"><\/script>\n'
 		if (db[person.mother]) {
-			if (db[person.mother].father) out += '<script src="'+db[person.mother].father+'.js" type="application/javascript"><\/script>\n'
-			if (db[person.mother].mother) out += '<script src="'+db[person.mother].mother+'.js" type="application/javascript"><\/script>\n'
+			if (a = db[person.mother].father) if (db[a] && db[a].p) out += '<script src="'+a+'.js" type="application/javascript"><\/script>\n'
+			if (a = db[person.mother].mother) if (db[a] && db[a].p) out += '<script src="'+a+'.js" type="application/javascript"><\/script>\n'
 			}
 		}
 	
 	// get siblings
+	out += '<!-- siblings -->\n'
 	if (db[person.father]) parent = db[person.father]
 	else if (db[person.mother]) parent = db[person.mother]
 	if (parent && parent.fg) { 
-		out += '<!-- siblings -->\n'
-		for (var i=0;i<parent.fg.length;i++) {
-			for (var j=2;j<parent.fg[i].length;j++) {
-				if (parent.fg[i][j] !== individual) {
-					out += '<script src="'+parent.fg[i][j]+'.js" type="application/javascript"><\/script>\n'
+		for (i=0;i<parent.fg.length;i++) {
+			for (j=2;j<parent.fg[i].length;j++) {
+				if ((s = parent.fg[i][j]) !== individual && db[s] && db[s].p) {
+					out += '<script src="'+s+'.js" type="application/javascript"><\/script>\n'
 					}
 				}
 			}
 		}
 	
 	// get children
+	out += '<!-- children -->\n'
 	if (db[individual].fg) { 
-		out += '<!-- children -->\n'
 		for (var i=0;i<db[individual].fg.length;i++) {
-			for (var j=2;j<db[individual].fg[i].length;j++) out += '<script src="'+db[individual].fg[i][j]+'.js" type="application/javascript"><\/script>\n'
+			for (var j=2;j<db[individual].fg[i].length;j++) if (c = db[individual].fg[i][j]) if (db[c] && db[c].p) out += '<script src="'+c+'.js" type="application/javascript"><\/script>\n'
 			}
 		}
 	
@@ -92,7 +92,8 @@ function dump (individual) {
 					else childType = 'daughter'
 					if (db[child].fg) {
 						for (var k=0;k<db[child].fg.length;k++) {
-							out += '<script src="'+db[child].fg[k][1]+'.js" type="application/javascript"><\/script>\n'
+							var cspouse = db[child].fg[k][1]
+							if (cspouse && db[cspouse] && db[cspouse].p) out += '<script src="'+cspouse+'.js" type="application/javascript"><\/script>\n'
 							}
 						}
 					}
