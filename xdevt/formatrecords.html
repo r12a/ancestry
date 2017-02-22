@@ -10,6 +10,9 @@
 <script>
 
 function dump (individual) {
+	var quotes = false
+	if (document.getElementById('quotes').checked) quotes = true
+	
 	var source = document.getElementById('source').value
 	console.log(source)
 	var lines = source.split('\n')
@@ -17,10 +20,15 @@ function dump (individual) {
 	
 	var out = ''
 	for (var i=0;i<lines.length;i++) {
-		var parts = lines[i].split(':')
-		parts[0] = parts[0].replace(/ /g,'')
-		parts[1] = parts[1].replace(/\t/g,' ')
-		out += '\t"'+parts[0]+':'+parts[1]+'",\n'
+		if (lines[i].match(':')) {
+			var parts = lines[i].split(':')
+			parts[0] = parts[0].replace(/ /g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			if (quotes) out += '\t"'
+			out += parts[0]+': '+parts[1].trim()
+			if (quotes) out += '"'
+			out += ',\n'
+			}
 		}
 	console.log(out)
 	
@@ -38,7 +46,7 @@ function dump (individual) {
     <div id="pagetitle">Format records</div>
   </div>
   <div id="subbanner">
-    <div><a href="#n1">Foundation</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+    <div><input id="quotes" type="checkbox" checked> Add quotes</div>
   </div>
   <div id="subsubbanner">
     <div>
