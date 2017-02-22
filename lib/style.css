@@ -93,3 +93,4 @@ article {
 }
 
 #updates { float: right; color: brown; font-size: 70%; }
+#places .updateTitle { margin-top: 1em; }
