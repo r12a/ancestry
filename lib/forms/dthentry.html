@@ -1,0 +1,469 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Death form</title>
+<link href="../../lib/style.css" rel="stylesheet">
+<script src="formentrylookup.js" type="application/javascript"></script>
+<script src="../../data/db.js" type="application/javascript"></script>
+<script>
+function doRelation (type) { console.log(type)
+	document.getElementById('relation').innerHTML = 'relation: '+type
+	switch (type) {
+		case 'head': document.getElementById('headId').value = document.getElementById('censusId').value; break
+		case 'wife': document.getElementById('wifeId').value = document.getElementById('censusId').value; break
+		}
+	}
+
+function addChild () {
+	var input = document.createElement('input')
+	currentChildren = document.getElementById('children').querySelectorAll('input')
+	if (currentChildren) numberOfChildren = currentChildren.length+1
+	else numberOfChildren = 1
+	input.style.width = '400px'
+	input.id = 'child'+numberOfChildren
+	input.oninput = function () { updateField(this.id+'out', 'child: '+this.value) }
+	document.getElementById('children').appendChild(document.createElement('br'))
+	document.getElementById('children').appendChild(input)
+	
+	p = document.createElement('p')
+	p.id = input.id+'out'
+	document.getElementById('childrenOut').appendChild(p)
+	}
+
+function addField (type) {
+	var input = document.createElement('input')
+	currentPeople = document.getElementById(type).querySelectorAll('input')
+	if (currentPeople) numberOfPeople = currentPeople.length+1
+	else currentPeople = 1
+	input.style.width = '400px'
+	input.id = type+numberOfPeople
+	input.oninput = function () { updateField(this.id+'out', type+': '+this.value) }
+	document.getElementById(type).appendChild(document.createElement('br'))
+	document.getElementById(type).appendChild(input)
+	
+	p = document.createElement('p')
+	p.id = input.id+'out'
+	document.getElementById(type+'Out').appendChild(p)
+	}
+
+function updateField (id, content) { console.log('hell')
+	document.getElementById(id).innerHTML = content
+	}
+
+function makeNotes (content, target) {
+	segments = content.split('\n')
+	var out = ''
+	for (var i=0;i<segments.length;i++) out += '<div>&quot;'+target+': '+segments[i]+'&quot;,</div>'
+	document.getElementById(target).innerHTML = out
+	}
+
+function autoPropagate (person) {
+	if (person!='') {listRelations(person);} 
+	if (db[person]) {
+		document.getElementById('nameIn').value = db[person].g+' '+db[person].f
+		document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
+		}
+	}
+
+function addQuotesTo (content) {
+	var out = ''
+	var lines = content.split('\n')
+	for (var i=0;i<lines.length;i++) {
+		if (lines[i].match(':')) {
+			var parts = lines[i].split(':')
+			parts[0] = '_'+parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			out += '"'+parts[0]+': '+parts[1].trim()+'"'
+			out += ',\n'
+			}
+		}
+	return out
+	}
+
+</script>
+<style>
+#draft p {
+	margin: 0;
+	}
+#references {
+	font-size: 80%;
+	float: right;
+	}
+#references p {
+	margin: 0;
+	}
+#references h3 {
+	margin-bottom: 0;
+	}
+.redo { font-size:120%; margin-left: 1em; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Death record entry<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div><a href="#n1">Census</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+  </div>
+  <div id="subsubbanner">
+    <div>
+      <button onClick="dump()">Go</button>
+    </div>
+  </div>
+  <div id="main">
+    <h2>Death</h2>
+    
+      <div id="references">
+      </div>
+      
+      
+    <table id="census" style="margin: 2em;">
+      <tr>
+        <td>Id:</td>
+        <td><input type="text" id="idIn" 
+        	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+            onChange="
+            	autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span></td>
+      </tr>
+      
+      <tr>
+        <td colspan="2"><strong>Death record</strong></td></tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="deathSourceIn"
+         onInput="document.getElementById('deathSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn').value+'&quot;,';"/>
+          <input type="text" id="deathSourceURLIn" 
+          onInput="document.getElementById('deathSource').textContent = '&quot;source: '+document.getElementById('deathSourceIn').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="deathRecordIn" style="width:200px;" 
+        onInput="document.getElementById('deathRecord').textContent = '&quot;record: Death record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Text:</td>
+        <td><input type="text" id="deathTextIn" style="width:200px;" onInput="document.getElementById('deathText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Informant:</td>
+        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Pasted:</td>
+        <td><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+
+
+	<tr><td colspan="2">
+    <details>
+    <summary><strong>Second source</strong></summary>
+    <table>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="deathSourceIn2"
+         onInput="document.getElementById('deathSource2').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn2').value+'&quot;,';"/>
+          <input type="text" id="deathSourceURLIn2" 
+          onInput="document.getElementById('deathSource2').textContent = '&quot;source: '+document.getElementById('deathSourceIn2').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="deathRecordIn2" style="width:200px;" 
+        onInput="document.getElementById('deathRecord2').textContent = '&quot;record: Death record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Text:</td>
+        <td><input type="text" id="deathTextIn2" style="width:200px;" onInput="document.getElementById('deathText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Pasted:</td>
+        <td><textarea id="deathPastedIn2" style="width:400px;" onInput="document.getElementById('deathPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+    </table>
+    </details></td>
+    </tr>
+
+      <tr>
+        <td colspan="2"><strong>Burial record</strong></td></tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="burSourceIn"
+         onInput="document.getElementById('burSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('burSourceURLIn').value+'&quot;,';"/>
+          <input type="text" id="burSourceURLIn" 
+          onInput="document.getElementById('burSource').textContent = '&quot;source: '+document.getElementById('burSourceIn').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Year:</td>
+        <td><input type="text" id="burYearIn" style="width:200px;" 
+        onInput="document.getElementById('burYear').textContent = '&quot;buryear: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Date:</td>
+        <td><input type="text" id="burDateIn" style="width:200px;" 
+        onInput="document.getElementById('burDate').textContent = '&quot;burdate: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="burPlaceIn" style="width:200px;" 
+        onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="burRecordIn" style="width:200px;" 
+        onInput="document.getElementById('burRecord').textContent = '&quot;record: Burial record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Text:</td>
+        <td><input type="text" id="burTextIn" style="width:200px;" onInput="document.getElementById('burText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Pasted:</td>
+        <td><textarea id="burPastedIn" style="width:400px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+
+
+
+
+
+      <!--tr>
+        <td>Year:</td>
+        <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
+            <input type="radio" name="censusYear" value="1841"/>
+            1841 &nbsp;
+            <input type="radio" name="censusYear" value="1851"/>
+            1851 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1861"/>
+            1861 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1871"/>
+            1871 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1881"/>
+            1881 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1891"/>
+            1891
+            &nbsp;
+            <input type="radio" name="censusYear" value="1901"/>
+            1901
+            &nbsp;
+            <input type="radio" name="censusYear" value="1911"/>
+            1911
+            &nbsp;
+            <input type="radio" name="censusYear" value="1939"/>
+            1939 &nbsp;
+          </form></td>
+      </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Relation:</td>
+        <td><form onChange="doRelation(this.elements['censusRelation'].value)">
+            <input type="radio" name="censusRelation" value="head"/>
+            head &nbsp;
+            <input type="radio" name="censusRelation" value="wife"/>
+            wife  &nbsp;
+            <input type="radio" name="censusRelation" value="child"/>
+            child &nbsp;
+            <input type="radio" name="censusRelation" value="other"/>
+            other  &nbsp;
+            <input type="radio" name="censusRelation" value="serv"/>
+            serv  &nbsp;
+            <input type="radio" name="censusRelation" value="visitor"/>
+            visitor
+          </form></td>
+      </tr>
+      <tr>
+        <td>Head:</td>
+        <td><input type="text" id="headId"  onInput="comma=''; if (this.value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+this.value+comma+document.getElementById('censusHead').value"/>
+          ,
+          <input type="text" id="censusHead" style="width: 400px;" onInput="comma=''; if (document.getElementById('headId').value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+document.getElementById('headId').value+comma+this.value"/></td>
+      </tr>
+      <tr>
+        <td>Wife:</td>
+        <td>
+          <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
+        <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
+      </tr>
+      <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
+      <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
+      <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
+      <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
+      <tr>
+        <td></td>
+        <td>CParish
+          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
+          SRD
+          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
+          RD
+          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
+      </tr-->
+
+
+       <tr>
+        <td colspan="2"><strong>Grave inscription</strong></td></tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="graveSourceIn"
+         onInput="document.getElementById('graveSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('graveSourceURLIn').value+'&quot;,';"/>
+          <input type="text" id="graveSourceURLIn" 
+          onInput="document.getElementById('graveSource').textContent = '&quot;source: '+document.getElementById('graveSourceIn').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Inscription:</td>
+        <td><textarea id="inscriptionIn" style="width:400px;" onInput="document.getElementById('inscription').textContent = '&quot;gravestone: '+this.value+'&quot;,';"></textarea></td>
+      </tr>
+
+
+       <tr>
+        <td colspan="2"><strong>Probate</strong></td></tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="probateSourceIn"
+         onInput="document.getElementById('probateSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('probateSourceURLIn').value+'&quot;,';"/>
+          <input type="text" id="probateSourceURLIn" 
+          onInput="document.getElementById('probateSource').textContent = '&quot;source: '+document.getElementById('probateSourceIn').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Probate text:</td>
+        <td><textarea id="probateIn" style="width:400px;" onInput="document.getElementById('probate').textContent = '&quot;probate: '+this.value+'&quot;,';"></textarea></td>
+      </tr>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="probateRecordIn" style="width:200px;" 
+        onInput="document.getElementById('probateRecord').textContent = '&quot;record: Probate record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+
+
+     <tr><td colspan="2"><strong>Aggregated information</strong></td></tr>
+      <tr>
+        <td>Name:</td>
+        <td><input type="text" id="nameIn" style="width:200px;" onInput="document.getElementById('name').textContent = '&quot;name: '+this.value.trim()+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Of:</td>
+        <td><input type="text" id="ofIn" style="width:200px;" onInput="document.getElementById('of').textContent = '&quot;of: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Place of death:</td>
+        <td><input type="text" id="deathPlaceIn" style="width:200px;" onInput="document.getElementById('deathPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Age:</td>
+        <td><input type="text" id="ageIn" style="width:200px;" onInput="document.getElementById('age').textContent = '&quot;age: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Cause:</td>
+        <td><input type="text" id="causeIn" style="width:200px;" onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Occupation:</td>
+        <td><input type="text" id="occIn" style="width:200px;" onInput="document.getElementById('occ').textContent = '&quot;occ: '+this.value+'&quot;,';"/></td>
+      </tr>
+
+
+      <tr>
+        <td>Father:</td>
+        <td><input type="text" id="fatherIn" style="width:200px;" onInput="document.getElementById('father').textContent = '&quot;father: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Father id:</td>
+        <td><input type="text" id="fatherIdIn" style="width:200px;" onInput="document.getElementById('fatherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Father occ:</td>
+        <td><input type="text" id="foccIn" style="width:200px;" onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Mother:</td>
+        <td><input type="text" id="motherIn" style="width:200px;" onInput="document.getElementById('mother').textContent = '&quot;mother: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Mother id:</td>
+        <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>GPS:</td>
+        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('gpsCoords').value.trim().replace(/\s+/,',')+'&quot;,'"/>
+          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+this.value.trim().replace(/\s+/,',')+'&quot;,'"/></td>
+      </tr>
+      <tr>
+        <td>Notes:</td>
+        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')">{xxxx:kx} was</textarea></td>
+      </tr>
+      <tr>
+        <td>FNotes:</td>
+        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+      </tr>
+      <tr>
+        <td>Discussion:</td>
+        <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+      </tr>
+   </table>
+   
+   
+   
+    <div id="draft" style="margin:2em;">
+      <div>death: [</div>
+      <div id="id"></div>
+      <div id="name"></div>
+      <div id="of"></div>
+      <div id="deathPlace"></div>
+      <div id="age"></div>
+      <div id="cause"></div>
+      <div id="occ"></div>
+      
+      <div id="father"></div>
+      <div id="fatherId"></div>
+      <div id="focc"></div>
+      <div id="mother"></div>
+      <div id="motherId"></div>
+      <div id="informant"></div>
+      
+      
+      <div id="burYear"></div>
+      <div id="burDate"></div>
+      <div id="burPlace"></div>
+      
+      <div id="deathSource"></div>
+      <div id="deathText"></div>
+      <div id="deathPasted" style="white-space:pre-line"></div>
+      <div id="deathRecord"></div>
+      
+      <div id="deathSource2"></div>
+      <div id="deathText2"></div>
+      <div id="deathPasted2" style="white-space:pre-line"></div>
+      <div id="deathRecord2"></div>
+      
+      <div id="burSource"></div>
+      <div id="burText"></div>
+      <div id="burPasted" style="white-space:pre-line"></div>
+      <div id="burRecord"></div>
+      
+
+      <div id="graveSource"></div>
+      <div id="inscription"></div>
+
+      <div id="probateSource"></div>
+      <div id="probate"></div>
+      <div id="probateRecord"></div>
+
+      <div id="gps"></div>
+      <div id="note"></div>
+      <div id="fnote"></div>
+     <div id="discussion">"discussion: "</div>
+      <div>]</div>
+      </div>
+      
+      
+    <pre id="places">
+    </pre>
+  </div>
+</div>
+</body>
+</html>

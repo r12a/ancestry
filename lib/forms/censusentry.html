@@ -1,0 +1,282 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Census form</title>
+<link href="../../lib/style.css" rel="stylesheet">
+<script src="formentrylookup.js" type="application/javascript"></script>
+<script src="../../data/db.js" type="application/javascript"></script>
+<script>
+function getDate (year) { 
+	var date
+	switch (year) {
+		case '1841': date = '6 Jun'; break
+		case '1851': date = '30 Mar'; break
+		case '1861': date = '7 Apr'; break
+		case '1871': date = '2 Apr'; break
+		case '1881': date = '3 Apr'; break
+		case '1891': date = '5 Apr'; break
+		case '1901': date = '31 Mar'; break
+		case '1911': date = '2 Apr'; break
+		case '1939': date = '29 Sep'; break		
+		}
+	document.getElementById('year').textContent = year
+	document.getElementById('date').textContent = 'date: '+date
+	}
+
+function doRelation (type) { 
+	document.getElementById('relation').innerHTML = 'relation: '+type
+	switch (type) {
+		case 'head': document.getElementById('headId').value = document.getElementById('censusId').value; break
+		case 'wife': document.getElementById('wifeId').value = document.getElementById('censusId').value; break
+		}
+	}
+
+function addChild () {
+	var input = document.createElement('input')
+	currentChildren = document.getElementById('children').querySelectorAll('input')
+	if (currentChildren) numberOfChildren = currentChildren.length+1
+	else numberOfChildren = 1
+	input.style.width = '400px'
+	input.id = 'child'+numberOfChildren
+	input.oninput = function () { updateField(this.id+'out', 'child: '+this.value) }
+	document.getElementById('children').appendChild(document.createElement('br'))
+	document.getElementById('children').appendChild(input)
+	
+	p = document.createElement('p')
+	p.id = input.id+'out'
+	document.getElementById('childrenOut').appendChild(p)
+	}
+
+function addField (type) {
+	var input = document.createElement('input')
+	currentPeople = document.getElementById(type).querySelectorAll('input')
+	if (currentPeople) numberOfPeople = currentPeople.length+1
+	else currentPeople = 1
+	input.style.width = '400px'
+	input.id = type+numberOfPeople
+	input.oninput = function () { updateField(this.id+'out', type+': '+this.value) }
+	document.getElementById(type).appendChild(document.createElement('br'))
+	document.getElementById(type).appendChild(input)
+	
+	p = document.createElement('p')
+	p.id = input.id+'out'
+	document.getElementById(type+'Out').appendChild(p)
+	}
+
+function updateField (id, content) { 
+	document.getElementById(id).innerHTML = content
+	}
+
+function makeNotes (content, target) {
+	segments = content.split('\n')
+	var out = ''
+	for (var i=0;i<segments.length;i++) out += '<div>'+target+': '+segments[i]+'</div>'
+	document.getElementById(target).innerHTML = out
+	}
+
+function findParentIds (person) {
+	person = document.getElementById('censusId').value
+	if (db[person]) {
+		if (fid = db[person].father) {
+			document.getElementById('headId').value = fid;
+			}
+		if (mid = db[person].mother) {
+			document.getElementById('wifeId').value = mid;
+			}
+		}
+	}
+
+
+</script>
+<style>
+#draft p {
+	margin: 0;
+	}
+#references {
+	font-size: 80%;
+	float: right;
+	}
+#references p {
+	margin: 0;
+	}
+#references h3 {
+	margin-bottom: 0;
+	}
+.redo { font-size:120%; margin-left: 1em; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Census record entry<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div><a href="#n1">Census</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+  </div>
+  <div id="subsubbanner">
+    <div>
+      <button onClick="dump()">Go</button>
+    </div>
+  </div>
+  <div id="main">
+    <h2>Census</h2>
+    
+      <div id="references">
+      </div>
+      
+      
+    <table id="census" style="margin: 2em;">
+      <tr>
+        <td>Id:</td>
+        <td><input type="text" id="censusId" onChange="if (this.value!='') {listRelations(this.value);}"/>  <span class="redo" onClick="listRelations(document.getElementById('censusId').value);">🔁</span></td>
+      </tr>
+      <tr>
+        <td>Year:</td>
+        <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
+            <input type="radio" name="censusYear" value="1841"/>
+            1841 &nbsp;
+            <input type="radio" name="censusYear" value="1851"/>
+            1851 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1861"/>
+            1861 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1871"/>
+            1871 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1881"/>
+            1881 
+            &nbsp;
+            <input type="radio" name="censusYear" value="1891"/>
+            1891
+            &nbsp;
+            <input type="radio" name="censusYear" value="1901"/>
+            1901
+            &nbsp;
+            <input type="radio" name="censusYear" value="1911"/>
+            1911
+            &nbsp;
+            <input type="radio" name="censusYear" value="1939"/>
+            1939 &nbsp;
+          </form></td>
+      </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="document.getElementById('rooms').textContent = 'rooms: '+this.value;"/> rooms</td>
+      </tr>
+      <tr>
+        <td>Relation:</td>
+        <td><form onChange="doRelation(this.elements['censusRelation'].value)">
+            <input type="radio" name="censusRelation" value="head" 
+            	onClick="document.getElementById('headId').value = document.getElementById('censusId').value;"/>
+            head &nbsp;
+            <input type="radio" name="censusRelation" value="wife" 
+            	onClick="document.getElementById('wifeId').value = document.getElementById('censusId').value;"/>
+            wife  &nbsp;
+            <input type="radio" name="censusRelation" value="child" onClick="findParentIds()"/>
+            child &nbsp;
+            <input type="radio" name="censusRelation" value="other"/>
+            other  &nbsp;
+            <input type="radio" name="censusRelation" value="serv"/>
+            serv  &nbsp;
+            <input type="radio" name="censusRelation" value="visitor"/>
+            visitor
+          </form></td>
+      </tr>
+       <tr>
+        <td>Married:</td>
+        <td><input type="text" id="marriedIn" style="width:400px;" onInput="document.getElementById('married').textContent = 'married: '+this.value;"/></td>
+      </tr>
+     <tr>
+        <td>Head:</td>
+        <td><input type="text" id="headId"  onInput="comma=''; if (this.value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+this.value+comma+document.getElementById('censusHead').value"/>
+          ,
+          <input type="text" id="censusHead" style="width: 400px;" onInput="comma=''; if (document.getElementById('headId').value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+document.getElementById('headId').value+comma+this.value"/></td>
+      </tr>
+      <tr>
+        <td>Wife:</td>
+        <td>
+          <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
+        <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
+      </tr>
+      <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
+      <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
+      <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
+      <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
+      <tr>
+        <td></td>
+        <td>CParish
+          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
+          SRD
+          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
+          RD
+          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Occupation:</td>
+        <td><input type="text" id="censusOcc" style="width:200px;" onInput="document.getElementById('occ').textContent = 'occ: '+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="censusSourceName" onInput="document.getElementById('source').textContent = 'source: '+this.value+' '+document.getElementById('censusSourceURL').value;"/>
+          <input type="text" id="censusSourceURL" onInput="document.getElementById('source').textContent = 'source: '+document.getElementById('censusSourceName').value+' '+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="censusRecordURL" style="width:200px;" onInput="if (document.getElementById('yearList').elements['censusYear'].value == '1939') {recordType='Census';} else {recordType='Registration';} document.getElementById('record').textContent = ' record: '+recordType+' record url:records/'+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>GPS:</td>
+        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = 'gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('gpsCoords').value.trim().replace(/\s+/,',')"/>
+          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+this.value.trim().replace(/\s+/,',')"/></td>
+      </tr>
+      <tr>
+        <td>Record title:</td>
+        <td><input type="text" id="censusTitle" style="width:400px;" onInput="document.getElementById('title').textContent = this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Notes:</td>
+        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')">{xxxx:kx} was</textarea></td>
+      </tr>
+      <tr>
+        <td>FNotes:</td>
+        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+      </tr>
+      <tr>
+        <td>Discussion:</td>
+        <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+      </tr>
+   </table>
+    <div id="draft" style="margin:2em;">
+      <div>§ <span id="year"></span> Census <span id="title"></span></div>
+      <div id="date"></div>
+      <div id="place"></div>
+      <div id="rooms"></div>
+      <div id="gps"></div>
+      <div id="relation"></div>
+      <div id="occ"></div>
+      <div id="note"></div>
+      <div id="fnote"></div>
+      
+      <div id="source"></div>
+      <div><span id="cparish"></span> <span id="srd"></span> <span id="rd"></span></div>
+      <div id="head"></div>
+      <div id="wife"></div>
+      <div id="married"></div>
+      <div id="childOut"></div>
+      <div id="otherOut"></div>
+      <div id="servOut"></div>
+      <div id="visitorOut"></div>
+      <div id="record"></div>
+      <div id="discussion"></div>
+      </div>
+      
+      
+    <pre id="places">
+    </pre>
+  </div>
+</div>
+</body>
+</html>
