@@ -72,15 +72,26 @@ function addQuotesTo (content) {
 	for (var i=0;i<lines.length;i++) {
 		if (lines[i].match(':')) {
 			var parts = lines[i].split(':')
-			parts[0] = '_'+parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
 			parts[1] = parts[1].replace(/[\s]+/g,' ')
-			out += '"'+parts[0]+': '+parts[1].trim()+'"'
+			out += '"['+parts[0]+': '+parts[1].trim()+']"'
 			out += ',\n'
 			}
 		}
 	return out
 	}
 
+
+function clearAll () {
+	inputs = document.querySelectorAll('input, textarea')
+	for (var i=0;i<inputs.length;i++) inputs[i].value = ''
+	
+	divs =  document.getElementById('draft').querySelectorAll('div')
+	for (i=0;i<divs.length;i++) divs[i].textContent = ''
+	document.getElementById('discussion').textContent = '"discussion: "'
+	document.getElementById('start').textContent = "death: ["
+	document.getElementById('end').textContent = "]"
+	}
 </script>
 <style>
 #draft p {
@@ -106,7 +117,7 @@ function addQuotesTo (content) {
     </div>
   </div>
   <div id="subbanner">
-    <div><a href="#n1">Census</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+    <div><a href="birthentry.html">Birth</a> • <a href="dthentry.html">Death</a></div>
   </div>
   <div id="subsubbanner">
     <div>
@@ -126,7 +137,7 @@ function addQuotesTo (content) {
         <td><input type="text" id="idIn" 
         	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
             onChange="
-            	autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span></td>
+            	autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span></td>
       </tr>
       
       <tr>
@@ -409,7 +420,7 @@ function addQuotesTo (content) {
    
    
     <div id="draft" style="margin:2em;">
-      <div>death: [</div>
+      <div id="start">death: [</div>
       <div id="id"></div>
       <div id="name"></div>
       <div id="of"></div>
@@ -457,7 +468,7 @@ function addQuotesTo (content) {
       <div id="note"></div>
       <div id="fnote"></div>
      <div id="discussion">"discussion: "</div>
-      <div>]</div>
+      <div id="end">]</div>
       </div>
       
       

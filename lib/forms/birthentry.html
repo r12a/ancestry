@@ -122,11 +122,22 @@ function addQuotesTo (content) {
 			var parts = lines[i].split(':')
 			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
 			parts[1] = parts[1].replace(/[\s]+/g,' ')
-			out += '"'+parts[0]+': '+parts[1].trim()+'"'
+			out += '"['+parts[0]+': '+parts[1].trim()+']"'
 			out += ',\n'
 			}
 		}
 	return out
+	}
+
+function clearAll () {
+	inputs = document.querySelectorAll('input, textarea')
+	for (var i=0;i<inputs.length;i++) inputs[i].value = ''
+	
+	divs =  document.getElementById('draft').querySelectorAll('div')
+	for (i=0;i<divs.length;i++) divs[i].textContent = ''
+	document.getElementById('discussion').textContent = '"discussion: "'
+	document.getElementById('start').textContent = "birth: ["
+	document.getElementById('end').textContent = "]"
 	}
 
 </script>
@@ -154,7 +165,7 @@ function addQuotesTo (content) {
     </div>
   </div>
   <div id="subbanner">
-    <div><a href="#n1">Census</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+    <div><a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
   </div>
   <div id="subsubbanner">
     <div>
@@ -173,7 +184,7 @@ function addQuotesTo (content) {
         <td>Id:</td>
         <td><input type="text" id="idIn" 
         	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-            onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span></td>
+            onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span></td>
       </tr>
       
       <tr><td colspan="2"><strong>Birth record(s)</strong></td></tr>
@@ -192,6 +203,10 @@ function addQuotesTo (content) {
       <tr>
         <td>Text:</td>
         <td><input type="text" id="birthTextIn" style="width:200px;" onInput="document.getElementById('birthText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Informant:</td>
+        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Pasted:</td>
@@ -373,6 +388,12 @@ function addQuotesTo (content) {
         <td>Mother Id:</td>
         <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
       </tr>
+      <tr>
+        <td>née:</td>
+        <td><input type="text" id="mmnIn" style="width:200px;" onInput="document.getElementById('mmn').textContent = '&quot;mmn: '+this.value+'&quot;,';"/></td>
+      </tr>
+
+
        <tr>
         <td>GPS:</td>
         <td><input type="text" id="censusGPSPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('censusGPSlat').value+','+document.getElementById('censusGPSlon').value+'&quot;,'"/>
@@ -381,12 +402,8 @@ function addQuotesTo (content) {
           <input type="text" id="censusGPSlon"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('censusGPSPlace').value+' https://maps.google.com/maps?q='+document.getElementById('censusGPSlat').value+','+this.value"/--></td>
       </tr>
       <tr>
-        <td>Record title:</td>
-        <td><input type="text" id="censusTitle" style="width:400px;" onInput="document.getElementById('title').textContent = this.value;"/></td>
-      </tr>
-      <tr>
         <td>Notes:</td>
-        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')">{xxxx:kx} was</textarea></td>
+        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
@@ -401,7 +418,7 @@ function addQuotesTo (content) {
    
    
     <div id="draft" style="margin:2em;">
-      <div>birth: [</div>
+      <div id="start">birth: [</div>
       <div id="id"></div>
       <div id="name"></div>
       <div id="birthPlace"></div>
@@ -410,6 +427,7 @@ function addQuotesTo (content) {
       <div id="focc"></div>
       <div id="mother"></div>
       <div id="motherId"></div>
+      <div id="mmn"></div>
       <div id="siblings"></div>
       <div id="informant"></div>
       
@@ -451,7 +469,7 @@ function addQuotesTo (content) {
       <div id="visitorOut"></div>
       <div id="record"></div>
       <div id="discussion">"discussion: "</div>
-      <div>]</div>
+      <div id="end">]</div>
       </div>
       
       

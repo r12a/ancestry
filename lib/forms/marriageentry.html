@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Marriage form</title>
-<link href="../../lib/style.css" rel="stylesheet">
+<link href="../lib/style.css" rel="stylesheet">
 <script src="formentrylookup.js" type="application/javascript"></script>
-<script src="../../data/db.js" type="application/javascript"></script>
+<script src="../data/db.js" type="application/javascript"></script>
 <script>
 function getDate (year) { console.log(year)
 	var date
@@ -449,7 +449,7 @@ function addQuotesTo (content) {
         <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
       </tr>
       <tr>
-        <td>"Discussion: "</td>
+        <td>Discussion: </td>
         <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
       </tr>
    </table>
@@ -457,6 +457,8 @@ function addQuotesTo (content) {
    
    
     <div id="draft" style="margin:2em;">
+    <div>marriages: {</div>
+    <div>&nbsp;</div>
       <div><span id="spouseId"></span>: [</div>
       <div id="year"></div>
       <div id="date"></div>
@@ -508,8 +510,10 @@ function addQuotesTo (content) {
       <div id="note"></div>
       <div id="fnote"></div>
       
-     <div id="discussion">discussion: </div>
+     <div id="discussion">&quot;discussion: &quot;</div>
       <div>]</div>
+      <div>&nbsp;</div>
+      <div>}</div>
       </div>
       
       
