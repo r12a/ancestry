@@ -78,22 +78,24 @@ function makeNotes (content, target) {
 function autoPropagate (person) {
 	if (person!='') {listRelations(person);} 
 	if (db[person]) {
-		document.getElementById('nameIn').value = db[person].g+' '+db[person].f
-		document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
+		//document.getElementById('nameIn').value = db[person].g+' '+db[person].f
+		//document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
 		if (fid = db[person].father) {
-			document.getElementById('fatherIdIn').value = fid;
-			document.getElementById('fatherId').innerHTML = '&quot;fid: '+fid+'&quot;,'
+			//document.getElementById('fatherIdIn').value = fid;
+			//document.getElementById('fatherId').innerHTML = '&quot;fid: '+fid+'&quot;,'
 			if (db[fid]) { 
-				document.getElementById('fatherIn').value = db[fid].g+' '+db[fid].f
-				document.getElementById('father').innerHTML = '&quot;father: '+db[fid].g+' '+db[fid].f+'&quot;,'
+				document.getElementById('bapFatherIn').value = db[fid].g+' '+db[fid].f
+				document.getElementById('certFNameIn').value = db[fid].g+' '+db[fid].f
+				//document.getElementById('father').innerHTML = '&quot;father: '+db[fid].g+' '+db[fid].f+'&quot;,'
 				}
 			}
 		if (mid = db[person].mother) {
-			document.getElementById('motherIdIn').value = mid;
-			document.getElementById('motherId').innerHTML = '&quot;mid: '+mid+'&quot;,'
+			//document.getElementById('motherIdIn').value = mid;
+			//document.getElementById('motherId').innerHTML = '&quot;mid: '+mid+'&quot;,'
 			if (db[mid]) {
-				document.getElementById('motherIn').value = db[mid].g+' '
-				document.getElementById('mother').innerHTML = '&quot;mother: '+db[mid].g+'&quot;,'
+				document.getElementById('bapMotherIn').value = db[mid].g+' '
+				document.getElementById('certMNameIn').value = db[fid].g+' '
+				//document.getElementById('mother').innerHTML = '&quot;mother: '+db[mid].g+'&quot;,'
 				}
 			}
 		siblings = ''
@@ -140,6 +142,12 @@ function clearAll () {
 	document.getElementById('end').textContent = "]"
 	}
 
+
+function formatGPS (str) {
+	str = str.replace(/https:\/\/maps.google.com\/maps\?q=/,'')
+	str = str.trim().replace(/,/,' ').replace(/\s+/,',')
+	return str
+	}
 </script>
 <style>
 #draft p {
@@ -156,6 +164,10 @@ function clearAll () {
 	margin-bottom: 0;
 	}
 .redo { font-size:120%; margin-left: 1em; cursor: pointer; }
+.copy { margin-left: 2em; cursor: pointer; background-color: rgba(107,167,227,1.00); color: white; border-radius: 5px; }
+.copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
+.accept:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
+.heading { font-weight:bold; padding-top: 2em; font-size: 110%; }
 </style>
 </head>
 <body>
@@ -187,7 +199,10 @@ function clearAll () {
             onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span></td>
       </tr>
       
-      <tr><td colspan="2"><strong>Birth record(s)</strong></td></tr>
+      <tr>
+        <td colspan="2"><details>
+          <summary class="heading">Birth index</summary>
+          <table>
       <tr>
         <td>Source:</td>
         <td><input type="text" id="birthSourceIn"
@@ -196,27 +211,86 @@ function clearAll () {
           onInput="document.getElementById('birthSource').textContent = '&quot;source: '+document.getElementById('birthSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="birthRecordIn" style="width:200px;" 
-        onInput="document.getElementById('birthRecord').textContent = '&quot;record: Birth record  url:records/'+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
         <td>Text:</td>
         <td><input type="text" id="birthTextIn" style="width:200px;" onInput="document.getElementById('birthText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Informant:</td>
-        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Pasted:</td>
+        <td>Paste:</td>
         <td><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
+	</table></details>
+          </td></tr>
+      
+      
+      
+      <tr>
+        <td colspan="2"><details>
+          <summary class="heading">Birth certificate</summary>
+          <table>
+            <tr>
+              <td>Record:</td>
+              <td><input type="text" id="certRecordIn" style="width:200px;" 
+        onInput="document.getElementById('certRecord').textContent = '&quot;record: Birth certificate  url:records/'+this.value+'&quot;,';"/></td>
+            </tr>
+            <tr>
+              <td>Source:</td>
+              <td><input type="text" id="certSourceIn1"
+         onInput="document.getElementById('certSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('certSourceIn2').value+'&quot;,';"/>
+                <input type="text" id="certSourceIn2" 
+          onInput="document.getElementById('certSource').textContent = '&quot;source: '+document.getElementById('certSourceIn1').value+' '+this.value+'&quot;,';"/></td>
+            </tr>
+            <tr>
+              <td>When:</td>
+              <td><input type="text" id="certWhenIn" style="width:200px;" onInput="document.getElementById('certWhen').textContent = '&quot;[When: '+this.value+']&quot;,';"/></td>
+            </tr>
+            <tr>
+              <td>Where:</td>
+              <td><input type="text" id="certWhereIn" style="width:200px;" onInput="document.getElementById('certWhere').textContent = '&quot;[Where: '+this.value+']&quot;,';"/>
+                <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('certWhereIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('certWhereIn').value;">✚</span></td>
+            </tr>
+            <tr>
+              <td>Name:</td>
+              <td><input type="text" id="certNameIn" style="width:200px;" onInput="document.getElementById('certName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
+            </tr>
+            <tr>
+              <td>Father's name:</td>
+              <td><input type="text" id="certFNameIn" style="width:200px;" onInput="document.getElementById('certFName').textContent = '&quot;[FatherName: '+this.value+']&quot;,';"/>
+            <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certFName').textContent = '&quot;[Father: '+document.getElementById('certFNameIn').value+']&quot;,'">✔</span></td>
+            </tr>
+            <tr>
+              <td>Mother's name:</td>
+              <td><input type="text" id="certMNameIn" style="width:200px;" onInput="document.getElementById('certMName').textContent = '&quot;[MotherName: '+this.value+']&quot;,';"/>
+            <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certMName').textContent = '&quot;[Father: '+document.getElementById('certMNameIn').value+']&quot;,'">✔</span></td>
+            </tr>
+            <tr>
+              <td>Father occupation:</td>
+              <td><input type="text" id="certOccIn" style="width:200px;" onInput="document.getElementById('certOcc').textContent = '&quot;[FatherOccupation: '+this.value+']&quot;,';"/>
+                <span class="copy" title="Add to metadata." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('certOccIn').value;">✚</span></td>
+            </tr>
+            <tr>
+              <td>Informant:</td>
+              <td><input type="text" id="certInformantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,'; document.getElementById('informantIn').value = this.value;"/></td>
+            </tr>
+            <tr>
+              <td>Reg. date:</td>
+              <td><input type="text" id="certRegdIn" style="width:200px;" onInput="document.getElementById('certRegd').textContent = '&quot;[RegDate: '+this.value+']&quot;,';"/></td>
+            </tr>
+            <tr>
+              <td>Other:</td>
+              <td><textarea name="certOtherIn" id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
+            </tr>
+          </table>
+        </details></td>
+      </tr>
+
+
+
+
 
 
 	<tr><td colspan="2">
     <details>
-    <summary><strong>Second source</strong></summary>
+    <summary class="heading">Other source</summary>
     <table>
       <tr>
         <td>Source:</td>
@@ -242,13 +316,27 @@ function clearAll () {
     </details></td>
     </tr>
 
-      <tr><td colspan="2"><strong>Baptism record(s)</strong></td></tr>
-      <tr>
+      <tr><td colspan="2">
+      <details>
+    <summary class="heading">Baptism record</summary>
+    <table>
+        <tr>
+        <td>Record:</td>
+        <td><input type="text" id="bapRecordIn" style="width:200px;" 
+        onInput="document.getElementById('bapRecord').textContent = '&quot;record: Baptism record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+     <tr>
         <td>Source:</td>
         <td><input type="text" id="bapSourceIn"
          onInput="document.getElementById('bapSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('bapSourceURLIn').value+'&quot;,';"/>
           <input type="text" id="bapSourceURLIn" 
           onInput="document.getElementById('bapSource').textContent = '&quot;source: '+document.getElementById('bapSourceIn').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="bapPlaceIn" style="width:200px;" 
+        onInput="document.getElementById('bapPlace').textContent = '&quot;bapplace: '+this.value+'&quot;,';"/>
+                <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapPlaceIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapPlaceIn').value;">✚</span></td>
       </tr>
       <tr>
         <td>Year:</td>
@@ -261,23 +349,53 @@ function clearAll () {
         onInput="document.getElementById('bapDate').textContent = '&quot;bapdate: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Place:</td>
-        <td><input type="text" id="bapPlaceIn" style="width:200px;" 
-        onInput="document.getElementById('bapPlace').textContent = '&quot;bapplace: '+this.value+'&quot;,';"/></td>
+        <td>Born:</td>
+        <td><input type="text" id="bapBornIn" style="width:200px;" 
+        onInput="document.getElementById('bapBorn').textContent = '&quot;[Born: '+this.value+']&quot;,';"/></td>
       </tr>
+        <tr>
+          <td>Name:</td>
+          <td><input type="text" id="bapNameIn" style="width:200px;" onInput="document.getElementById('bapName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
+        </tr>
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="bapRecordIn" style="width:200px;" 
-        onInput="document.getElementById('bapRecord').textContent = '&quot;record: Baptism record  url:records/'+this.value+'&quot;,';"/></td>
+        <td>Father:</td>
+        <td><input type="text" id="bapFatherIn" style="width:200px;" onInput="document.getElementById('bapFather').textContent = '&quot;[Father: '+this.value+']&quot;,';"/>
+            <span class="accept" title="Add to baptism data." onClick="document.getElementById('bapFather').textContent = '&quot;[Father: '+document.getElementById('bapFatherIn').value+']&quot;,'">✔</span></td>
       </tr>
+      <!--tr>
+        <td>Father Id:</td>
+        <td><input type="text" id="fatherIdIn" style="width:200px;" onInput="document.getElementById('fatherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
+      </tr-->
+      <tr>
+        <td>Mother:</td>
+        <td><input type="text" id="bapMotherIn" style="width:200px;" onInput="document.getElementById('bapMother').textContent = '&quot;[Mother: '+this.value+']&quot;,';"/>
+            <span class="accept" title="Add to baptism data." onClick="document.getElementById('bapMother').textContent = '&quot;[Mother: '+document.getElementById('bapMotherIn').value+']&quot;,'">✔</span></td>
+      </tr>
+      <!--tr>
+        <td>Mother Id:</td>
+        <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
+      </tr-->
       <tr>
         <td>Text:</td>
         <td><input type="text" id="bapTextIn" style="width:200px;" onInput="document.getElementById('bapText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
+        <tr>
+          <td>Abode:</td>
+          <td><input type="text" id="bapWhereIn" style="width:200px;" onInput="document.getElementById('bapAbode').textContent = '&quot;[Abode: '+this.value+']&quot;,';"/>
+            <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapWhereIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapWhereIn').value;">✚</span></td>
+        </tr>
+        <tr>
+          <td>Father occupation:</td>
+          <td><input type="text" id="bapOccIn" style="width:200px;" onInput="document.getElementById('bapOcc').textContent = '&quot;[FatherOccupation: '+this.value+']&quot;,';"/>
+            <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('bapOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('bapOccIn').value;">✚</span></td>
+        </tr>
       <tr>
-        <td>Pasted:</td>
+        <td>Paste:</td>
         <td><textarea id="bapPastedIn" style="width:400px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
+</table></details>     
+      
+      </td></tr>
 
 
 
@@ -359,47 +477,30 @@ function clearAll () {
           RD
           <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
       </tr-->
-      <tr><td colspan="2"><strong>Aggregated information</strong></td></tr>
       <tr>
+        <td colspan="2" class="heading">Metadata</td></tr>
+      <!--tr>
         <td>Name:</td>
         <td><input type="text" id="nameIn" style="width:200px;" onInput="document.getElementById('name').textContent = '&quot;name: '+this.value.trim()+'&quot;,';"/></td>
-      </tr>
+      </tr-->
       <tr>
         <td>Place of birth:</td>
         <td><input type="text" id="birthPlaceIn" style="width:200px;" onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Father:</td>
-        <td><input type="text" id="fatherIn" style="width:200px;" onInput="document.getElementById('father').textContent = '&quot;father: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Father Id:</td>
-        <td><input type="text" id="fatherIdIn" style="width:200px;" onInput="document.getElementById('fatherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Father occ:</td>
         <td><input type="text" id="foccIn" style="width:200px;" onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Mother:</td>
-        <td><input type="text" id="motherIn" style="width:200px;" onInput="document.getElementById('mother').textContent = '&quot;mother: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Mother Id:</td>
-        <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>née:</td>
-        <td><input type="text" id="mmnIn" style="width:200px;" onInput="document.getElementById('mmn').textContent = '&quot;mmn: '+this.value+'&quot;,';"/></td>
+        <td>Informant:</td>
+        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
       </tr>
 
 
        <tr>
         <td>GPS:</td>
-        <td><input type="text" id="censusGPSPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('censusGPSlat').value+','+document.getElementById('censusGPSlon').value+'&quot;,'"/>
-          <input type="text" id="censusGPSlat"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('censusGPSPlace').value+' https://maps.google.com/maps?q='+this.value.trim().replace(/\s+/,',')+'&quot;,'"/>
-          <!--input type="text" id="censusGPSlat"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('censusGPSPlace').value+' https://maps.google.com/maps?q='+this.value.trim()+','+document.getElementById('censusGPSlon').value.trim()"/>
-          <input type="text" id="censusGPSlon"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('censusGPSPlace').value+' https://maps.google.com/maps?q='+document.getElementById('censusGPSlat').value+','+this.value"/--></td>
+        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
+          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
       </tr>
       <tr>
         <td>Notes:</td>
@@ -422,34 +523,52 @@ function clearAll () {
       <div id="id"></div>
       <div id="name"></div>
       <div id="birthPlace"></div>
-      <div id="father"></div>
-      <div id="fatherId"></div>
+      <div id="father" style="display:none;"></div>
+      <div id="fatherId" style="display:none;"></div>
       <div id="focc"></div>
-      <div id="mother"></div>
-      <div id="motherId"></div>
-      <div id="mmn"></div>
+      <div id="mother" style="display:none;"></div>
+      <div id="motherId" style="display:none;"></div>
+      <div id="mmn" style="display:none;"></div>
       <div id="siblings"></div>
       <div id="informant"></div>
       
       
-      <div id="bapYear"></div>
-      <div id="bapDate"></div>
-      <div id="bapPlace"></div>
+      <div id="certRecord"></div>
+      <div id="certSource"></div>
+      <div id="certWhen"></div>
+      <div id="certWhere"></div>
+      <div id="certName"></div>
+      <div id="certFName"></div>
+      <div id="certMName"></div>
+      <div id="certOcc"></div>
+      <div id="certCause"></div>
+      <div id="certInformant"></div>
+      <div id="certRegd"></div>
+      <div id="certOther" style="white-space:pre-line"></div>
       
       <div id="birthSource"></div>
       <div id="birthText"></div>
       <div id="birthPasted" style="white-space:pre-line"></div>
       <div id="birthRecord"></div>
       
+      <div id="birthRecord2"></div>
       <div id="birthSource2"></div>
       <div id="birthText2"></div>
       <div id="birthPasted2" style="white-space:pre-line"></div>
-      <div id="birthRecord2"></div>
       
+      <div id="bapRecord"></div>
       <div id="bapSource"></div>
+      <div id="bapPlace"></div>
+      <div id="bapYear"></div>
+      <div id="bapDate"></div>
+      <div id="bapBorn"></div>
+      <div id="bapName"></div>
+      <div id="bapFather"></div>
+      <div id="bapMother"></div>
+      <div id="bapAbode"></div>
+      <div id="bapOcc"></div>
       <div id="bapText"></div>
       <div id="bapPasted" style="white-space:pre-line"></div>
-      <div id="bapRecord"></div>
       
       
       <div id="place"></div>
@@ -469,7 +588,7 @@ function clearAll () {
       <div id="visitorOut"></div>
       <div id="record"></div>
       <div id="discussion">"discussion: "</div>
-      <div id="end">]</div>
+      <div id="end">],</div>
       </div>
       
       

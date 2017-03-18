@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Marriage form</title>
-<link href="../lib/style.css" rel="stylesheet">
+<link href="../../lib/style.css" rel="stylesheet">
 <script src="formentrylookup.js" type="application/javascript"></script>
-<script src="../data/db.js" type="application/javascript"></script>
+<script src="../../data/db.js" type="application/javascript"></script>
 <script>
 function getDate (year) { console.log(year)
 	var date
@@ -22,14 +22,6 @@ function getDate (year) { console.log(year)
 		}
 	document.getElementById('year').textContent = year
 	document.getElementById('date').textContent = 'date: '+date
-	}
-
-function doRelation (type) { console.log(type)
-	document.getElementById('relation').innerHTML = 'relation: '+type
-	switch (type) {
-		case 'head': document.getElementById('headId').value = document.getElementById('censusId').value; break
-		case 'wife': document.getElementById('wifeId').value = document.getElementById('censusId').value; break
-		}
 	}
 
 function addChild () {
@@ -194,6 +186,9 @@ function addQuotesTo (content) {
 	margin-bottom: 0;
 	}
 .redo { font-size:120%; margin-left: 1em; cursor: pointer; }
+.copy { margin-left: 2em; cursor: pointer; background-color: rgba(107,167,227,1.00); color: white; border-radius: 5px; }
+.copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
+.heading { font-weight:bold; padding-top: 2em; font-size: 110%; }
 </style>
 </head>
 <body>
@@ -240,52 +235,52 @@ function addQuotesTo (content) {
 
      
       <tr>
-        <td colspan="2"><strong>Marriage record(s)</strong></td></tr>
+        <td colspan="2" class="heading">Marriage record(s)</td></tr>
       <tr>
         <td>Source:</td>
-        <td><input type="text" id="birthSourceIn"
-         onInput="document.getElementById('birthSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('birthSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="birthSourceURLIn" 
-          onInput="document.getElementById('birthSource').textContent = '&quot;source: '+document.getElementById('birthSourceIn').value+' '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrSourceIn"
+         onInput="document.getElementById('marrSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('marrSourceURLIn').value+'&quot;,';"/>
+          <input type="text" id="marrSourceURLIn" 
+          onInput="document.getElementById('marrSource').textContent = '&quot;source: '+document.getElementById('marrSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Record:</td>
-        <td><input type="text" id="birthRecordIn" style="width:200px;" 
-        onInput="document.getElementById('birthRecord').textContent = '&quot;record: Marriage record  url:records/'+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrRecordIn" style="width:200px;" 
+        onInput="document.getElementById('marrRecord').textContent = '&quot;record: Marriage record  url:records/'+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Text:</td>
-        <td><input type="text" id="birthTextIn" style="width:200px;" onInput="document.getElementById('birthText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrTextIn" style="width:200px;" onInput="document.getElementById('marrText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Pasted:</td>
-        <td><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+        <td><textarea id="marrPastedIn" style="width:400px;" onInput="document.getElementById('marrPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
 
 
 	<tr><td colspan="2">
     <details>
-    <summary><strong>Second source</strong></summary>
+    <summary class="heading">Second source</summary>
     <table>
       <tr>
         <td>Source:</td>
-        <td><input type="text" id="birthSourceIn2"
-         onInput="document.getElementById('birthSource2').textContent = '&quot;source: '+this.value+' '+document.getElementById('birthSourceURLIn2').value+'&quot;,';"/>
-          <input type="text" id="birthSourceURLIn2" 
-          onInput="document.getElementById('birthSource2').textContent = '&quot;source: '+document.getElementById('birthSourceIn2').value+' '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrSourceIn2"
+         onInput="document.getElementById('marrSource2').textContent = '&quot;source: '+this.value+' '+document.getElementById('marrSourceURLIn2').value+'&quot;,';"/>
+          <input type="text" id="marrSourceURLIn2" 
+          onInput="document.getElementById('marrSource2').textContent = '&quot;source: '+document.getElementById('marrSourceIn2').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Record:</td>
-        <td><input type="text" id="birthRecordIn2" style="width:200px;" 
-        onInput="document.getElementById('record2').textContent = '&quot;record: Birth record  url:records/'+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrRecordIn2" style="width:200px;" 
+        onInput="document.getElementById('record2').textContent = '&quot;record: marr record  url:records/'+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Text:</td>
-        <td><input type="text" id="birthTextIn2" style="width:200px;" onInput="document.getElementById('birthText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrTextIn2" style="width:200px;" onInput="document.getElementById('marrText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Pasted:</td>
-        <td><textarea id="birthPastedIn2" style="width:400px;" onInput="document.getElementById('birthPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
+        <td><textarea id="marrPastedIn2" style="width:400px;" onInput="document.getElementById('marrPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
     </table>
     </details></td>
@@ -294,57 +289,11 @@ function addQuotesTo (content) {
 
 
 
-      <!--tr>
+      <tr>
+        <td colspan="2" class="heading">Programmable information</td></tr>
       <tr>
         <td>Place:</td>
-        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/></td>
-      </tr>
-      <tr>
-        <td>Relation:</td>
-        <td><form onChange="doRelation(this.elements['censusRelation'].value)">
-            <input type="radio" name="censusRelation" value="head"/>
-            head &nbsp;
-            <input type="radio" name="censusRelation" value="wife"/>
-            wife  &nbsp;
-            <input type="radio" name="censusRelation" value="child"/>
-            child &nbsp;
-            <input type="radio" name="censusRelation" value="other"/>
-            other  &nbsp;
-            <input type="radio" name="censusRelation" value="serv"/>
-            serv  &nbsp;
-            <input type="radio" name="censusRelation" value="visitor"/>
-            visitor
-          </form></td>
-      </tr>
-      <tr>
-        <td>Head:</td>
-        <td><input type="text" id="headId"  onInput="comma=''; if (this.value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+this.value+comma+document.getElementById('censusHead').value"/>
-          ,
-          <input type="text" id="censusHead" style="width: 400px;" onInput="comma=''; if (document.getElementById('headId').value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+document.getElementById('headId').value+comma+this.value"/></td>
-      </tr>
-      <tr>
-        <td>Wife:</td>
-        <td>
-          <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
-        <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
-      </tr>
-      <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
-      <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
-      <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
-      <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
-      <tr>
-        <td></td>
-        <td>CParish
-          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
-          SRD
-          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
-          RD
-          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
-      </tr-->
-      <tr><td colspan="2"><strong>Aggregated information</strong></td></tr>
-      <tr>
-        <td>Place:</td>
-        <td><input type="text" id="birthPlaceIn" style="width:200px;" onInput="document.getElementById('place').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="marrPlaceIn" style="width:200px;" onInput="document.getElementById('place').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Groom:</td>
@@ -460,9 +409,13 @@ function addQuotesTo (content) {
     <div>marriages: {</div>
     <div>&nbsp;</div>
       <div><span id="spouseId"></span>: [</div>
+      <div id="marrRecord"></div>
+      <div id="marrSource"></div>
+
       <div id="year"></div>
       <div id="date"></div>
       <div id="place"></div>
+      <div id="gps"></div>
       <div id="id"></div>
       <div id="groom"></div>
       <div id="gid"></div>
@@ -493,19 +446,15 @@ function addQuotesTo (content) {
       <div id="bapDate"></div>
       <div id="bapPlace"></div>
       
-      <div id="birthSource"></div>
-      <div id="birthText"></div>
-      <div id="birthPasted" style="white-space:pre-line"></div>
-      <div id="birthRecord"></div>
+      <div id="marrText"></div>
+      <div id="marrPasted" style="white-space:pre-line"></div>
       
-      <div id="birthSource2"></div>
-      <div id="birthText2"></div>
-      <div id="birthPasted2" style="white-space:pre-line"></div>
-      <div id="birthRecord2"></div>
+      <div id="marrSource2"></div>
+      <div id="marrText2"></div>
+      <div id="marrPasted2" style="white-space:pre-line"></div>
+      <div id="marrRecord2"></div>
       
       
-      <div id="gps"></div>
-      <div id="relation"></div>
       <div id="occ"></div>
       <div id="note"></div>
       <div id="fnote"></div>
@@ -513,7 +462,7 @@ function addQuotesTo (content) {
      <div id="discussion">&quot;discussion: &quot;</div>
       <div>]</div>
       <div>&nbsp;</div>
-      <div>}</div>
+      <div>},</div>
       </div>
       
       

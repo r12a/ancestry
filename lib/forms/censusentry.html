@@ -88,6 +88,12 @@ function findParentIds (person) {
 	}
 
 
+function formatGPS (str) {
+	str = str.replace(/https:\/\/maps.google.com\/maps\?q=/,'')
+	str = str.trim().replace(/,/,' ').replace(/\s+/,',')
+	return str
+	}
+
 </script>
 <style>
 #draft p {
@@ -163,10 +169,6 @@ function findParentIds (person) {
           </form></td>
       </tr>
       <tr>
-        <td>Place:</td>
-        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="document.getElementById('rooms').textContent = 'rooms: '+this.value;"/> rooms</td>
-      </tr>
-      <tr>
         <td>Relation:</td>
         <td><form onChange="doRelation(this.elements['censusRelation'].value)">
             <input type="radio" name="censusRelation" value="head" 
@@ -185,9 +187,18 @@ function findParentIds (person) {
             visitor
           </form></td>
       </tr>
-       <tr>
-        <td>Married:</td>
-        <td><input type="text" id="marriedIn" style="width:400px;" onInput="document.getElementById('married').textContent = 'married: '+this.value;"/></td>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="censusRecordURL" style="width:200px;" onInput="if (document.getElementById('yearList').elements['censusYear'].value == '1939') {recordType='Census';} else {recordType='Registration';} document.getElementById('record').textContent = ' record: '+recordType+' record url:records/'+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="censusSourceName" onInput="document.getElementById('source').textContent = 'source: '+this.value+' '+document.getElementById('censusSourceURL').value;"/>
+          <input type="text" id="censusSourceURL" onInput="document.getElementById('source').textContent = 'source: '+document.getElementById('censusSourceName').value+' '+this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="document.getElementById('rooms').textContent = 'rooms: '+this.value;"/> rooms</td>
       </tr>
      <tr>
         <td>Head:</td>
@@ -200,6 +211,10 @@ function findParentIds (person) {
         <td>
           <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
         <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
+      </tr>
+       <tr>
+        <td>Married:</td>
+        <td><input type="text" id="marriedIn" style="width:400px;" onInput="document.getElementById('married').textContent = 'married: '+this.value;"/></td>
       </tr>
       <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
       <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
@@ -219,18 +234,9 @@ function findParentIds (person) {
         <td><input type="text" id="censusOcc" style="width:200px;" onInput="document.getElementById('occ').textContent = 'occ: '+this.value;"/></td>
       </tr>
       <tr>
-        <td>Source:</td>
-        <td><input type="text" id="censusSourceName" onInput="document.getElementById('source').textContent = 'source: '+this.value+' '+document.getElementById('censusSourceURL').value;"/>
-          <input type="text" id="censusSourceURL" onInput="document.getElementById('source').textContent = 'source: '+document.getElementById('censusSourceName').value+' '+this.value;"/></td>
-      </tr>
-      <tr>
-        <td>Record:</td>
-        <td><input type="text" id="censusRecordURL" style="width:200px;" onInput="if (document.getElementById('yearList').elements['censusYear'].value == '1939') {recordType='Census';} else {recordType='Registration';} document.getElementById('record').textContent = ' record: '+recordType+' record url:records/'+this.value;"/></td>
-      </tr>
-      <tr>
         <td>GPS:</td>
-        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = 'gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('gpsCoords').value.trim().replace(/\s+/,',')"/>
-          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+this.value.trim().replace(/\s+/,',')"/></td>
+        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = 'gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)"/>
+          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)"/></td>
       </tr>
       <tr>
         <td>Record title:</td>
@@ -251,17 +257,17 @@ function findParentIds (person) {
    </table>
     <div id="draft" style="margin:2em;">
       <div>§ <span id="year"></span> Census <span id="title"></span></div>
-      <div id="date"></div>
-      <div id="place"></div>
-      <div id="rooms"></div>
       <div id="gps"></div>
+      <div id="date"></div>
       <div id="relation"></div>
       <div id="occ"></div>
-      <div id="note"></div>
-      <div id="fnote"></div>
-      
+
+      <div id="record"></div>
       <div id="source"></div>
       <div><span id="cparish"></span> <span id="srd"></span> <span id="rd"></span></div>
+      <div id="place"></div>
+      <div id="rooms"></div>
+      
       <div id="head"></div>
       <div id="wife"></div>
       <div id="married"></div>
@@ -269,7 +275,9 @@ function findParentIds (person) {
       <div id="otherOut"></div>
       <div id="servOut"></div>
       <div id="visitorOut"></div>
-      <div id="record"></div>
+
+      <div id="note"></div>
+      <div id="fnote"></div>
       <div id="discussion"></div>
       </div>
       

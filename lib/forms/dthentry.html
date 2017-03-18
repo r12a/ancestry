@@ -61,8 +61,8 @@ function makeNotes (content, target) {
 function autoPropagate (person) {
 	if (person!='') {listRelations(person);} 
 	if (db[person]) {
-		document.getElementById('nameIn').value = db[person].g+' '+db[person].f
-		document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
+		//document.getElementById('nameIn').value = db[person].g+' '+db[person].f
+		//document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
 		}
 	}
 
@@ -92,6 +92,12 @@ function clearAll () {
 	document.getElementById('start').textContent = "death: ["
 	document.getElementById('end').textContent = "]"
 	}
+
+function formatGPS (str) {
+	str = str.replace(/https:\/\/maps.google.com\/maps\?q=/,'')
+	str = str.trim().replace(/,/,' ').replace(/\s+/,',')
+	return str
+	}
 </script>
 <style>
 #draft p {
@@ -108,6 +114,9 @@ function clearAll () {
 	margin-bottom: 0;
 	}
 .redo { font-size:120%; margin-left: 1em; cursor: pointer; }
+.copy { margin-left: 2em; cursor: pointer; background-color: rgba(107,167,227,1.00); color: white; border-radius: 5px; }
+.copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
+.heading { font-weight:bold; padding-top: 2em; font-size: 110%; }
 </style>
 </head>
 <body>
@@ -141,8 +150,11 @@ function clearAll () {
       </tr>
       
       <tr>
-        <td colspan="2"><strong>Death record</strong></td></tr>
-      <tr>
+        <td colspan="2">
+      <details>
+    <summary class="heading">Death index</summary>
+    <table>
+    <tr>
         <td>Source:</td>
         <td><input type="text" id="deathSourceIn"
          onInput="document.getElementById('deathSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn').value+'&quot;,';"/>
@@ -150,27 +162,86 @@ function clearAll () {
           onInput="document.getElementById('deathSource').textContent = '&quot;source: '+document.getElementById('deathSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="deathRecordIn" style="width:200px;" 
-        onInput="document.getElementById('deathRecord').textContent = '&quot;record: Death record  url:records/'+this.value+'&quot;,';"/></td>
+        <td>Name:</td>
+        <td><input type="text" id="burNameIn" style="width:200px;" 
+        onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Age:</td>
+        <td><input type="text" id="indexAgeIn" style="width:200px;" onInput="document.getElementById('indexAge').textContent = '&quot;[Age: '+this.value+']&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('indexAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('indexAgeIn').value;">✚</span></td>
       </tr>
       <tr>
         <td>Text:</td>
         <td><input type="text" id="deathTextIn" style="width:200px;" onInput="document.getElementById('deathText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Informant:</td>
-        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Pasted:</td>
+        <td>Paste:</td>
         <td><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
+      </table></details>
+</td></tr>
 
 
 	<tr><td colspan="2">
     <details>
-    <summary><strong>Second source</strong></summary>
+    <summary class="heading">Death certificate</summary>
+    <table>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="deathRecordInC" style="width:200px;" 
+        onInput="document.getElementById('deathRecordC').textContent = '&quot;record: Death certificate  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Source:</td>
+        <td><input type="text" id="deathSourceInC"
+         onInput="document.getElementById('deathSourceC').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn2').value+'&quot;,';"/>
+          <input type="text" id="deathSourceURLInC" 
+          onInput="document.getElementById('deathSourceC').textContent = '&quot;source: '+document.getElementById('deathSourceInC').value+' '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>When:</td>
+        <td><input type="text" id="certWhenIn" style="width:200px;" onInput="document.getElementById('certWhen').textContent = '&quot;[When: '+this.value+']&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Where:</td>
+        <td><input type="text" id="certWhereIn" style="width:200px;" onInput="document.getElementById('certWhere').textContent = '&quot;[Where: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('of').textContent = '&quot;of: '+document.getElementById('certWhereIn').value+'&quot;,'; document.getElementById('ofIn').value = document.getElementById('certWhereIn').value;">✚</span></td>
+      </tr>
+      <tr>
+        <td>Name:</td>
+        <td><input type="text" id="certNameIn" style="width:200px;" onInput="document.getElementById('certName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/> <!--span class="copy" title="Add to aggregate fields." onClick="document.getElementById('name').textContent = '&quot;name: '+document.getElementById('certNameIn').value+'&quot;,'; document.getElementById('nameIn').value = document.getElementById('certNameIn').value;">✚</span--></td>
+      </tr>
+      <tr>
+        <td>Age:</td>
+        <td><input type="text" id="certAgeIn" style="width:200px;" onInput="document.getElementById('certAge').textContent = '&quot;[Age: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('certAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('certAgeIn').value;">✚</span></td>
+      </tr>
+      <tr>
+        <td>Occupation:</td>
+        <td><input type="text" id="certOccIn" style="width:200px;" onInput="document.getElementById('certOcc').textContent = '&quot;[Occupation: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('occ').textContent = '&quot;occ: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('occIn').value = document.getElementById('certOccIn').value;">✚</span></td>
+      </tr>
+      <tr>
+        <td>Cause:</td>
+        <td><input type="text" id="certCauseIn" style="width:200px;" onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,'; document.getElementById('causeIn').value = this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Informant:</td>
+        <td><input type="text" id="certInformantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,'; document.getElementById('informantIn').value = this.value;"/></td>
+      </tr>
+      <tr>
+        <td>Reg. date:</td>
+        <td><input type="text" id="certRegdIn" style="width:200px;" onInput="document.getElementById('certRegd').textContent = '&quot;[RegDate: '+this.value+']&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Other:</td>
+        <td><textarea id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+    </table>
+    </details></td>
+    </tr>
+
+
+	<tr><td colspan="2">
+    <details>
+    <summary class="heading">Other source</summary>
     <table>
       <tr>
         <td>Source:</td>
@@ -196,9 +267,20 @@ function clearAll () {
     </details></td>
     </tr>
 
+
+
+
       <tr>
-        <td colspan="2"><strong>Burial record</strong></td></tr>
-      <tr>
+        <td colspan="2">
+       <details>
+    <summary class="heading">Burial record</summary>
+    <table>
+    <tr>
+        <td>Record:</td>
+        <td><input type="text" id="burRecordIn" style="width:200px;" 
+        onInput="document.getElementById('burRecord').textContent = '&quot;record: Burial record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+     <tr>
         <td>Source:</td>
         <td><input type="text" id="burSourceIn"
          onInput="document.getElementById('burSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('burSourceURLIn').value+'&quot;,';"/>
@@ -218,107 +300,45 @@ function clearAll () {
       <tr>
         <td>Place:</td>
         <td><input type="text" id="burPlaceIn" style="width:200px;" 
-        onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/></td>
+        onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
       </tr>
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="burRecordIn" style="width:200px;" 
-        onInput="document.getElementById('burRecord').textContent = '&quot;record: Burial record  url:records/'+this.value+'&quot;,';"/></td>
+        <td>Name:</td>
+        <td><input type="text" id="burNameIn" style="width:200px;" 
+        onInput="document.getElementById('burName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Abode:</td>
+        <td><input type="text" id="burAbodeIn" style="width:200px;" 
+        onInput="document.getElementById('burAbode').textContent = '&quot;[Abode: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('of').textContent = '&quot;of: '+document.getElementById('burAbodeIn').value+'&quot;,'; document.getElementById('ofIn').value = document.getElementById('burAbodeIn').value;">✚</span></td>
+      </tr>
+      <tr>
+        <td>Age:</td>
+        <td><input type="text" id="burAgeIn" style="width:200px;" 
+        onInput="document.getElementById('burAge').textContent = '&quot;[Age: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('burAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('burAgeIn').value;">✚</span></td>
       </tr>
       <tr>
         <td>Text:</td>
         <td><input type="text" id="burTextIn" style="width:200px;" onInput="document.getElementById('burText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Pasted:</td>
+        <td>Paste:</td>
         <td><textarea id="burPastedIn" style="width:400px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
+      </table></details>
+</td></tr>
 
 
 
 
-
-      <!--tr>
-        <td>Year:</td>
-        <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
-            <input type="radio" name="censusYear" value="1841"/>
-            1841 &nbsp;
-            <input type="radio" name="censusYear" value="1851"/>
-            1851 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1861"/>
-            1861 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1871"/>
-            1871 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1881"/>
-            1881 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1891"/>
-            1891
-            &nbsp;
-            <input type="radio" name="censusYear" value="1901"/>
-            1901
-            &nbsp;
-            <input type="radio" name="censusYear" value="1911"/>
-            1911
-            &nbsp;
-            <input type="radio" name="censusYear" value="1939"/>
-            1939 &nbsp;
-          </form></td>
-      </tr>
-      <tr>
-        <td>Place:</td>
-        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/></td>
-      </tr>
-      <tr>
-        <td>Relation:</td>
-        <td><form onChange="doRelation(this.elements['censusRelation'].value)">
-            <input type="radio" name="censusRelation" value="head"/>
-            head &nbsp;
-            <input type="radio" name="censusRelation" value="wife"/>
-            wife  &nbsp;
-            <input type="radio" name="censusRelation" value="child"/>
-            child &nbsp;
-            <input type="radio" name="censusRelation" value="other"/>
-            other  &nbsp;
-            <input type="radio" name="censusRelation" value="serv"/>
-            serv  &nbsp;
-            <input type="radio" name="censusRelation" value="visitor"/>
-            visitor
-          </form></td>
-      </tr>
-      <tr>
-        <td>Head:</td>
-        <td><input type="text" id="headId"  onInput="comma=''; if (this.value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+this.value+comma+document.getElementById('censusHead').value"/>
-          ,
-          <input type="text" id="censusHead" style="width: 400px;" onInput="comma=''; if (document.getElementById('headId').value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+document.getElementById('headId').value+comma+this.value"/></td>
-      </tr>
-      <tr>
-        <td>Wife:</td>
-        <td>
-          <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
-        <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
-      </tr>
-      <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
-      <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
-      <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
-      <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
-      <tr>
-        <td></td>
-        <td>CParish
-          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
-          SRD
-          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
-          RD
-          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
-      </tr-->
 
 
        <tr>
-        <td colspan="2"><strong>Grave inscription</strong></td></tr>
-      <tr>
+        <td colspan="2">
+      <details>
+    <summary class="heading">Grave inscription</summary>
+    <table>
+    <tr>
         <td>Source:</td>
         <td><input type="text" id="graveSourceIn"
          onInput="document.getElementById('graveSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('graveSourceURLIn').value+'&quot;,';"/>
@@ -328,11 +348,16 @@ function clearAll () {
       <tr>
         <td>Inscription:</td>
         <td><textarea id="inscriptionIn" style="width:400px;" onInput="document.getElementById('inscription').textContent = '&quot;gravestone: '+this.value+'&quot;,';"></textarea></td>
+        </tr></table></details>
+        </td>
       </tr>
 
 
        <tr>
-        <td colspan="2"><strong>Probate</strong></td></tr>
+        <td colspan="2">
+      <details>
+    <summary class="heading">Probate</summary>
+    <table>
       <tr>
         <td>Source:</td>
         <td><input type="text" id="probateSourceIn"
@@ -349,13 +374,12 @@ function clearAll () {
         <td><input type="text" id="probateRecordIn" style="width:200px;" 
         onInput="document.getElementById('probateRecord').textContent = '&quot;record: Probate record  url:records/'+this.value+'&quot;,';"/></td>
       </tr>
+      </table></details>
+        </td></tr>
 
 
-     <tr><td colspan="2"><strong>Aggregated information</strong></td></tr>
-      <tr>
-        <td>Name:</td>
-        <td><input type="text" id="nameIn" style="width:200px;" onInput="document.getElementById('name').textContent = '&quot;name: '+this.value.trim()+'&quot;,';"/></td>
-      </tr>
+     <tr>
+       <td colspan="2" class="heading">Metadata</td></tr>
       <tr>
         <td>Of:</td>
         <td><input type="text" id="ofIn" style="width:200px;" onInput="document.getElementById('of').textContent = '&quot;of: '+this.value+'&quot;,';"/></td>
@@ -373,12 +397,16 @@ function clearAll () {
         <td><input type="text" id="causeIn" style="width:200px;" onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
+        <td>Informant:</td>
+        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
         <td>Occupation:</td>
         <td><input type="text" id="occIn" style="width:200px;" onInput="document.getElementById('occ').textContent = '&quot;occ: '+this.value+'&quot;,';"/></td>
       </tr>
 
 
-      <tr>
+      <!--tr>
         <td>Father:</td>
         <td><input type="text" id="fatherIn" style="width:200px;" onInput="document.getElementById('father').textContent = '&quot;father: '+this.value+'&quot;,';"/></td>
       </tr>
@@ -397,15 +425,15 @@ function clearAll () {
       <tr>
         <td>Mother id:</td>
         <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
-      </tr>
+      </tr-->
       <tr>
         <td>GPS:</td>
-        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('gpsCoords').value.trim().replace(/\s+/,',')+'&quot;,'"/>
-          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+this.value.trim().replace(/\s+/,',')+'&quot;,'"/></td>
+        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
+          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
       </tr>
       <tr>
         <td>Notes:</td>
-        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')">{xxxx:kx} was</textarea></td>
+        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
@@ -435,26 +463,44 @@ function clearAll () {
       <div id="mother"></div>
       <div id="motherId"></div>
       <div id="informant"></div>
+      <div id="gps"></div>
       
       
-      <div id="burYear"></div>
-      <div id="burDate"></div>
-      <div id="burPlace"></div>
       
       <div id="deathSource"></div>
       <div id="deathText"></div>
+      <div id="indexName"></div>
+      <div id="indexAge"></div>
       <div id="deathPasted" style="white-space:pre-line"></div>
       <div id="deathRecord"></div>
+      
+      <div id="deathRecordC"></div>
+      <div id="deathSourceC"></div>
+      <div id="certWhen"></div>
+      <div id="certWhere"></div>
+      <div id="certName"></div>
+      <div id="certAge"></div>
+      <div id="certOcc"></div>
+      <div id="certCause"></div>
+      <div id="certInformant"></div>
+      <div id="certRegd"></div>
+      <div id="certOther" style="white-space:pre-line"></div>
       
       <div id="deathSource2"></div>
       <div id="deathText2"></div>
       <div id="deathPasted2" style="white-space:pre-line"></div>
       <div id="deathRecord2"></div>
       
-      <div id="burSource"></div>
-      <div id="burText"></div>
-      <div id="burPasted" style="white-space:pre-line"></div>
       <div id="burRecord"></div>
+      <div id="burSource"></div>
+      <div id="burYear"></div>
+      <div id="burDate"></div>
+      <div id="burPlace"></div>
+      <div id="burText"></div>
+      <div id="burName"></div>
+      <div id="burAbode"></div>
+      <div id="burAge"></div>
+      <div id="burPasted" style="white-space:pre-line"></div>
       
 
       <div id="graveSource"></div>
@@ -464,7 +510,6 @@ function clearAll () {
       <div id="probate"></div>
       <div id="probateRecord"></div>
 
-      <div id="gps"></div>
       <div id="note"></div>
       <div id="fnote"></div>
      <div id="discussion">"discussion: "</div>
