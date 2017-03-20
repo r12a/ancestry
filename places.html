@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <title>Place index</title>
+<style>
+.gpscoords { font-size: 70%; color: #ccc; }
+</style>
 <link href="lib/article.css" rel="stylesheet">
 <script src="xdevt/place_db.js" type="application/javascript"></script>
 <script>
@@ -81,7 +84,9 @@ for (var i=0;i<places.length;i++) {
 	
 for (var place in placeIndex) {
 	if (placeIndex[place].location != 'xxxx') {
-		out += '<p><a href="'+placeIndex[place].a+'" target="_blank">'+placeIndex[place].location+'</a>'
+		var coords = placeIndex[place].a.replace(/https:\/\/maps.google.com\/maps\?q=/,'')
+		coords = coords.replace(/http:\/\/maps.google.com\/maps\?q=/,'')
+		out += '<p><a href="'+placeIndex[place].a+'" target="_blank">'+placeIndex[place].location+' <span class="gpscoords">🗆'+coords+'</span></a>'
 		for (j=0;j<placeIndex[place].list.length;j++) {
 			out += ' <a class="detaillink" href="data/'+placeIndex[place].list[j]+'.html" target="_blank">'+placeIndex[place].list[j]+'</a>'
 			}

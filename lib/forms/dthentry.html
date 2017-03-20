@@ -77,6 +77,13 @@ function addQuotesTo (content) {
 			out += '"['+parts[0]+': '+parts[1].trim()+']"'
 			out += ',\n'
 			}
+		else if (lines[i].match('\t')) {
+			var parts = lines[i].split('\t')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			out += '"['+parts[0]+': '+parts[1].trim()+']"'
+			out += ',\n'
+			}
 		}
 	return out
 	}
@@ -162,8 +169,12 @@ function formatGPS (str) {
           onInput="document.getElementById('deathSource').textContent = '&quot;source: '+document.getElementById('deathSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
+        <td>Paste:</td>
+        <td><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+      <tr>
         <td>Name:</td>
-        <td><input type="text" id="burNameIn" style="width:200px;" 
+        <td><input type="text" id="indexNameIn" style="width:200px;" 
         onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
       </tr>
       <tr>
@@ -173,10 +184,6 @@ function formatGPS (str) {
       <tr>
         <td>Text:</td>
         <td><input type="text" id="deathTextIn" style="width:200px;" onInput="document.getElementById('deathText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Paste:</td>
-        <td><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
       </table></details>
 </td></tr>
@@ -260,7 +267,7 @@ function formatGPS (str) {
         <td><input type="text" id="deathTextIn2" style="width:200px;" onInput="document.getElementById('deathText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Pasted:</td>
+        <td>Paste:</td>
         <td><textarea id="deathPastedIn2" style="width:400px;" onInput="document.getElementById('deathPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
     </table>
@@ -288,18 +295,22 @@ function formatGPS (str) {
           onInput="document.getElementById('burSource').textContent = '&quot;source: '+document.getElementById('burSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
+        <td>Paste:</td>
+        <td><textarea id="burPastedIn" style="width:400px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+      <tr>
         <td>Year:</td>
-        <td><input type="text" id="burYearIn" style="width:200px;" 
+        <td><input type="text" id="burYearIn"  style="color:red; width:200px;" placeholder="Fill me in." 
         onInput="document.getElementById('burYear').textContent = '&quot;buryear: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Date:</td>
-        <td><input type="text" id="burDateIn" style="width:200px;" 
+        <td><input type="text" id="burDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
         onInput="document.getElementById('burDate').textContent = '&quot;burdate: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Place:</td>
-        <td><input type="text" id="burPlaceIn" style="width:200px;" 
+        <td><input type="text" id="burPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
         onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
       </tr>
       <tr>
@@ -320,10 +331,6 @@ function formatGPS (str) {
       <tr>
         <td>Text:</td>
         <td><input type="text" id="burTextIn" style="width:200px;" onInput="document.getElementById('burText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Paste:</td>
-        <td><textarea id="burPastedIn" style="width:400px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
       </table></details>
 </td></tr>
@@ -359,6 +366,11 @@ function formatGPS (str) {
     <summary class="heading">Probate</summary>
     <table>
       <tr>
+        <td>Record:</td>
+        <td><input type="text" id="probateRecordIn" style="width:200px;" 
+        onInput="document.getElementById('probateRecord').textContent = '&quot;record: Probate record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
         <td>Source:</td>
         <td><input type="text" id="probateSourceIn"
          onInput="document.getElementById('probateSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('probateSourceURLIn').value+'&quot;,';"/>
@@ -368,11 +380,6 @@ function formatGPS (str) {
       <tr>
         <td>Probate text:</td>
         <td><textarea id="probateIn" style="width:400px;" onInput="document.getElementById('probate').textContent = '&quot;probate: '+this.value+'&quot;,';"></textarea></td>
-      </tr>
-      <tr>
-        <td>Record:</td>
-        <td><input type="text" id="probateRecordIn" style="width:200px;" 
-        onInput="document.getElementById('probateRecord').textContent = '&quot;record: Probate record  url:records/'+this.value+'&quot;,';"/></td>
       </tr>
       </table></details>
         </td></tr>
@@ -427,9 +434,14 @@ function formatGPS (str) {
         <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
       </tr-->
       <tr>
-        <td>GPS:</td>
+        <td>New GPS:</td>
         <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
           <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
+      </tr>
+       <tr>
+        <td>GPS paste:</td>
+        <td><input type="text" id="gpsPaste" onInput="parts=this.value.split('🗆'); document.getElementById('gps').innerHTML = '&quot;gps: '+ parts[0].trim()+' https://maps.google.com/maps?q='+parts[1].trim()+'&quot;,'" style="width: 300px;"/>
+        </td>
       </tr>
       <tr>
         <td>Notes:</td>
@@ -506,9 +518,9 @@ function formatGPS (str) {
       <div id="graveSource"></div>
       <div id="inscription"></div>
 
+      <div id="probateRecord"></div>
       <div id="probateSource"></div>
       <div id="probate"></div>
-      <div id="probateRecord"></div>
 
       <div id="note"></div>
       <div id="fnote"></div>

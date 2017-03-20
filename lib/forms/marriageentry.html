@@ -6,6 +6,7 @@
 <link href="../../lib/style.css" rel="stylesheet">
 <script src="formentrylookup.js" type="application/javascript"></script>
 <script src="../../data/db.js" type="application/javascript"></script>
+<script src="../../xdevt/place_db.js" type="application/javascript"></script>
 <script>
 function getDate (year) { console.log(year)
 	var date
@@ -166,6 +167,13 @@ function addQuotesTo (content) {
 			out += '"'+parts[0]+': '+parts[1].trim()+'"'
 			out += ',\n'
 			}
+		else if (lines[i].match('\t')) {
+			var parts = lines[i].split('\t')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			out += '"['+parts[0]+': '+parts[1].trim()+']"'
+			out += ',\n'
+			}
 		}
 	return out
 	}
@@ -235,18 +243,19 @@ function addQuotesTo (content) {
 
      
       <tr>
-        <td colspan="2" class="heading">Marriage record(s)</td></tr>
+        <td colspan="2" class="heading">Marriage record(s)</td>
+        </tr>
+      <tr>
+        <td>Record:</td>
+        <td><input type="text" id="marrRecordIn" style="width:200px;" 
+        onInput="document.getElementById('marrRecord').textContent = '&quot;record: Marriage record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
       <tr>
         <td>Source:</td>
         <td><input type="text" id="marrSourceIn"
          onInput="document.getElementById('marrSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('marrSourceURLIn').value+'&quot;,';"/>
           <input type="text" id="marrSourceURLIn" 
           onInput="document.getElementById('marrSource').textContent = '&quot;source: '+document.getElementById('marrSourceIn').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Record:</td>
-        <td><input type="text" id="marrRecordIn" style="width:200px;" 
-        onInput="document.getElementById('marrRecord').textContent = '&quot;record: Marriage record  url:records/'+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Text:</td>
@@ -386,7 +395,7 @@ function addQuotesTo (content) {
 
       <tr>
         <td>GPS:</td>
-        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('gpsCoords').value.trim().replace(/\s+/,',')+'&quot;,'"/>
+        <td><input type="text" id="gpsPlace" onInput="if (placeIndex[this.value]){document.getElementById('gpsCoords').value = placeIndex[this.value]}; document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+document.getElementById('gpsCoords').value.trim().replace(/\s+/,',')+'&quot;,'"/>
           <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+this.value.trim().replace(/\s+/,',')+'&quot;,'"/></td>
       </tr>
       <tr>
@@ -470,5 +479,34 @@ function addQuotesTo (content) {
     </pre>
   </div>
 </div>
+
+
+
+<script>
+// get gps places 
+places.sort()
+var placeIndex = {}	
+for (var i=0;i<places.length;i++) {
+	places[i][1] = places[i][1].replace(/http:\/\/maps.google.com\/maps\?q=/,'')
+	places[i][1] = places[i][1].replace(/https:\/\/maps.google.com\/maps\?q=/,'')
+	if (placeIndex[places[i][0]]) {
+		//placeIndex[places[i][0]].list.push(places[i][2])
+		if (placeIndex[places[i][0]] != places[i][1]) console.log('Different gps found for ',places[i][0],places[i][1])
+		}
+	else {
+		//placeIndex[places[i][0]] = {}
+		//placeIndex[places[i][0]].location = places[i][0]
+		placeIndex[places[i][0]] = places[i][1]
+		//placeIndex[places[i][0]].a = places[i][1]
+		//placeIndex[places[i][0]].list = [places[i][2]]
+		//total++
+		}
+	}
+out = ''
+for (thing in placeIndex) {
+	out += '"'+thing+'":"'+placeIndex[thing]+'",\n'
+	}
+console.log(out)
+</script>
 </body>
 </html>

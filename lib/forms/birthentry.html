@@ -127,6 +127,13 @@ function addQuotesTo (content) {
 			out += '"['+parts[0]+': '+parts[1].trim()+']"'
 			out += ',\n'
 			}
+		else if (lines[i].match('\t')) {
+			var parts = lines[i].split('\t')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			out += '"['+parts[0]+': '+parts[1].trim()+']"'
+			out += ',\n'
+			}
 		}
 	return out
 	}
@@ -211,12 +218,17 @@ function formatGPS (str) {
           onInput="document.getElementById('birthSource').textContent = '&quot;source: '+document.getElementById('birthSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
+        <td>Paste:</td>
+        <td><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+      <tr>
         <td>Text:</td>
         <td><input type="text" id="birthTextIn" style="width:200px;" onInput="document.getElementById('birthText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Paste:</td>
-        <td><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+        <td>Name:</td>
+        <td><input type="text" id="indexNameIn" style="width:200px;" 
+        onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
       </tr>
 	</table></details>
           </td></tr>
@@ -276,7 +288,7 @@ function formatGPS (str) {
               <td><input type="text" id="certRegdIn" style="width:200px;" onInput="document.getElementById('certRegd').textContent = '&quot;[RegDate: '+this.value+']&quot;,';"/></td>
             </tr>
             <tr>
-              <td>Other:</td>
+              <td>Paste:</td>
               <td><textarea name="certOtherIn" id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
             </tr>
           </table>
@@ -293,6 +305,11 @@ function formatGPS (str) {
     <summary class="heading">Other source</summary>
     <table>
       <tr>
+        <td>Record:</td>
+        <td><input type="text" id="birthRecordIn2" style="width:200px;" 
+        onInput="document.getElementById('birthRecord2').textContent = '&quot;record: Birth record  url:records/'+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
         <td>Source:</td>
         <td><input type="text" id="birthSourceIn2"
          onInput="document.getElementById('birthSource2').textContent = '&quot;source: '+this.value+' '+document.getElementById('birthSourceURLIn2').value+'&quot;,';"/>
@@ -300,17 +317,12 @@ function formatGPS (str) {
           onInput="document.getElementById('birthSource2').textContent = '&quot;source: '+document.getElementById('birthSourceIn2').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="birthRecordIn2" style="width:200px;" 
-        onInput="document.getElementById('birthRecord2').textContent = '&quot;record: Birth record  url:records/'+this.value+'&quot;,';"/></td>
+        <td>Paste:</td>
+        <td><textarea id="birthPastedIn2" style="width:400px;" onInput="document.getElementById('birthPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
       <tr>
         <td>Text:</td>
         <td><input type="text" id="birthTextIn2" style="width:200px;" onInput="document.getElementById('birthText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Pasted:</td>
-        <td><textarea id="birthPastedIn2" style="width:400px;" onInput="document.getElementById('birthPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
     </table>
     </details></td>
@@ -333,19 +345,23 @@ function formatGPS (str) {
           onInput="document.getElementById('bapSource').textContent = '&quot;source: '+document.getElementById('bapSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
+        <td>Paste:</td>
+        <td><textarea id="bapPastedIn" style="width:400px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+      </tr>
+      <tr>
         <td>Place:</td>
-        <td><input type="text" id="bapPlaceIn" style="width:200px;" 
+        <td><input type="text" id="bapPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
         onInput="document.getElementById('bapPlace').textContent = '&quot;bapplace: '+this.value+'&quot;,';"/>
                 <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapPlaceIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapPlaceIn').value;">✚</span></td>
       </tr>
       <tr>
         <td>Year:</td>
-        <td><input type="text" id="bapYearIn" style="width:200px;" 
+        <td><input type="text" id="bapYearIn" style="color:red; width:200px;" placeholder="Fill me in." 
         onInput="document.getElementById('bapYear').textContent = '&quot;bapyear: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Date:</td>
-        <td><input type="text" id="bapDateIn" style="width:200px;" 
+        <td><input type="text" id="bapDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
         onInput="document.getElementById('bapDate').textContent = '&quot;bapdate: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
@@ -389,10 +405,6 @@ function formatGPS (str) {
           <td><input type="text" id="bapOccIn" style="width:200px;" onInput="document.getElementById('bapOcc').textContent = '&quot;[FatherOccupation: '+this.value+']&quot;,';"/>
             <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('bapOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('bapOccIn').value;">✚</span></td>
         </tr>
-      <tr>
-        <td>Paste:</td>
-        <td><textarea id="bapPastedIn" style="width:400px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
 </table></details>     
       
       </td></tr>
@@ -485,7 +497,7 @@ function formatGPS (str) {
       </tr-->
       <tr>
         <td>Place of birth:</td>
-        <td><input type="text" id="birthPlaceIn" style="width:200px;" onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="birthPlaceIn" style="color:red; width:200px;" placeholder="Fill me in."  onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Father occ:</td>
@@ -498,9 +510,14 @@ function formatGPS (str) {
 
 
        <tr>
-        <td>GPS:</td>
+        <td>New GPS:</td>
         <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
           <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
+      </tr>
+       <tr>
+        <td>GPS paste:</td>
+        <td><input type="text" id="gpsPaste" onInput="parts=this.value.split('🗆'); document.getElementById('gps').innerHTML = '&quot;gps: '+ parts[0].trim()+' https://maps.google.com/maps?q='+parts[1].trim()+'&quot;,'" style="width: 300px;"/>
+        </td>
       </tr>
       <tr>
         <td>Notes:</td>
@@ -548,6 +565,7 @@ function formatGPS (str) {
       
       <div id="birthSource"></div>
       <div id="birthText"></div>
+      <div id="indexName"></div>
       <div id="birthPasted" style="white-space:pre-line"></div>
       <div id="birthRecord"></div>
       
