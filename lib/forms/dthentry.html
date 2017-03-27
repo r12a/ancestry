@@ -133,7 +133,7 @@ function formatGPS (str) {
     </div>
   </div>
   <div id="subbanner">
-    <div><a href="birthentry.html">Birth</a> • <a href="dthentry.html">Death</a></div>
+    <div><a href="birthentry.html">Birth</a> • <a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a></div>
   </div>
   <div id="subsubbanner">
     <div>
@@ -389,27 +389,27 @@ function formatGPS (str) {
        <td colspan="2" class="heading">Metadata</td></tr>
       <tr>
         <td>Of:</td>
-        <td><input type="text" id="ofIn" style="width:200px;" onInput="document.getElementById('of').textContent = '&quot;of: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="ofIn" style="color:red; width:200px;" placeholder="Fill in this or place." onInput="document.getElementById('of').textContent = '&quot;of: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Place of death:</td>
-        <td><input type="text" id="deathPlaceIn" style="width:200px;" onInput="document.getElementById('deathPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="deathPlaceIn" style="color:red; width:200px;" placeholder="Fill in this and/or old." onInput="document.getElementById('deathPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Age:</td>
-        <td><input type="text" id="ageIn" style="width:200px;" onInput="document.getElementById('age').textContent = '&quot;age: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="ageIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('age').textContent = '&quot;age: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Cause:</td>
-        <td><input type="text" id="causeIn" style="width:200px;" onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="causeIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Informant:</td>
-        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="informantIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Occupation:</td>
-        <td><input type="text" id="occIn" style="width:200px;" onInput="document.getElementById('occ').textContent = '&quot;occ: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="occIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('occ').textContent = '&quot;occ: '+this.value+'&quot;,';"/></td>
       </tr>
 
 

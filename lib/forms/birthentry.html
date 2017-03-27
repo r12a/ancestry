@@ -146,7 +146,7 @@ function clearAll () {
 	for (i=0;i<divs.length;i++) divs[i].textContent = ''
 	document.getElementById('discussion').textContent = '"discussion: "'
 	document.getElementById('start').textContent = "birth: ["
-	document.getElementById('end').textContent = "]"
+	document.getElementById('end').textContent = "],"
 	}
 
 
@@ -184,7 +184,7 @@ function formatGPS (str) {
     </div>
   </div>
   <div id="subbanner">
-    <div><a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
+    <div><a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
   </div>
   <div id="subsubbanner">
     <div>
@@ -501,11 +501,11 @@ function formatGPS (str) {
       </tr>
       <tr>
         <td>Father occ:</td>
-        <td><input type="text" id="foccIn" style="width:200px;" onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="foccIn"  style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Informant:</td>
-        <td><input type="text" id="informantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
+        <td><input type="text" id="informantIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
       </tr>
 
 

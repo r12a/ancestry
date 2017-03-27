@@ -206,7 +206,7 @@ function addQuotesTo (content) {
     </div>
   </div>
   <div id="subbanner">
-    <div><a href="#n1">Census</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+    <div><a href="birthentry.html">Birth</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
   </div>
   <div id="subsubbanner">
     <div>
@@ -229,15 +229,15 @@ function addQuotesTo (content) {
       </tr>
        <tr>
         <td>Year:</td>
-        <td><input type="text" id="yearIn" style="width:200px;" onInput="document.getElementById('year').textContent = '&quot;year: '+this.value.trim()+'&quot;,';"/></td>
+        <td><input type="text" id="yearIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="document.getElementById('year').textContent = '&quot;year: '+this.value.trim()+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Date:</td>
-        <td><input type="text" id="dateIn" style="width:200px;" onInput="document.getElementById('date').textContent = '&quot;date: '+this.value.trim()+'&quot;,';"/></td>
+        <td><input type="text" id="dateIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="document.getElementById('date').textContent = '&quot;date: '+this.value.trim()+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Spouse id:</td>
-        <td><input type="text" id="spouseIdIn" style="width:200px;" onInput="document.getElementById('spouseId').textContent = this.value.trim();"/></td>
+        <td><input type="text" id="spouseIdIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="document.getElementById('spouseId').textContent = this.value.trim();"/></td>
       </tr>
 
 
@@ -263,7 +263,7 @@ function addQuotesTo (content) {
       </tr>
       <tr>
         <td>Pasted:</td>
-        <td><textarea id="marrPastedIn" style="width:400px;" onInput="document.getElementById('marrPasted').textContent = addQuotesTo(this.value);"></textarea></td>
+        <td><textarea id="marrPastedIn" style="color:red; width:400px;" placeholder="Copy actual data here, then fill in as many of the fields below as you can." onInput="document.getElementById('marrPasted').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
 
 
@@ -299,7 +299,7 @@ function addQuotesTo (content) {
 
 
       <tr>
-        <td colspan="2" class="heading">Programmable information</td></tr>
+        <td colspan="2" class="heading">Metadata</td></tr>
       <tr>
         <td>Place:</td>
         <td><input type="text" id="marrPlaceIn" style="width:200px;" onInput="document.getElementById('place').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
