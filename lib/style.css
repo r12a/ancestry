@@ -2,7 +2,7 @@
 body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } 
 #summaryIn { display: none; }
 #main { background-color: #f8f7f3; }
-#topMenu { font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; top: 0; width: 100%; }
+#topMenu { font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; bottom: 0; width: 100%; }
 #topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; }
 #banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; border-top-left-radius: .5em; border-top-right-radius: .5em; }
 #top { font-size: 80%; line-height: 2; }
@@ -35,7 +35,7 @@ textarea { width: 90%; height: 100px; }
 .footnotes p { margin-top: 1em; }
 .footnotes ol { margin-top: 0; margin-bottom: 0; }
 a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; }
-#places { background-color: #dedcd6; color: rgb(83, 77, 70); font-size: 80%; padding: 0.5em 3em;  margin-top: 3em; }
+#places { background-color: #dedcd6; color: rgb(83, 77, 70); font-size: 80%; padding: 0.5em 3em;  margin-top: 3em; margin-bottom: 2em; }
 #places p { margin: .3em 0; }
 .portrait { max-height: 200px; float: left; margin: .5em 1em 1em 0; border-radius: 5px; }
 q { font-style: italic; }
