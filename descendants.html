@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Descendants chart</title>
+<script src="data/db.js" type="application/javascript"></script>
+<link href="lib/article.css" rel="stylesheet">
+<script>
+var families = []
+var count = 0
+
+function findFamily (id) {
+	out = ''
+	if (db[id] && db[id].fg) {
+		var person = db[id]
+		var fg = person.fg
+		
+		// show the family group
+		for (var g=0;g<fg.length;g++) {
+			out += '<tr class="fg">'
+			
+			// year
+			out += '<td class="year">'+fg[g][0]+'</td>'
+			
+			// given name
+			out += '<td class="n">'+person.g+' &nbsp;<a id="fg_'+id+'_'+g+'" href="#'+id+'">'+person.b+'</a><br/>'
+			if (db[person.fg[g][1]]) {
+				out += '<span class="wifen">'+db[person.fg[g][1]].g+'</span></td>'
+				}
+			else if (person.fg[g][1]) {
+				out += '<span class="wifen">'+person.fg[g][1]+'</span></td>'
+				}
+
+			// family name
+			fname = person.f
+			if (person.male) fname = fname.toUpperCase()
+			out += '<td><span class="fn">'+fname+'</span><br/>'
+			if (db[person.fg[g][1]]) {
+				fname = db[person.fg[g][1]].f
+				if (db[person.fg[g][1]].male) fname = fname.toUpperCase()
+				out += '<span class="wifefn">'+fname+'</span></td>'
+				}
+			else if (person.fg[g][1]) {
+				out += '<span class="wifefn">&nbsp;</span></td>'
+				}
+
+			// link back & spouse notes
+			//out += '<td class="notes"><a id="fg_'+id+'_'+g+'" href="#'+id+'">'+person.b+'</a><br/>'
+			out += '<td class="notes">'
+			if (person.bplace) 	out += person.bplace+'<br/>'
+			else out += '&nbsp;<br/>'
+			if (db[person.fg[g][1]] && db[person.fg[g][1]].bplace) out += db[person.fg[g][1]].bplace 
+			else out += '&nbsp;'
+			out += '</td>'
+
+			// death year
+			out += '<td class="dth">'
+			if (person.d) out += person.d+'<br/>'
+			else out += '&nbsp;<br/>'
+			if (db[person.fg[g][1]] && db[person.fg[g][1]].d) out += db[person.fg[g][1]].d
+			else out += '&nbsp;'
+			out += '</td>'
+
+			// death place
+			out += '<td class="notes">'
+			if (person.dplace) out += person.dplace+'<br/>'
+			else out += '&nbsp;<br/>'
+			if (db[person.fg[g][1]] && db[person.fg[g][1]].dplace) out += db[person.fg[g][1]].dplace
+			else out += '&nbsp;'
+			out += '</td>'
+
+			// occ
+			out += '<td class="notes">'
+			if (person.occ) out += person.occ+'<br/>'
+			else out += '&nbsp;<br/>'
+			if (db[person.fg[g][1]] && db[person.fg[g][1]].occ) out += db[person.fg[g][1]].occ
+			else out += '&nbsp;'
+			out += '</td>'
+
+			// link
+			out += '<td class="newpage"><a href="descendants.html?person='+id+'">🔗</a><br/>'
+			if (db[person.fg[g][1]]) {
+				out += '<a href="descendants.html?person='+person.fg[g][1]+'">🔗</a></td>'
+				}
+
+			out += '</tr>\n'
+	
+			for (var p=2; p<fg[g].length; p++) {
+				child = db[fg[g][p]]
+				if (child) {
+					out += '<tr class="ind">'
+					out += '<td class="year" id="'+fg[g][p]+'">'+child.b+'</td>'
+					out += '<td class="n">'+child.g
+					if (child.fg) {
+						for (l=0;l<child.fg.length;l++) out += ' <a href="#fg_'+fg[g][p]+'_'+l+'">'+child.fg[l][0]+'</a>'
+						}
+					else if (child.cstatus) out += ' &bull;'
+					out += '</td>'
+					out += '<td class="fn">'+child.f+'</td>'
+					out += '<td class="notes">'+child.bplace+'</td>'
+					out += '<td class="dth">'+child.d+'</td>'
+					out += '<td class="notes">'+child.dplace+'</td>'
+					if (child.occ) out += '<td class="notes">'+child.occ+'</td>'
+					else  out += '<td class="notes">&nbsp;</td>'
+					out += '</td>'
+					out += '<td class="notes"><a href="descendants.html?person='+fg[g][p]+'">🔗</span></td>'
+					out += '</tr>\n'
+					count++
+					}
+				}
+			families.push(out)
+			for (var p=2; p<fg[g].length; p++) {
+				findFamily(fg[g][p])
+				}
+			}
+		}
+	}
+
+</script>
+<style>
+#topMenu { bottom: 0; top:auto; }
+table { margin: auto; font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; font-size: 14px; padding-bottom: 800px; }
+.fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,1.00); }
+td { padding: 0 1em; }
+.notes, .parents { color: #aaa; }
+.goto { font-size: 75%; color: brown; }
+table a { font-size: 75%; color: brown; }
+tr td:first-of-type { border-bottom-left-radius: 5px; border-top-left-radius: 5px; }
+tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5px; }
+</style>
+</head>
+<body>
+<div id="topMenu">
+	<a href="index.html">Index</a>
+	<a id="treeLink" href="#">Tree</a>
+	<a id="detailLink" href="#"></a>
+	<a id="fatherLink" href="#"></a>
+	<a href="#top">Top</a>
+	</div>
+	<div id="top"></div>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Descendants<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div><a href="#explanations">Total <span id="total"></span></a></div>
+  </div>
+  <article>
+      <table id="outTable"></table>
+  </article>
+</div>
+
+<script>
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { 
+		if (pairs[1] && db[pairs[1]]) { 
+			document.getElementById('pagetitle').innerHTML = db[pairs[1]].g+' '+db[pairs[1]].f+'<br><span id="bannerdates">Descendants</span>'
+			findFamily(pairs[1])
+			families.sort()
+			out = ''
+			for (i=0;i<families.length;i++) out += families[i]
+			document.getElementById('outTable').innerHTML = out
+			document.getElementById('total').innerHTML = count
+			document.getElementById('treeLink').href = 'data/tree.html?person='+pairs[1]
+			if (db[pairs[1]] && db[pairs[1]].p) {
+				document.getElementById('detailLink').href = 'data/'+pairs[1]+'.html'
+				document.getElementById('detailLink').textContent = 'Details'
+				}
+			if (db[pairs[1]] && db[pairs[1]].father && db[db[pairs[1]].father]) {
+				document.getElementById('fatherLink').href = 'descendants.html?person='+db[pairs[1]].father
+				document.getElementById('fatherLink').textContent = 'Father'
+				}
+			} 
+		}
+	}
+</script>
+</body>
+</html>
