@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+</head>
+<body>
+<!-- for position display -->
+<div id="myposition"></div>
+
+<!-- for gmap display -->
+<!--div id="map" style="width:700px;height:500px"></div-->
+<div id="map" style="width:100%;height:700px"></div>
+
+<!-- get gmap API -->
+<script src="https://maps.google.com/maps/api/js"></script>
+
+<script>
+//locations = [["St Mewan, Cornwall",50.331220,-4.813782], ['Stoke Damerel, Devon'§50.376537§-4.163022]]
+locations = []
+
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'locations') { if (pairs[1]) { 
+		pairs[1] = decodeURIComponent(pairs[1])
+		var locs = pairs[1].split('|')
+		for (var i=0;i<locs.length;i++) {
+			bits = locs[i].split('§')
+			locations.push([bits[2],bits[0],bits[1]])
+			}
+		} }
+	}
+//displayPerson('lakelin_sarah_ann_1866')
+
+
+
+// Default position
+var centerpos = new google.maps.LatLng(51.997875, -1.951143);
+
+// default options for the google map
+var optionsGmaps = {
+	center:centerpos,
+	navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+	mapTypeId: google.maps.MapTypeId.ROADMAP,
+	zoom: 7
+	}
+
+// Init map object
+var map = new google.maps.Map(document.getElementById("map"), optionsGmaps)
+
+// callback function, called by getCurrentPosition() in case of success
+function drawPosition(position) {
+
+	var infopos = ''
+	for (i=0;i<locations.length;i++) {
+		//infopos += locations[i][0]+" "+locations[i][1]+locations[i][2]+"<br>";
+		//document.getElementById("myposition").innerHTML = infopos;
+	
+		// Make new object LatLng for Google Maps
+		var latlng = new google.maps.LatLng(locations[i][1], locations[i][2]);
+	
+		// Add a marker at position
+		var marker = new google.maps.Marker({
+			position: latlng,
+			map: map,
+			title: locations[i][0],
+			label: i.toString()
+			})
+		}
+    // center map on longitude and latitude
+	map.panTo(centerpos);
+}
+
+function errorPosition(error) {
+	// callback function, called by getCurrentPosition() in case of error
+	var info = "Error during geolocation : "
+	switch(error.code) {
+		case error.TIMEOUT:
+			info += "Timeout !";
+		break;
+		case error.PERMISSION_DENIED:
+			info += "You did not access to the geolocation API";
+		break;
+		case error.POSITION_UNAVAILABLE:
+			info += "Position could not be determined";
+		break;
+		case error.UNKNOWN_ERROR:
+			info += "Unknown error";
+		break;
+		}
+	document.getElementById("myposition").innerHTML = info
+	}
+
+drawPosition(null)
+
+</script>
+</body>
+</html>
