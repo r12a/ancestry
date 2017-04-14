@@ -17,9 +17,11 @@ function findFamily (id) {
 		
 		// show the family group
 		for (var g=0;g<fg.length;g++) {
-			out += '<tr class="fg">'
+			out = '<tr class="fg">'
 			
 			// year
+			var year = fg[g][0].trim().replace('~','').replace('?','')
+			out += '<td class="sort">'+year+'</td>'
 			out += '<td class="year">'+fg[g][0]+'</td>'
 			
 			// given name
@@ -89,6 +91,7 @@ function findFamily (id) {
 				child = db[fg[g][p]]
 				if (child) {
 					out += '<tr class="ind">'
+					out += '<td class="sort"></td>'
 					out += '<td class="year" id="'+fg[g][p]+'">'+child.b+'</td>'
 					out += '<td class="n">'+child.g
 					if (child.fg) {
@@ -109,9 +112,7 @@ function findFamily (id) {
 					}
 				}
 			families.push(out)
-			for (var p=2; p<fg[g].length; p++) {
-				findFamily(fg[g][p])
-				}
+			for (p=2; p<fg[g].length; p++) findFamily(fg[g][p])
 			}
 		}
 	}
@@ -125,8 +126,9 @@ td { padding: 0 1em; }
 .notes, .parents { color: #aaa; }
 .goto { font-size: 75%; color: brown; }
 table a { font-size: 75%; color: brown; }
-tr td:first-of-type { border-bottom-left-radius: 5px; border-top-left-radius: 5px; }
+tr td:first-of-type+td { border-bottom-left-radius: 5px; border-top-left-radius: 5px; }
 tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5px; }
+.sort { display:none; }
 </style>
 </head>
 <body>
@@ -165,6 +167,7 @@ for (var p=0;p<parameters.length;p++) {
 			document.getElementById('pagetitle').innerHTML = db[pairs[1]].g+' '+db[pairs[1]].f+'<br><span id="bannerdates">Descendants</span>'
 			findFamily(pairs[1])
 			families.sort()
+			console.log(families)
 			out = ''
 			for (i=0;i<families.length;i++) out += families[i]
 			document.getElementById('outTable').innerHTML = out
