@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <title>Birth form</title>
 <link href="../../lib/style.css" rel="stylesheet">
+<style>
+td { vertical-align: top; padding-left: 1em; }/* border: 1px solid red; }
+table { border: 1px dashed blue; }*/
+/*tr td:first-of-type { text-align:right; }*/
+details { margin-left: 2em; }
+</style>
 <script src="formentrylookup.js" type="application/javascript"></script>
 <script src="../../data/db.js" type="application/javascript"></script>
 <script>
@@ -174,7 +180,7 @@ function formatGPS (str) {
 .copy { margin-left: 2em; cursor: pointer; background-color: rgba(107,167,227,1.00); color: white; border-radius: 5px; }
 .copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
 .accept:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
-.heading { font-weight:bold; padding-top: 2em; font-size: 110%; }
+.heading { font-weight:bold; padding-top: 1em; font-size: 110%; }
 </style>
 </head>
 <body>
@@ -198,16 +204,15 @@ function formatGPS (str) {
       </div>
       
       
-    <table id="census" style="margin: 2em;">
-      <tr>
-        <td>Id:</td>
-        <td><input type="text" id="idIn" 
+    <p style="margin: 2em;">
+        <strong>Id:</strong> 
+        <input type="text" id="idIn" style="width:200px;"
         	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-            onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span></td>
-      </tr>
+            onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span>
+  </p>
+  
       
-      <tr>
-        <td colspan="2"><details>
+<details>
           <summary class="heading">Birth index</summary>
           <table>
       <tr>
@@ -217,11 +222,13 @@ function formatGPS (str) {
           <input type="text" id="birthSourceURLIn" 
           onInput="document.getElementById('birthSource').textContent = '&quot;source: '+document.getElementById('birthSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
-      <tr>
+      <!--tr>
         <td>Paste:</td>
         <td><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
+      </tr-->
       <tr>
+        <td rowspan="2">Paste:</td>
+        <td rowspan="2"><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
         <td>Text:</td>
         <td><input type="text" id="birthTextIn" style="width:200px;" onInput="document.getElementById('birthText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
@@ -231,12 +238,10 @@ function formatGPS (str) {
         onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
       </tr>
 	</table></details>
-          </td></tr>
       
       
       
-      <tr>
-        <td colspan="2"><details>
+      <details>
           <summary class="heading">Birth certificate</summary>
           <table>
             <tr>
@@ -292,15 +297,13 @@ function formatGPS (str) {
               <td><textarea name="certOtherIn" id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
             </tr>
           </table>
-        </details></td>
-      </tr>
+        </details>
 
 
 
 
 
 
-	<tr><td colspan="2">
     <details>
     <summary class="heading">Other source</summary>
     <table>
@@ -325,10 +328,9 @@ function formatGPS (str) {
         <td><input type="text" id="birthTextIn2" style="width:200px;" onInput="document.getElementById('birthText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
     </table>
-    </details></td>
-    </tr>
+    </details>
 
-      <tr><td colspan="2">
+
       <details>
     <summary class="heading">Baptism record</summary>
     <table>
@@ -344,27 +346,13 @@ function formatGPS (str) {
           <input type="text" id="bapSourceURLIn" 
           onInput="document.getElementById('bapSource').textContent = '&quot;source: '+document.getElementById('bapSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
-      <tr>
+      <!--tr>
         <td>Paste:</td>
         <td><textarea id="bapPastedIn" style="width:400px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
+      </tr-->
       <tr>
-        <td>Place:</td>
-        <td><input type="text" id="bapPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('bapPlace').textContent = '&quot;bapplace: '+this.value+'&quot;,';"/>
-                <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapPlaceIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapPlaceIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Year:</td>
-        <td><input type="text" id="bapYearIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('bapYear').textContent = '&quot;bapyear: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Date:</td>
-        <td><input type="text" id="bapDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('bapDate').textContent = '&quot;bapdate: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
+        <td rowspan="7">Paste:</td>
+        <td rowspan="7"><textarea id="bapPastedIn" style="width:400px; height: 200px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
         <td>Born:</td>
         <td><input type="text" id="bapBornIn" style="width:200px;" 
         onInput="document.getElementById('bapBorn').textContent = '&quot;[Born: '+this.value+']&quot;,';"/></td>
@@ -401,13 +389,28 @@ function formatGPS (str) {
             <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapWhereIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapWhereIn').value;">✚</span></td>
         </tr>
         <tr>
-          <td>Father occupation:</td>
+          <td>Father occ:</td>
           <td><input type="text" id="bapOccIn" style="width:200px;" onInput="document.getElementById('bapOcc').textContent = '&quot;[FatherOccupation: '+this.value+']&quot;,';"/>
             <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('bapOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('bapOccIn').value;">✚</span></td>
         </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="bapPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
+        onInput="document.getElementById('bapPlace').textContent = '&quot;bapplace: '+this.value+'&quot;,';"/>
+                <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapPlaceIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapPlaceIn').value;">✚</span></td>
+      </tr>
+      <tr>
+        <td>Year:</td>
+        <td><input type="text" id="bapYearIn" style="color:red; width:200px;" placeholder="Fill me in." 
+        onInput="document.getElementById('bapYear').textContent = '&quot;bapyear: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Date:</td>
+        <td><input type="text" id="bapDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
+        onInput="document.getElementById('bapDate').textContent = '&quot;bapdate: '+this.value+'&quot;,';"/></td>
+      </tr>
 </table></details>     
       
-      </td></tr>
 
 
 
@@ -489,47 +492,49 @@ function formatGPS (str) {
           RD
           <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
       </tr-->
+      </table>
+      <table style="margin: 2em;">
       <tr>
-        <td colspan="2" class="heading">Metadata</td></tr>
+        <td colspan="4" class="heading">Metadata</td></tr>
       <!--tr>
         <td>Name:</td>
         <td><input type="text" id="nameIn" style="width:200px;" onInput="document.getElementById('name').textContent = '&quot;name: '+this.value.trim()+'&quot;,';"/></td>
       </tr-->
       <tr>
         <td>Place of birth:</td>
-        <td><input type="text" id="birthPlaceIn" style="color:red; width:200px;" placeholder="Fill me in."  onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
+        <td colspan="3"><input type="text" id="birthPlaceIn" style="color:red; width:200px;" placeholder="Fill me in."  onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Father occ:</td>
-        <td><input type="text" id="foccIn"  style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
+        <td colspan="3"><input type="text" id="foccIn"  style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
         <td>Informant:</td>
-        <td><input type="text" id="informantIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
+        <td colspan="3"><input type="text" id="informantIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
       </tr>
 
 
        <tr>
         <td>New GPS:</td>
-        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
+        <td colspan="3"><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
           <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
       </tr>
        <tr>
         <td>GPS paste:</td>
-        <td><input type="text" id="gpsPaste" onInput="parts=this.value.split('🗆'); document.getElementById('gps').innerHTML = '&quot;gps: '+ parts[0].trim()+' https://maps.google.com/maps?q='+parts[1].trim()+'&quot;,'" style="width: 300px;"/>
+        <td colspan="3"><input type="text" id="gpsPaste" onInput="parts=this.value.split('🗆'); document.getElementById('gps').innerHTML = '&quot;gps: '+ parts[0].trim()+' https://maps.google.com/maps?q='+parts[1].trim()+'&quot;,'" style="width: 300px;"/>
         </td>
       </tr>
       <tr>
         <td>Notes:</td>
-        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
+        <td colspan="3"><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
-        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+        <td colspan="3"><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
       </tr>
       <tr>
         <td>Discussion:</td>
-        <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+        <td colspan="3"><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
       </tr>
    </table>
    
