@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Place index</title>
 <style>
-.gpscoords { font-size: 70%; color: #ccc; }
+.gpscoords { font-size: 70%; color: #ccc; cursor:pointer; }
 </style>
 <link href="lib/article.css" rel="stylesheet">
 <script src="xdevt/place_db.js" type="application/javascript"></script>
@@ -21,19 +21,17 @@ function filter (str) {
 	document.getElementById('total').textContent = total
 	}
 	
-function secondFilter (str) {
-	str = str.toLowerCase()
-	total = 0
-	var match1 = document.getElementById('filter').value
-	var names = document.querySelectorAll('#listrecord a')
-	for (var i=0;i<names.length;i++) {
-		if (names[i].textContent.toLowerCase().match(match1) && names[i].textContent.toLowerCase().match(str)) {
-			names[i].style.display = 'inline'; total++
-			}
-		else { names[i].style.display = 'none'; }
-		}
-	document.getElementById('total').textContent = total
+
+function copyToClipboard (node) {
+	// this doesn't work on Safari because S doesn't support execCommand('copy')
+	var copybuffer = document.getElementById('copybuffer')
+	copybuffer.value = node.parentNode.textContent
+	copybuffer.focus()
+	copybuffer.select()
+	document.execCommand('copy')
+	document.getElementById('filter').focus()
 	}
+
 </script>
 </head>
 <body>
@@ -64,6 +62,8 @@ function secondFilter (str) {
   </article>
 </div>
 
+<input id="copybuffer" style="height:1px; width:1px;"/>
+
 <script>
 var out = ''
 var total = 0
@@ -86,7 +86,7 @@ for (var place in placeIndex) {
 	if (placeIndex[place].location != 'xxxx') {
 		var coords = placeIndex[place].a.replace(/https:\/\/maps.google.com\/maps\?q=/,'')
 		coords = coords.replace(/http:\/\/maps.google.com\/maps\?q=/,'')
-		out += '<p><a href="'+placeIndex[place].a+'" target="_blank">'+placeIndex[place].location+' <span class="gpscoords">🗆'+coords+'</span></a>'
+		out += '<p><span><a href="'+placeIndex[place].a+'" target="_blank">'+placeIndex[place].location+'</a> <span class="gpscoords" onclick="copyToClipboard(this)">🗆'+coords+'</span></span>'
 		for (j=0;j<placeIndex[place].list.length;j++) {
 			out += ' <a class="detaillink" href="data/'+placeIndex[place].list[j]+'.html" target="_blank">'+placeIndex[place].list[j]+'</a>'
 			}
