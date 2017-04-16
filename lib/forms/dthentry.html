@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <title>Death form</title>
 <link href="../../lib/style.css" rel="stylesheet">
+<style>
+td { vertical-align: top; padding-left: 1em; }
+details { margin-left: 2em; }
+</style>
 <script src="formentrylookup.js" type="application/javascript"></script>
 <script src="../../data/db.js" type="application/javascript"></script>
 <script>
@@ -123,7 +127,7 @@ function formatGPS (str) {
 .redo { font-size:120%; margin-left: 1em; cursor: pointer; }
 .copy { margin-left: 2em; cursor: pointer; background-color: rgba(107,167,227,1.00); color: white; border-radius: 5px; }
 .copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
-.heading { font-weight:bold; padding-top: 2em; font-size: 110%; }
+.heading { font-weight:bold; padding-top: 1em; font-size: 110%; }
 </style>
 </head>
 <body>
@@ -146,18 +150,17 @@ function formatGPS (str) {
       <div id="references">
       </div>
       
-      
-    <table id="census" style="margin: 2em;">
-      <tr>
-        <td>Id:</td>
-        <td><input type="text" id="idIn" 
+    <p style="margin: 2em;">
+        <strong>Id:</strong> 
+        <input type="text" id="idIn" style="width:200px;"
         	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-            onChange="
-            	autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span></td>
-      </tr>
+            onChange="autoPropagate(this.value);"/> 
+            <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> 
+            <span class="redo" onClick="clearAll();">❌</span>
+  </p>
       
-      <tr>
-        <td colspan="2">
+        	
+      
       <details>
     <summary class="heading">Death index</summary>
     <table>
@@ -169,10 +172,8 @@ function formatGPS (str) {
           onInput="document.getElementById('deathSource').textContent = '&quot;source: '+document.getElementById('deathSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Paste:</td>
-        <td><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
-      <tr>
+        <td rowspan="3">Paste:</td>
+        <td rowspan="3"><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
         <td>Name:</td>
         <td><input type="text" id="indexNameIn" style="width:200px;" 
         onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
@@ -186,10 +187,8 @@ function formatGPS (str) {
         <td><input type="text" id="deathTextIn" style="width:200px;" onInput="document.getElementById('deathText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
       </table></details>
-</td></tr>
 
 
-	<tr><td colspan="2">
     <details>
     <summary class="heading">Death certificate</summary>
     <table>
@@ -242,11 +241,9 @@ function formatGPS (str) {
         <td><textarea id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
     </table>
-    </details></td>
-    </tr>
+    </details>
 
 
-	<tr><td colspan="2">
     <details>
     <summary class="heading">Other source</summary>
     <table>
@@ -271,15 +268,12 @@ function formatGPS (str) {
         <td><textarea id="deathPastedIn2" style="width:400px;" onInput="document.getElementById('deathPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
       </tr>
     </table>
-    </details></td>
-    </tr>
+    </details>
 
 
 
 
-      <tr>
-        <td colspan="2">
-       <details>
+    <details>
     <summary class="heading">Burial record</summary>
     <table>
     <tr>
@@ -295,25 +289,8 @@ function formatGPS (str) {
           onInput="document.getElementById('burSource').textContent = '&quot;source: '+document.getElementById('burSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
       <tr>
-        <td>Paste:</td>
-        <td><textarea id="burPastedIn" style="width:400px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
-      <tr>
-        <td>Year:</td>
-        <td><input type="text" id="burYearIn"  style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('burYear').textContent = '&quot;buryear: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Date:</td>
-        <td><input type="text" id="burDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('burDate').textContent = '&quot;burdate: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Place:</td>
-        <td><input type="text" id="burPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
-      </tr>
-      <tr>
+        <td rowspan="4">Paste:</td>
+        <td rowspan="4"><textarea id="burPastedIn" style="width:400px; height: 150px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
         <td>Name:</td>
         <td><input type="text" id="burNameIn" style="width:200px;" 
         onInput="document.getElementById('burName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
@@ -332,16 +309,28 @@ function formatGPS (str) {
         <td>Text:</td>
         <td><input type="text" id="burTextIn" style="width:200px;" onInput="document.getElementById('burText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
       </tr>
+      <tr>
+        <td>Year:</td>
+        <td><input type="text" id="burYearIn"  style="color:red; width:200px;" placeholder="Fill me in." 
+        onInput="document.getElementById('burYear').textContent = '&quot;buryear: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Date:</td>
+        <td><input type="text" id="burDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
+        onInput="document.getElementById('burDate').textContent = '&quot;burdate: '+this.value+'&quot;,';"/></td>
+      </tr>
+      <tr>
+        <td>Place:</td>
+        <td><input type="text" id="burPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
+        onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
+      </tr>
       </table></details>
-</td></tr>
 
 
 
 
 
 
-       <tr>
-        <td colspan="2">
       <details>
     <summary class="heading">Grave inscription</summary>
     <table>
@@ -356,12 +345,8 @@ function formatGPS (str) {
         <td>Inscription:</td>
         <td><textarea id="inscriptionIn" style="width:400px;" onInput="document.getElementById('inscription').textContent = '&quot;gravestone: '+this.value+'&quot;,';"></textarea></td>
         </tr></table></details>
-        </td>
-      </tr>
 
 
-       <tr>
-        <td colspan="2">
       <details>
     <summary class="heading">Probate</summary>
     <table>
@@ -382,9 +367,10 @@ function formatGPS (str) {
         <td><textarea id="probateIn" style="width:400px;" onInput="document.getElementById('probate').textContent = '&quot;probate: '+this.value+'&quot;,';"></textarea></td>
       </tr>
       </table></details>
-        </td></tr>
 
 
+      </table>
+      <table style="margin: 2em;">
      <tr>
        <td colspan="2" class="heading">Metadata</td></tr>
       <tr>
