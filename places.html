@@ -7,7 +7,7 @@
 .gpscoords { font-size: 70%; color: #ccc; cursor:pointer; }
 </style>
 <link href="lib/article.css" rel="stylesheet">
-<script src="xdevt/place_db.js" type="application/javascript"></script>
+<script src="lib/place_db.js" type="application/javascript"></script>
 <script>
 function filter (str) {
 	str = str.toLowerCase()
@@ -41,7 +41,7 @@ function copyToClipboard (node) {
     </div>
   </div>
   <div id="subbanner">
-    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />
     </div>
   </div>
   <div id="subsubbanner">
@@ -52,12 +52,8 @@ function copyToClipboard (node) {
   </div>
   <article>
     <section id="listrecord">
-      <!--div class="record" id="listrecord">
-      </div-->
     </section>
     <div id="places">
-      <!--p class="recordTitle" id="explanations">Explanations regarding dates</p>
-      <p>Where the date  Note that the dates following each name are only token dates, associated with the name as part of its ID. In some cases these dates are pure guesswork, such as in the case where a father is known from a marriage record but no other information. In some cases the date may accurately reflect the birth date of the person. In others, that birth date may be ajusted in the light of new evidence in the actual records, but the date here will remain the same.<a target="_blank" href="https://maps.google.com/maps?q=53.8352112,-2.832418"></a></p-->
     </div>
   </article>
 </div>
