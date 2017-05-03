@@ -65,7 +65,7 @@ var total = 0
 for (var person in db) {
 	//if (db[person].p) out += '<p><a href="data/'+person+'.html">'+db[person].f
 	//else 
-	out += '<p><a href="data/tree.html?person='+person+'">'+db[person].f
+	out += '<p><a href="tree.html?person='+person+'">'+db[person].f
 	if (db[person].m) {
 		for (var i=0;i<db[person].m.length;i++) {
 			out += ' ('+db[person].m[i]+')'
@@ -80,7 +80,7 @@ for (var person in db) {
 		var temp = person.split('_')
 		out += ', ~'+temp[temp.length-1]
 		}
-	if (db[person].p) out += '</a><a class="detaillink" href="data/'+person+'.html">[details]'
+	if (db[person].p) out += '</a><a class="detaillink" href="person.html?person='+person+'">[details]'
 	out += '</a></p>'
 	total++
 	}

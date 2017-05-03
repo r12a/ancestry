@@ -1,0 +1,224 @@
+<!doctype html>
+<html><head>
+<meta charset="UTF-8">
+<title>Relationships page</title>
+<link href="lib/tree.css" rel="stylesheet" />
+<script src="data/db.js" type="application/javascript"></script>
+</head><body>
+<div id="topMenu">
+	<a href="#top">Top</a>
+	<a id="detailSwitch" href="#top" onClick="if (localStorage.treeDetailed == 'yes') {localStorage.treeDetailed='no'; this.textContent='More detail';} else {localStorage.treeDetailed='yes'; this.textContent='Less detail';} console.log(localStorage.treeDetailed); location.reload(); return false;">More detail</a>
+	<a href="index.html">Index</a>
+	</div>
+	<div id="top">&nbsp;</div>
+<div id="main">
+<div id="gparents"><div id="pgfather" class="gparent"><img src="thumbs/man_pic.png" alt=""/>?</div><div id="pgmother" class="gparent"><img src="thumbs/woman_pic.png" alt=""/>?</div><div id="mgfather" class="gparent"><img src="thumbs/man_pic.png" alt=""/>?</div><div id="mgmother" class="gparent"><img src="thumbs/woman_pic.png" alt=""/>?</div></div>
+<div id="parents"><div id="father" class="parent"><img src="thumbs/man_pic.png" alt=""/>?</div><div id="mother" class="parent"><img src="thumbs/woman_pic.png" alt=""/>?</div></div>
+<div id="person"></div>
+<div id="children"></div>
+<div id="siblings"></div>
+</div>
+<script>
+//localStorage.treeDetailed = 'yes'
+console.log(localStorage); 
+if (localStorage.treeDetailed == 'yes') document.getElementById('detailSwitch').textContent = 'Less detail'
+
+function displayPerson (individual) {
+	person = db[individual]
+	var out
+
+	// display the person themselves
+	document.getElementById('person').innerHTML = getPersonDetails(individual, 'person', '')
+	
+	// get parents
+	//if (db[person.father]) 
+	document.getElementById('father').outerHTML =  getPersonDetails(person.father, 'parent', 'father')
+	//if (db[person.mother]) 
+	document.getElementById('mother').outerHTML =  getPersonDetails(person.mother, 'parent', 'mother')
+	
+	
+	// get family groups
+	out = ''
+	if (person.fg && person.fg.length > 0) {
+		for (var spouse=0;spouse<person.fg.length;spouse++) {
+			out += getFamilyGroup(person.fg[spouse], person)
+			}
+		}
+	document.getElementById('children').innerHTML = out
+	
+	// get grandparents
+	out = ''
+	if (db[person.father]) {
+		if (db[person.father].father) document.getElementById('pgfather').outerHTML = getPersonDetails(db[person.father].father, 'gparent', 'pgfather')
+		if (db[person.father].mother) document.getElementById('pgmother').outerHTML = getPersonDetails(db[person.father].mother, 'gparent', 'pgmother')
+		}
+	if (db[person.mother]) {
+		if (db[person.mother].father) document.getElementById('mgfather').outerHTML = getPersonDetails(db[person.mother].father, 'gparent', 'mgfather')
+		if (db[person.mother].mother) document.getElementById('mgmother').outerHTML = getPersonDetails(db[person.mother].mother, 'gparent', 'mgmother')
+		}	
+	
+	// get siblings
+	if (db[person.father] && db[person.father].fg) {
+		out = '<details><summary class="fgroup">Siblings</summary>'
+		for (var ffg=0;ffg<db[person.father].fg.length;ffg++) {
+			out += getSiblings(db[person.father].fg[ffg], individual)
+			//console.log(db[person.father].fg)
+			}
+		out += '</details>'
+		}
+	document.getElementById('siblings').innerHTML = out
+
+	}
+
+
+function getAge (eDate, eYear, bDate, bYear) {
+	if (eYear.trim() === '' || bYear.trim() === '?' || bYear.trim() === '') return ''
+	
+	if (! bDate || bDate === '?' || bDate === '') bDate = '1 Jul'
+	if (!eDate || eDate === '?' || eDate === '') eDate = '1 Jul'
+
+	if (! eDate.match(/[0-9]/)) eDate = '1 '+eDate
+	if (! bDate.match(/[0-9]/)) bDate = '1 '+bDate
+	
+	eDate = eDate.replace(/by|bef|aft|abt|onob|\*|\<|\>|,/, '')
+	bDate = bDate.replace(/by|bef|aft|abt|onob|\*|\<|\>|,/, '')
+	eYear = eYear.replace(/by|bef|aft|abt|onob|~|\*|\<|\>|,/, '')
+	bYear = bYear.replace(/by|bef|aft|abt|onob|~|\*|\<|\>|,/, '')
+	
+	eDate = eDate.replace(/\-.../, '')
+	bDate = bDate.replace(/\-.../, '')
+	
+	var age = parseInt(eYear) - parseInt(bYear)
+	if (age < 0) return age
+	var eTime = new Date( eDate + ' 2000' )
+	var bTime = new Date(bDate + ' 2000' )
+	if (eTime < bTime) age--
+	if (age < 0) age = 0
+	
+	return age
+	}
+
+
+
+function getPersonDetails (id, type, loc) {
+	if (db[id]) {
+		var out = '<div class="'+type+'"'
+		if (loc) out += ' id="'+loc+'"'
+		out += '>'
+		
+		if (db[id].thumb) out += '<img src="thumbs/'+id+'_pic.jpg" alt=""/>'
+		else  { out += '<img src="thumbs/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
+
+		out += '<div class="data">'
+		out += '<div class="name"><a href="tree.html?person='+id+'">'
+		//out += db[id].g+' '
+		if (db[id].k) out += db[id].k+' ('+db[id].g+') '
+		else out += db[id].g+' '
+		out += db[id].f
+		out += '</a>'
+		out += '</div>'
+		out += '<div class="dates">'+db[id].b+'–'+db[id].d
+		if (localStorage.treeDetailed == 'yes' && db[id].b && db[id].d) out += '<span class="detaileddates" style="margin-left:2em;">'+ getAge(db[id].ddate,db[id].d,db[id].bdate,db[id].b) + '</span>'
+		out += '</div>'
+		if (localStorage.treeDetailed == 'yes') {
+			out += '<div class="detaileddates">b. '
+			if (db[id].bplace) out += db[id].bplace+', '
+			out += db[id].bdate
+			out += '</div>'
+			out += '<div class="detaileddates">d. '
+			if (db[id].dplace) out += db[id].dplace+', '
+			out += db[id].ddate+'</div>'
+			}
+		if (db[id].adopted && loc == '') { 
+			var  adopter = '<a href="tree.html?person='+db[id].adopted+'">'+db[db[id].adopted].g +' '+ db[db[id].adopted].f+'</a>'
+			out += '<div class="adopted">Adopted by '+adopter+'</div>'
+			}
+		else if (db[id].adopted && type == 'child') { 
+			out += '<div class="adopted">Adopted</div>'
+			}
+		if (db[id].occ) out += '<div class="occ">'+db[id].occ+'</div>'
+		if (db[id].fg && type==='child') {
+			var temp = 'sp: '
+			for (var i=0;i<db[id].fg.length;i++) {
+				var spouse = db[id].fg[i][1]
+				if (db[spouse]) temp += db[spouse].g+' '+db[spouse].f
+				else temp += db[id].fg[i][1]
+				if (i<db[id].fg.length-1) temp += ', '
+				}
+			out += '<div class="sp">'+temp+'</div>'
+			}
+		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
+			out += '<div class="stop">'+db[id].cstatus+'</div>'
+			}
+		//if (db[id].p) { out += '<div class="showme"><a href="'+id+'.html">Show details</a></div>' }
+		out += '<div class="showme">'
+		if (db[id].p) { out += '<a href="person.html?person='+id+'">Details</a> &bull; ' }
+		//out += '<a href="descendants.html?person='+id+'">🢗</a>'
+		out += ' <a href="descendants.html?person='+id+'">Desc.</a>'
+		//out += '<a href="descendants.html?person='+id+'"><img src="lib/i/desc.png" alt="Descendants" height="26px" width="43px"/></a>'
+		out += '</div>'
+		if (type === 'person' && db[id].cstatus) out += '<p class="noissue">– '+db[id].cstatus+' –</p>'
+		out += '</div>'
+		out += '</div>'
+		}
+	else { 
+		out = '<div class="'+type+'"'
+		if (loc) out += ' id="'+loc+'"'
+		out += '>'
+		out += '<img src="thumbs/'; if (loc && loc.match('mother')) out += 'wo'; out +='man_pic.png" alt=""/>'
+		out += id + '</div>'
+		out += '</div>'
+		}
+	return out
+	}
+
+
+
+function getFamilyGroup (group, person) {
+	
+	out = '<div class="fgroup">'
+	out += '<div style="float:right; margin:1em;">'+group[0]+'</div>'
+	if (db[group[1]]) out += getPersonDetails(group[1], 'spouse')
+	else out += '<div class="spouse">'+group[1]+'</div>'
+	out += '<div class="children">'
+	if (group[2] === 'noissue') out += '<p class="noissue">– No children –</p>'
+	//if (person.cstatus) out += '<p class="noissue">'+person.cstatus+'</p>'
+	else {
+			for (var c=2;c<group.length;c++) {
+			if (db[group[c]]) {
+				out += getPersonDetails(group[c], 'child')
+				}
+			else out += '<div class="child">'+group[c]+'</div>'
+			}
+		}
+	out += '</div></div>'
+	
+	return out
+	}
+
+
+
+function getSiblings (group, individual) { 
+	var out = '<div class="children">'
+	for (var c=2;c<group.length;c++) {
+		if (db[group[c]] && group[c] !== individual) {
+			out += getPersonDetails(group[c], 'child')
+			}
+		else if (group[c] !== individual) out += '<div class="child">'+group[c]+'</div>'
+		}
+	out += '</div>'
+	
+	return out
+	}
+
+
+
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { displayPerson(pairs[1]); } }
+	}
+//displayPerson('lakelin_sarah_ann_1866')
+</script>
+</body></html>

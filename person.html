@@ -1,0 +1,106 @@
+<!doctype html>
+<html><head id="head">
+<meta charset="utf-8">
+<title>Person page</title>
+<link href="lib/style.css" rel="stylesheet" />
+<script src="lib/script.js" type="application/javascript"></script>
+<script src="data/db.js" type="application/javascript"></script>
+<script src="data/events.js" type="application/javascript"></script>
+
+<script>
+// read in thisPerson
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	}
+	
+// find all the relatives with .js files
+var relatives = findRelatives(thisPerson)
+relatives.push(thisPerson)
+console.log(thisPerson)
+</script>
+</head>
+
+<body>
+<div id="summaryIn"><p></p></div>
+<div id="links"></div>
+<div id="in"></div>
+
+
+<div id="out">
+<div id="banner">
+  <div id="pagetitle"></div>
+</div>
+<div id="subbanner">
+  <div>&nbsp;</div>
+</div>
+<div id="subsubbanner">
+  <div>&nbsp;</div>
+</div>
+<div id="subsubsubbanner">
+  <div>&nbsp;</div>
+</div>
+<div id="main">
+<div class="dateAndRecord">
+  <div>
+    <div class="recordDate"><span style="font-size: 100%; margin-top:.8em;">-</span><span>&nbsp;</span></div>
+  </div>
+  <div id="summary" class="record">
+    <div>
+      <p>&nbsp;</p>
+    </div>
+  </div>
+  <div class="keypoints">&nbsp;</div>
+</div>
+</div>
+</div>
+<script>
+
+function getRelatives (relative) {
+		var queryURL = 'data/'+relative+'.json'
+	
+		fetch(queryURL, {mode:'no-cors'})
+            .then(function (response) {
+                return response.json()
+            	})
+            .then(function (person) {
+                data[relative] = person;
+				counter--
+            	})
+            .catch(function (error) {
+                //console.log('Error during fetch: ' + error.message + ' for ' + relative)
+                document.querySelector('#summary div').innerHTML += '<p style="font-size:.8em;">Error during fetch: '+error.message+' for '+relative+'</p>'
+            	})
+	}
+
+function getPersonData (relative) {
+		var queryURL = 'data/'+relative+'.txt'
+	
+		fetch(queryURL, {mode:'same-origin'})
+            .then(function (response) {
+                return response.text()
+            	})
+            .then(function (person) {
+                document.getElementById('in').textContent = person;
+				counter--
+            	})
+            .catch(function (error) {
+                //console.log('Error during fetch: ' + error.message + ' for ' + relative)
+                document.getElementById('summary').innerHTML += '<p>Error during fetch: '+error.message+' for '+relative+'</p>'
+            	})
+	}
+
+var counter = relatives.length+1
+for (var r=0;r<relatives.length;r++) { console.log(relatives[r]); getRelatives(relatives[r]) }
+getPersonData(thisPerson)
+var timer = setInterval(function() {
+	if (counter === 0) {
+		clearInterval(timer)		
+		setUpPage(thisPerson)
+		}
+	else if (debug) console.log('counter: ',counter)
+	}, 20)
+</script>
+</body></html>
