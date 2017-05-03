@@ -119,7 +119,7 @@ function findFamily (id) {
 
 </script>
 <style>
-#topMenu { bottom: 0; top:auto; }
+#topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
 table { margin: auto; font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; font-size: 14px; padding-bottom: 800px; }
 .fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,1.00); }
 td { padding: 0 1em; }
@@ -133,11 +133,11 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 </head>
 <body>
 <div id="topMenu">
-	<a href="index.html">Index</a>
-	<a id="treeLink" href="#">Tree</a>
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
 	<a href="#top">Top</a>
+	<a id="treeLink" href="#">Tree</a>
+	<a href="index.html" style="margin-right: 2em;">Index</a>
 	</div>
 	<div id="top"></div>
 <div id="out">
@@ -172,9 +172,9 @@ for (var p=0;p<parameters.length;p++) {
 			for (i=0;i<families.length;i++) out += families[i]
 			document.getElementById('outTable').innerHTML = out
 			document.getElementById('total').innerHTML = count
-			document.getElementById('treeLink').href = 'data/tree.html?person='+pairs[1]
+			document.getElementById('treeLink').href = 'tree.html?person='+pairs[1]
 			if (db[pairs[1]] && db[pairs[1]].p) {
-				document.getElementById('detailLink').href = 'data/'+pairs[1]+'.html'
+				document.getElementById('detailLink').href = 'person.html?person='+pairs[1]
 				document.getElementById('detailLink').textContent = 'Details'
 				}
 			if (db[pairs[1]] && db[pairs[1]].father && db[db[pairs[1]].father]) {
