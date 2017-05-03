@@ -14,6 +14,7 @@ function dump (individual) {
 	var out = ''
 	
 	// make the doctype etc
+	/*
 	out += '<!doctype html>\n'
 	out += '<html><head id="head">\n'
 	out += '<meta charset="utf-8">\n'
@@ -101,7 +102,8 @@ function dump (individual) {
 			}
 		}
 
-	
+		*/
+
 	
 	// initialise list of records
 	records = []
@@ -109,7 +111,7 @@ function dump (individual) {
 	
 	
 	// end head, start body
-	out += '</head>\n\n<body><div id="summaryIn"><p>'+getName('', individual, 'gkf', false)+'.</p></div>\n<div id="links">\n</div>\n<div id="in">\n\n'
+	/*out += '</head>\n\n<body><div id="summaryIn"><p>'+getName('', individual, 'gkf', false)+'.</p></div>\n<div id="links">\n</div>\n<div id="in">\n\n' */
 
 	// get birth
 	if (person.b) records.push(cleanYear(person.b)+' § '+person.b+' Birth\nbirth: '+individual+'\n\n\n')
@@ -274,12 +276,13 @@ function dump (individual) {
 	
 
 	// do end matter
+	/*
 	out += '</div><div id="out"></div>\n'
 	out += '<script>\n'
 	out += "setUpPage(thisPerson)\n"
     out += '<\/script>\n'
 	out += '</body></html>'
-
+	*/
 
 	return out
 	}

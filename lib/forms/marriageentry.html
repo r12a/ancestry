@@ -74,7 +74,7 @@ function autoPropagate (person) {
 		// add the spouse id
 		if (db[person].fg && db[person].fg.length === 1) {
 			document.getElementById('spouseIdIn').value = db[person].fg[0][1]
-			document.getElementById('spouseId').textContent = db[person].fg[0][1]
+			document.getElementById('spouseId').textContent = '"'+db[person].fg[0][1]+'"'
 			}
 		// get this person's name and id
 		if (db[person].male) {
@@ -162,9 +162,9 @@ function addQuotesTo (content) {
 	for (var i=0;i<lines.length;i++) {
 		if (lines[i].match(':')) {
 			var parts = lines[i].split(':')
-			parts[0] = '_'+parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
 			parts[1] = parts[1].replace(/[\s]+/g,' ')
-			out += '"'+parts[0]+': '+parts[1].trim()+'"'
+			out += '"['+parts[0]+': '+parts[1].trim()+']"'
 			out += ',\n'
 			}
 		else if (lines[i].match('\t')) {
@@ -415,7 +415,7 @@ function addQuotesTo (content) {
    
    
     <div id="draft" style="margin:2em;">
-    <div>marriages: {</div>
+    <div>"marriages": {</div>
     <div>&nbsp;</div>
       <div><span id="spouseId"></span>: [</div>
       <div id="marrRecord"></div>

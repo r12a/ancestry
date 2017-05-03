@@ -196,7 +196,16 @@ function formatGPS (str) {
         <td><input type="text" id="censusSourceName" onInput="document.getElementById('source').textContent = 'source: '+this.value+' '+document.getElementById('censusSourceURL').value;"/>
           <input type="text" id="censusSourceURL" onInput="document.getElementById('source').textContent = 'source: '+document.getElementById('censusSourceName').value+' '+this.value;"/></td>
       </tr>
-      <tr>
+       <tr>
+        <td>CParish</td>
+        <td>
+          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
+          SRD
+          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
+          RD
+          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
+      </tr>
+     <tr>
         <td>Place:</td>
         <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="document.getElementById('rooms').textContent = 'rooms: '+this.value;"/> rooms</td>
       </tr>
@@ -221,15 +230,6 @@ function formatGPS (str) {
       <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
       <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
       <tr>
-        <td></td>
-        <td>CParish
-          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
-          SRD
-          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
-          RD
-          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
-      </tr>
-      <tr>
         <td>Occupation:</td>
         <td><input type="text" id="censusOcc" style="width:200px;" onInput="document.getElementById('occ').textContent = 'occ: '+this.value;"/></td>
       </tr>
@@ -238,7 +238,7 @@ function formatGPS (str) {
         <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = 'gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)"/>
           <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)"/></td>
       </tr>
-      <tr>
+      <tr style="visibility:hidden;">
         <td>Record title:</td>
         <td><input type="text" id="censusTitle" style="width:400px;" onInput="document.getElementById('title').textContent = this.value;"/></td>
       </tr>

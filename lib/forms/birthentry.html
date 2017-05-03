@@ -5,9 +5,7 @@
 <title>Birth form</title>
 <link href="../../lib/style.css" rel="stylesheet">
 <style>
-td { vertical-align: top; padding-left: 1em; }/* border: 1px solid red; }
-table { border: 1px dashed blue; }*/
-/*tr td:first-of-type { text-align:right; }*/
+td { vertical-align: top; padding-left: 1em; }
 details { margin-left: 2em; }
 </style>
 <script src="formentrylookup.js" type="application/javascript"></script>
@@ -84,20 +82,13 @@ function makeNotes (content, target) {
 function autoPropagate (person) {
 	if (person!='') {listRelations(person);} 
 	if (db[person]) {
-		//document.getElementById('nameIn').value = db[person].g+' '+db[person].f
-		//document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
 		if (fid = db[person].father) {
-			//document.getElementById('fatherIdIn').value = fid;
-			//document.getElementById('fatherId').innerHTML = '&quot;fid: '+fid+'&quot;,'
 			if (db[fid]) { 
 				document.getElementById('bapFatherIn').value = db[fid].g+' '+db[fid].f
 				document.getElementById('certFNameIn').value = db[fid].g+' '+db[fid].f
-				//document.getElementById('father').innerHTML = '&quot;father: '+db[fid].g+' '+db[fid].f+'&quot;,'
 				}
 			}
 		if (mid = db[person].mother) {
-			//document.getElementById('motherIdIn').value = mid;
-			//document.getElementById('motherId').innerHTML = '&quot;mid: '+mid+'&quot;,'
 			if (db[mid]) {
 				document.getElementById('bapMotherIn').value = db[mid].g+' '
 				document.getElementById('certMNameIn').value = db[fid].g+' '
@@ -222,10 +213,6 @@ function formatGPS (str) {
           <input type="text" id="birthSourceURLIn" 
           onInput="document.getElementById('birthSource').textContent = '&quot;source: '+document.getElementById('birthSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
-      <!--tr>
-        <td>Paste:</td>
-        <td><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr-->
       <tr>
         <td rowspan="2">Paste:</td>
         <td rowspan="2"><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
@@ -346,10 +333,6 @@ function formatGPS (str) {
           <input type="text" id="bapSourceURLIn" 
           onInput="document.getElementById('bapSource').textContent = '&quot;source: '+document.getElementById('bapSourceIn').value+' '+this.value+'&quot;,';"/></td>
       </tr>
-      <!--tr>
-        <td>Paste:</td>
-        <td><textarea id="bapPastedIn" style="width:400px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr-->
       <tr>
         <td rowspan="7">Paste:</td>
         <td rowspan="7"><textarea id="bapPastedIn" style="width:400px; height: 200px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
@@ -366,19 +349,11 @@ function formatGPS (str) {
         <td><input type="text" id="bapFatherIn" style="width:200px;" onInput="document.getElementById('bapFather').textContent = '&quot;[Father: '+this.value+']&quot;,';"/>
             <span class="accept" title="Add to baptism data." onClick="document.getElementById('bapFather').textContent = '&quot;[Father: '+document.getElementById('bapFatherIn').value+']&quot;,'">✔</span></td>
       </tr>
-      <!--tr>
-        <td>Father Id:</td>
-        <td><input type="text" id="fatherIdIn" style="width:200px;" onInput="document.getElementById('fatherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
-      </tr-->
       <tr>
         <td>Mother:</td>
         <td><input type="text" id="bapMotherIn" style="width:200px;" onInput="document.getElementById('bapMother').textContent = '&quot;[Mother: '+this.value+']&quot;,';"/>
             <span class="accept" title="Add to baptism data." onClick="document.getElementById('bapMother').textContent = '&quot;[Mother: '+document.getElementById('bapMotherIn').value+']&quot;,'">✔</span></td>
       </tr>
-      <!--tr>
-        <td>Mother Id:</td>
-        <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
-      </tr-->
       <tr>
         <td>Text:</td>
         <td><input type="text" id="bapTextIn" style="width:200px;" onInput="document.getElementById('bapText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
@@ -414,92 +389,10 @@ function formatGPS (str) {
 
 
 
-
-
-      <!--tr>
-        <td>Year:</td>
-        <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
-            <input type="radio" name="censusYear" value="1841"/>
-            1841 &nbsp;
-            <input type="radio" name="censusYear" value="1851"/>
-            1851 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1861"/>
-            1861 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1871"/>
-            1871 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1881"/>
-            1881 
-            &nbsp;
-            <input type="radio" name="censusYear" value="1891"/>
-            1891
-            &nbsp;
-            <input type="radio" name="censusYear" value="1901"/>
-            1901
-            &nbsp;
-            <input type="radio" name="censusYear" value="1911"/>
-            1911
-            &nbsp;
-            <input type="radio" name="censusYear" value="1939"/>
-            1939 &nbsp;
-          </form></td>
-      </tr>
-      <tr>
-        <td>Place:</td>
-        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/></td>
-      </tr>
-      <tr>
-        <td>Relation:</td>
-        <td><form onChange="doRelation(this.elements['censusRelation'].value)">
-            <input type="radio" name="censusRelation" value="head"/>
-            head &nbsp;
-            <input type="radio" name="censusRelation" value="wife"/>
-            wife  &nbsp;
-            <input type="radio" name="censusRelation" value="child"/>
-            child &nbsp;
-            <input type="radio" name="censusRelation" value="other"/>
-            other  &nbsp;
-            <input type="radio" name="censusRelation" value="serv"/>
-            serv  &nbsp;
-            <input type="radio" name="censusRelation" value="visitor"/>
-            visitor
-          </form></td>
-      </tr>
-      <tr>
-        <td>Head:</td>
-        <td><input type="text" id="headId"  onInput="comma=''; if (this.value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+this.value+comma+document.getElementById('censusHead').value"/>
-          ,
-          <input type="text" id="censusHead" style="width: 400px;" onInput="comma=''; if (document.getElementById('headId').value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+document.getElementById('headId').value+comma+this.value"/></td>
-      </tr>
-      <tr>
-        <td>Wife:</td>
-        <td>
-          <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
-        <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
-      </tr>
-      <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
-      <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
-      <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
-      <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
-      <tr>
-        <td></td>
-        <td>CParish
-          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
-          SRD
-          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
-          RD
-          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
-      </tr-->
       </table>
       <table style="margin: 2em;">
       <tr>
         <td colspan="4" class="heading">Metadata</td></tr>
-      <!--tr>
-        <td>Name:</td>
-        <td><input type="text" id="nameIn" style="width:200px;" onInput="document.getElementById('name').textContent = '&quot;name: '+this.value.trim()+'&quot;,';"/></td>
-      </tr-->
       <tr>
         <td>Place of birth:</td>
         <td colspan="3"><input type="text" id="birthPlaceIn" style="color:red; width:200px;" placeholder="Fill me in."  onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
@@ -541,7 +434,7 @@ function formatGPS (str) {
    
    
     <div id="draft" style="margin:2em;">
-      <div id="start">birth: [</div>
+      <div id="start">"birth": [</div>
       <div id="id"></div>
       <div id="name"></div>
       <div id="birthPlace"></div>
