@@ -20,11 +20,11 @@ for (var p=0;p<parameters.length;p++) {
 	}
 
 // load the appropriate db file	
-if (! project) project = 'data'
-var db = document.createElement('script');
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script')
 db.src = project+'/db.js'
 db.async = false
-document.head.appendChild(db);
+document.head.appendChild(db)
 
 </script>
 
