@@ -3,7 +3,25 @@
 <head>
 <meta charset="utf-8">
 <title>Descendants chart</title>
-<script src="data/db.js" type="application/javascript"></script>
+<script>
+// read in thisPerson
+thisPerson = ''
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
 <link href="lib/article.css" rel="stylesheet">
 <script>
 var families = []
@@ -131,7 +149,7 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 .sort { display:none; }
 </style>
 </head>
-<body>
+<body onLoad="start()">
 <div id="topMenu">
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
@@ -158,31 +176,26 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 </div>
 
 <script>
-parameters = location.search.split('&');
-parameters[0] = parameters[0].substring(1);
-for (var p=0;p<parameters.length;p++) {  
-	pairs = parameters[p].split('=');
-	if (pairs[0] == 'person') { 
-		if (pairs[1] && db[pairs[1]]) { 
-			document.getElementById('pagetitle').innerHTML = db[pairs[1]].g+' '+db[pairs[1]].f+'<br><span id="bannerdates">Descendants</span>'
-			findFamily(pairs[1])
-			families.sort()
-			console.log(families)
-			out = ''
-			for (i=0;i<families.length;i++) out += families[i]
-			document.getElementById('outTable').innerHTML = out
-			document.getElementById('total').innerHTML = count
-			document.getElementById('treeLink').href = 'tree.html?person='+pairs[1]
-			if (db[pairs[1]] && db[pairs[1]].p) {
-				document.getElementById('detailLink').href = 'person.html?person='+pairs[1]
-				document.getElementById('detailLink').textContent = 'Details'
-				}
-			if (db[pairs[1]] && db[pairs[1]].father && db[db[pairs[1]].father]) {
-				document.getElementById('fatherLink').href = 'descendants.html?person='+db[pairs[1]].father
-				document.getElementById('fatherLink').textContent = 'Father'
-				}
-			} 
-		}
+function start () {
+	if (thisPerson && db[thisPerson]) { 
+		document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Descendants</span>'
+		findFamily(thisPerson)
+		families.sort()
+		console.log(families)
+		out = ''
+		for (i=0;i<families.length;i++) out += families[i]
+		document.getElementById('outTable').innerHTML = out
+		document.getElementById('total').innerHTML = count
+		document.getElementById('treeLink').href = 'tree.html?project='+project+'&person='+thisPerson
+		if (db[thisPerson] && db[thisPerson].p) {
+			document.getElementById('detailLink').href = 'person.html?project='+project+'&person='+thisPerson
+			document.getElementById('detailLink').textContent = 'Details'
+			}
+		if (db[thisPerson] && db[thisPerson].father && db[db[thisPerson].father]) {
+			document.getElementById('fatherLink').href = 'descendants.html?project='+project+'&person='+db[thisPerson].father
+			document.getElementById('fatherLink').textContent = 'Father'
+			}
+		} 
 	}
 </script>
 </body>
