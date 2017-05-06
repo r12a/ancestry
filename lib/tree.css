@@ -26,7 +26,7 @@ body { font: 19.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -m
 .child .name { font-size: 110%; }
 
 .dates, .occ, .showme, .sp, .stop, .adopted { font-size: 80%; }
-.stop { background-color: #ddd; padding: 0 1em; border-radius: 5px; text-align: center; }
+.stop { background-color: #ddd; padding: 0 1em; border-radius: 5px; text-align: center; margin-top: 5px; }
 .detaileddates {
     font-size: 80%;
     color: #666;
