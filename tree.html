@@ -4,7 +4,27 @@
 <title>Relationships page</title>
 <link href="lib/tree.css" rel="stylesheet" />
 <script src="data/db.js" type="application/javascript"></script>
-</head><body>
+</head>
+<script>
+// read in thisPerson
+thisPerson = ''
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/_db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
+<body onLoad="start()">
 <div id="topMenu">
 	<a href="#top">Top</a>
 	<a id="detailSwitch" href="#top" onClick="if (localStorage.treeDetailed == 'yes') {localStorage.treeDetailed='no'; this.textContent='More detail';} else {localStorage.treeDetailed='yes'; this.textContent='Less detail';} console.log(localStorage.treeDetailed); location.reload(); return false;">More detail</a>
@@ -12,18 +32,20 @@
 	</div>
 	<div id="top">&nbsp;</div>
 <div id="main">
-<div id="gparents"><div id="pgfather" class="gparent"><img src="thumbs/man_pic.png" alt=""/>?</div><div id="pgmother" class="gparent"><img src="thumbs/woman_pic.png" alt=""/>?</div><div id="mgfather" class="gparent"><img src="thumbs/man_pic.png" alt=""/>?</div><div id="mgmother" class="gparent"><img src="thumbs/woman_pic.png" alt=""/>?</div></div>
-<div id="parents"><div id="father" class="parent"><img src="thumbs/man_pic.png" alt=""/>?</div><div id="mother" class="parent"><img src="thumbs/woman_pic.png" alt=""/>?</div></div>
+<div id="gparents"><div id="pgfather" class="gparent"><img src="lib/i/man_pic.png" alt=""/>?</div><div id="pgmother" class="gparent"><img src="lib/i/woman_pic.png" alt=""/>?</div><div id="mgfather" class="gparent"><img src="lib/i/man_pic.png" alt=""/>?</div><div id="mgmother" class="gparent"><img src="lib/i/woman_pic.png" alt=""/>?</div></div>
+<div id="parents"><div id="father" class="parent"><img src="lib/i/man_pic.png" alt=""/>?</div><div id="mother" class="parent"><img src="lib/i/woman_pic.png" alt=""/>?</div></div>
 <div id="person"></div>
 <div id="children"></div>
 <div id="siblings"></div>
 </div>
+
 <script>
 //localStorage.treeDetailed = 'yes'
-console.log(localStorage); 
+//console.log(localStorage); 
+
 if (localStorage.treeDetailed == 'yes') document.getElementById('detailSwitch').textContent = 'Less detail'
 
-function displayPerson (individual) {
+function displayPerson (individual, project) {
 	person = db[individual]
 	var out
 
@@ -106,11 +128,11 @@ function getPersonDetails (id, type, loc) {
 		if (loc) out += ' id="'+loc+'"'
 		out += '>'
 		
-		if (db[id].thumb) out += '<img src="thumbs/'+id+'_pic.jpg" alt=""/>'
-		else  { out += '<img src="thumbs/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
+		if (db[id].thumb) out += '<img src="'+window.project+'/_thumbs/'+id+'.jpg" alt=""/>'
+		else  { out += '<img src="lib/i/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
 
 		out += '<div class="data">'
-		out += '<div class="name"><a href="tree.html?person='+id+'">'
+		out += '<div class="name"><a href="tree.html?person='+id+'&project='+window.project+'">'
 		//out += db[id].g+' '
 		if (db[id].k) out += db[id].k+' ('+db[id].g+') '
 		else out += db[id].g+' '
@@ -130,7 +152,7 @@ function getPersonDetails (id, type, loc) {
 			out += db[id].ddate+'</div>'
 			}
 		if (db[id].adopted && loc == '') { 
-			var  adopter = '<a href="tree.html?person='+db[id].adopted+'">'+db[db[id].adopted].g +' '+ db[db[id].adopted].f+'</a>'
+			var  adopter = '<a href="tree.html?person='+db[id].adopted+'&project='+window.project+'">'+db[db[id].adopted].g +' '+ db[db[id].adopted].f+'</a>'
 			out += '<div class="adopted">Adopted by '+adopter+'</div>'
 			}
 		else if (db[id].adopted && type == 'child') { 
@@ -152,9 +174,9 @@ function getPersonDetails (id, type, loc) {
 			}
 		//if (db[id].p) { out += '<div class="showme"><a href="'+id+'.html">Show details</a></div>' }
 		out += '<div class="showme">'
-		if (db[id].p) { out += '<a href="person.html?person='+id+'">Details</a> &bull; ' }
+		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'">Details</a> &bull; ' }
 		//out += '<a href="descendants.html?person='+id+'">🢗</a>'
-		out += ' <a href="descendants.html?person='+id+'">Desc.</a>'
+		out += ' <a href="descendants.html?person='+id+'&project='+window.project+'">Desc.</a>'
 		//out += '<a href="descendants.html?person='+id+'"><img src="lib/i/desc.png" alt="Descendants" height="26px" width="43px"/></a>'
 		out += '</div>'
 		if (type === 'person' && db[id].cstatus) out += '<p class="noissue">– '+db[id].cstatus+' –</p>'
@@ -165,7 +187,7 @@ function getPersonDetails (id, type, loc) {
 		out = '<div class="'+type+'"'
 		if (loc) out += ' id="'+loc+'"'
 		out += '>'
-		out += '<img src="thumbs/'; if (loc && loc.match('mother')) out += 'wo'; out +='man_pic.png" alt=""/>'
+		out += '<img src="lib/i/'; if (loc && loc.match('mother')) out += 'wo'; out +='man_pic.png" alt=""/>'
 		out += id + '</div>'
 		out += '</div>'
 		}
@@ -212,13 +234,8 @@ function getSiblings (group, individual) {
 	}
 
 
-
-parameters = location.search.split('&');
-parameters[0] = parameters[0].substring(1);
-for (var p=0;p<parameters.length;p++) {  
-	pairs = parameters[p].split('=');
-	if (pairs[0] == 'person') { if (pairs[1]) { displayPerson(pairs[1]); } }
+function start () {
+	if (window.thisPerson) displayPerson(thisPerson, project)
 	}
-//displayPerson('lakelin_sarah_ann_1866')
 </script>
 </body></html>

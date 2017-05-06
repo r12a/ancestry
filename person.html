@@ -4,8 +4,10 @@
 <title>Person page</title>
 <link href="lib/style.css" rel="stylesheet" />
 <script src="lib/script.js" type="application/javascript"></script>
-<script src="data/db.js" type="application/javascript"></script>
-<script src="data/events.js" type="application/javascript"></script>
+<!--script src="data/db.js" type="application/javascript"></script-->
+<script src="events.js" type="application/javascript"></script>
+
+</head>
 
 <script>
 // read in thisPerson
@@ -14,16 +16,19 @@ parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
 	pairs = parameters[p].split('=');
 	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
 	}
-	
-// find all the relatives with .js files
-var relatives = findRelatives(thisPerson)
-relatives.push(thisPerson)
-console.log(thisPerson)
-</script>
-</head>
 
-<body>
+// load the appropriate db file	
+if (! project) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/_db.js'
+db.async = false
+document.head.appendChild(db);
+
+</script>
+
+<body onLoad="init()">
 <div id="summaryIn"><p></p></div>
 <div id="links"></div>
 <div id="in"></div>
@@ -58,6 +63,11 @@ console.log(thisPerson)
 </div>
 <script>
 
+// find all the relatives with .js files
+/*var relatives = findRelatives(thisPerson)
+relatives.push(thisPerson)
+console.log(thisPerson)
+
 function getRelatives (relative) {
 		var queryURL = 'data/'+relative+'.json'
 	
@@ -70,7 +80,6 @@ function getRelatives (relative) {
 				counter--
             	})
             .catch(function (error) {
-                //console.log('Error during fetch: ' + error.message + ' for ' + relative)
                 document.querySelector('#summary div').innerHTML += '<p style="font-size:.8em;">Error during fetch: '+error.message+' for '+relative+'</p>'
             	})
 	}
@@ -87,7 +96,6 @@ function getPersonData (relative) {
 				counter--
             	})
             .catch(function (error) {
-                //console.log('Error during fetch: ' + error.message + ' for ' + relative)
                 document.getElementById('summary').innerHTML += '<p>Error during fetch: '+error.message+' for '+relative+'</p>'
             	})
 	}
@@ -102,5 +110,6 @@ var timer = setInterval(function() {
 		}
 	else if (debug) console.log('counter: ',counter)
 	}, 20)
+	*/
 </script>
 </body></html>
