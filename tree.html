@@ -28,7 +28,7 @@ document.head.appendChild(db);
 <div id="topMenu">
 	<a href="#top">Top</a>
 	<a id="detailSwitch" href="#top" onClick="if (localStorage.treeDetailed == 'yes') {localStorage.treeDetailed='no'; this.textContent='More detail';} else {localStorage.treeDetailed='yes'; this.textContent='Less detail';} console.log(localStorage.treeDetailed); location.reload(); return false;">More detail</a>
-	<a href="index.html">Index</a>
+	<a id="indexLink" href="index.html">Index</a>
 	</div>
 	<div id="top">&nbsp;</div>
 <div id="main">
@@ -233,6 +233,7 @@ function getSiblings (group, individual) {
 
 function start () {
 	if (window.thisPerson) displayPerson(thisPerson, project)
+	document.getElementById('indexLink').href = 'index.html?project='+project
 	}
 </script>
 </body></html>
