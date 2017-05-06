@@ -18,7 +18,7 @@ for (var p=0;p<parameters.length;p++) {
 	}
 
 // load the appropriate db file	
-if (! project) project = 'data'
+if (! project || project.match(/\.\./)) project = 'data'
 var db = document.createElement('script');
 db.src = project+'/db.js'
 db.async = false
@@ -169,16 +169,13 @@ function getPersonDetails (id, type, loc) {
 				}
 			out += '<div class="sp">'+temp+'</div>'
 			}
+		out += '<div class="showme">'
+		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'">Details</a>' }
+		if (! db[id].cstatus) out += ' &bull; <a href="descendants.html?person='+id+'&project='+window.project+'" style="font-size:120%;">▽</a>'
+		out += '</div>'
 		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
 			out += '<div class="stop">'+db[id].cstatus+'</div>'
 			}
-		//if (db[id].p) { out += '<div class="showme"><a href="'+id+'.html">Show details</a></div>' }
-		out += '<div class="showme">'
-		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'">Details</a> &bull; ' }
-		//out += '<a href="descendants.html?person='+id+'">🢗</a>'
-		out += ' <a href="descendants.html?person='+id+'&project='+window.project+'">Desc.</a>'
-		//out += '<a href="descendants.html?person='+id+'"><img src="lib/i/desc.png" alt="Descendants" height="26px" width="43px"/></a>'
-		out += '</div>'
 		if (type === 'person' && db[id].cstatus) out += '<p class="noissue">– '+db[id].cstatus+' –</p>'
 		out += '</div>'
 		out += '</div>'
