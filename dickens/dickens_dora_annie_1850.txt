@@ -1,0 +1,9 @@
+§ 1850 Birth
+birth: dickens_dora_annie_1850
+
+§ 1851 grandfather dies dickens_john_1785
+
+
+§ 1851 Death
+death: dickens_dora_annie_1850
+

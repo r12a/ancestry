@@ -1,0 +1,125 @@
+§ 1839 Birth
+birth: dickens_catherine_elizabeth_macready_1839
+
+
+§ 1841 brother born dickens_walter_savage_landor_1841
+
+§ 1841 Census
+gps: 1 Devonshire Terrace, London https://maps.google.com/maps?q=51.513611,-0.179810
+date: 6 Jun
+relation: child
+occ: Child
+record: Census record url:records/1841_dickens_charles_catherine_c.jpg
+source: HO107; Piece: 680; Book: 14; Civil Parish: St Marylebone; County: Middlesex; Enumeration District: 14; Folio: 12; Page: 18 http://search.ancestry.co.uk/cgi-bin/sse.dll?db=uki1841&indiv=try&h=7352195
+div: cparish St Marylebone, srd Rectory, rd St Marylebone
+place: Devonshire Terrace, St Marylebone, London
+head: dickens_charles_john_huffam_1812, Chas Dickens, 29, Gent, not born in county
+wife: hogarth_catherine_thompson_1815, Catherine Dickens, 26, born in Scotland, Ireland, or foriegn parts
+child: Charles Dickens, 4, born in county
+child: Mary Dickens, 3, born in county
+child: Catherine Dickens, 1 1/2, born in county
+child: Walter Dickens, 4mnths, born in county
+note: {dickens_charles_john_huffam_1812:k} was a gentleman. The children were {dickens_charles_culliford_boz_1837:k}, 4, {dickens_mary_1838:k}, 3, {dickens_catherine_elizabeth_macready_1839:kx}, one and a half, and {dickens_walter_savage_landor_1841:k}, aged 4 months.
+
+
+§ 1844 brother born dickens_francis_jeffrey_1844
+
+§ 1845 brother born dickens_alfred_dorsay_tennison_1845
+
+§ 1847 brother born dickens_sydney_smith_haldimand_1847
+
+§ 1849 brother born dickens_henry_fielding_1849
+
+§ 1850 sister born dickens_dora_annie_1850
+
+§ 1851 grandfather dies dickens_john_1785
+
+§ 1851 sister dies dickens_dora_annie_1850
+
+§ 1852 brother born dickens_edward_bulwer_lytton_1852
+
+§ 1860 Marriage
+marriage: collins_charles_allston_1828
+
+§ 1861 Census
+gps: Clarence Terrace, London https://maps.google.com/maps?q=51.525043,-0.159391
+date: 7 Apr
+relation: wife
+record: Census record url:records/1861_collins_charles_catherine_c.jpg
+source: RG 9; Piece: 83; Folio: 123; Page: 26 ed16 http://search.ancestry.co.uk/cgi-bin/sse.dll?db=uki1861&indiv=try&h=8464296
+div: cparish St Marylebone, srd Christchurch, rd Marylebone
+place: 2 Clarence Terrace, London
+head: collins_charles_allston_1828, Charles A Collins, mar, 33, author journalist, b Middlesex Hampstead
+wife: dickens_catherine_elizabeth_macready_1839, Catherine E M Collins, mar, 21, b Middlesex Hampstead
+serv: Mary Bull, un, 22, house serv, b Middlesex Marylebone
+note: {collins_charles_allston_1828:k} was an author and journalist.
+note: Mary Bull, 22, was the house servant.
+
+
+§ 1863 brother dies dickens_walter_savage_landor_1841
+
+§ 1863 grandmother dies barrow_elizabeth_culliford_1789
+
+§ 1867 event reform_act
+
+§ 1870 father dies dickens_charles_john_huffam_1812
+
+§ 1872 brother dies dickens_sydney_smith_haldimand_1847
+
+§ 1873 husband dies collins_charles_allston_1828
+
+§ 1874 Marriage
+marriage: perugini_charles_edward_1839
+
+§ 1876 son born perugini_leonard_ralph_dickens_1876
+
+§ 1876 son dies perugini_leonard_ralph_dickens_1876
+
+§ 1879 mother dies hogarth_catherine_thompson_1815
+
+§ 1883 event property_rights
+
+§ 1886 brother dies dickens_francis_jeffrey_1844
+
+§ 1896 brother dies dickens_charles_culliford_boz_1837
+
+§ 1896 sister dies dickens_mary_1838
+
+§ 1901 event victoria_dies
+
+§ 1902 brother dies dickens_edward_bulwer_lytton_1852
+
+§ 1911 Census
+gps: 32 Victoria Rd, Kensington, London https://maps.google.com/maps?q=51.499156,-0.185936
+date: 2 Apr
+relation: wife
+occ: Painter, artist
+record: Census record url:records/1911_perugini_charles_catherine_c.jpg
+source: RG14; Piece: 104 ed17 http://search.ancestry.co.uk/cgi-bin/sse.dll?db=1911England&indiv=try&h=884547
+div: cparish Kensington, srd rd Kensington 2
+place: 32 Victoria Rd, Kensington W, London
+rooms: 10
+head: perugini_charles_edward_1839, Charles Edward Perugini, 71, married, painter "Artist", own account, at home, b Italy, naturalized 1862
+wife: dickens_catherine_elizabeth_macready_1839, Catherine Elizabeth Macready Perugini, 70, married, painter "Artist", own account, at home, b Middlesex London, english
+married: 37 years, one child
+serv: Emily Elmer, cook, 45, single, b Boxford Suffolk
+serv: Alice Pantall, housemaid, 41, single, b Malvern
+serv: Annie Zinnelly, parlourmaid, 29, single, b Cavan Ireland
+note: {perugini_charles_edward_1839:k} and {dickens_catherine_elizabeth_macready_1839:kx} were listed as painters and artists.
+note: The servants were Emily Elmer, 45, cook, Alice Pantall, 41, housemaid, and Annie Zinnelly, 29, the parlourmaid.
+
+
+§ 1912 brother dies dickens_alfred_dorsay_tennison_1845
+
+§ 1914 event ww1_start
+
+§ 1918 event ww1_end
+
+§ 1918 husband dies perugini_charles_edward_1839
+
+§ 1928 event womens_vote
+
+§ 1929 Death
+death: dickens_catherine_elizabeth_macready_1839
+
+

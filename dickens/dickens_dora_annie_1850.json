@@ -1,0 +1,42 @@
+{
+
+
+"birth": [
+"id: dickens_dora_annie_1850",
+"place: Marylebone RD, London",
+"source: Civil Registration Birth Index, 1837-1915 1 25 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=FreeBMDBirth&h=42450686",
+"[Name: Dora Annie Dickens]",
+"[RegistrationYear: 1850]",
+"[RegistrationQuarter: Jul-Aug-Sep]",
+"[Registrationdistrict: Marylebone]",
+"discussion: "
+],
+
+
+
+"death": [
+"id: dickens_dora_annie_1850",
+"of: 1 Devonshire Terrace, York Place",
+"age: 9 months",
+"record: Burial record url:records/1851_dickens_dora_annie_bur.jpg",
+"source: Church of England Deaths and Burials, 1813-1980 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=LMAdeaths&h=10063939",
+"buryear: 1851",
+"burdate: 17 apr",
+"burplace: St James, St Pancras, London",
+"[Abode: 1 Devonshire Terrace, York Place]",
+"[Age: 9 months]",
+"[Name: Dora Annie Dickens]",
+"[RecordType: Burial]",
+"[Age: 9 Months]",
+"[Estimatedbirthyear: abt 1850]",
+"[DeathDate: abt 1851]",
+"[BurialDate: 17 Apr 1851]",
+"[BurialPlace: St James, St Pancras, England]",
+"[ParishorPoorLawUnion: St James, St Pancras]",
+"[Borough: Camden]",
+"[RegisterType: Bishop's Transcript]",
+"discussion: "
+]
+
+
+}

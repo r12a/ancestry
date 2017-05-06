@@ -1,0 +1,91 @@
+{
+
+"birth": [
+"id: dickens_john_1785",
+"place: St Marylebone parish, Middlesex",
+"record: Baptism record url:records/1785_dickens_john_bap.jpg",
+"source: London Metropolitan Archives, St Marylebone, Westminster, Day book of baptisms, Jan 1779-Nov 1786, P89/MRY1/080 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=LMAearlyparish&h=343265",
+"bapplace: St Marylebone, Middlesex",
+"bapyear: 1785",
+"bapdate: 20 Nov",
+"[Born: 21 Aug 1785]",
+"text: Jno Dickens of Wm & Eliz b 21 Augt 85",
+"[Name: Jno Dickens]",
+"[BaptismDate: 20 Nov 1785]",
+"[Parish: St Marylebone]",
+"[County: Middlesex]",
+"[Borough: Westminster]",
+"[Parent(s): Wm,]",
+"[RecordType: Baptism]",
+"[RegisterType: Parish Register]",
+"fnote: He was baptised on the same day as his brother William.",
+"discussion: "
+],
+
+
+
+"marriages": {
+ 
+"barrow_elizabeth_culliford_1789": [
+"record: Marriage record url:records/1809_dickens_john_barrow_elizabeth_m.jpg",
+"source: London Metropolitan Archives, Saint Mary Le Strand: Westminster, Transcript of Baptisms, Marriages and Burials, 1809 Mar-1810 Mar, DL/t Item, 097/009 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=LMAmarriages&h=10103288",
+"year: 1809",
+"date: 13 Jun",
+"place: St Mary Le Strand, Westminster, London",
+"id: dickens_john_1785",
+"groom: John Dickins",
+"gid: dickens_john_1785",
+"bride: Elizabeth Culliford Barrow",
+"bid: barrow_elizabeth_culliford_1789",
+"bage: below 21",
+"gparish: otp",
+"bparish: otp",
+"gstatus: bachelor",
+"bstatus: spinster",
+"witnesses: Charles, Mary & Sarah Barrow",
+"[Name: John Dickens]",
+"[Spouse: Elizabeth Barrow]",
+"[RecordType: Marriage]",
+"[EventDate: 13 Jun 1809]",
+"[Parish: St Mary Le Strand, Westminster]",
+"[Borough: Westminster]",
+"[RegisterType: Bishop's Transcript]",
+"discussion: "
+]
+ 
+},
+
+
+
+"death": [
+"id: dickens_john_1785",
+"of: 34 Keppel St, Russell Square",
+"age: 66",
+"gps: 34 Keppel St, London https://maps.google.com/maps?q=51.520668,-0.129617",
+"source: Civil Registration Death Index, 1837-1915 1 46 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=FreeBMDDeath&h=9293977",
+"[Name: John Dickens]",
+"[RegistrationYear: 1851]",
+"[RegistrationQuarter: Apr-May-Jun]",
+"[Registrationdistrict: St Giles]",
+"record: Burial record url:records/1851_dickens_john_bur.jpg",
+"source: London, England, Church of England Deaths and Burials, 1813-1980 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=LMAdeaths&h=10063916",
+"buryear: 1851",
+"burdate: 5 Apr",
+"burplace: St James, St Pancras, London",
+"[Abode: 34 Keppel St, Ansell Square]",
+"[Age: 66]",
+"[Name: John Dickens]",
+"[RecordType: Burial]",
+"[Age: 66]",
+"[Estimatedbirthyear: abt 1785]",
+"[DeathDate: abt 1851]",
+"[BurialDate: 5 Apr 1851]",
+"[BurialPlace: St James, St Pancras, England]",
+"[ParishorPoorLawUnion: St James, St Pancras]",
+"[Borough: Camden]",
+"[RegisterType: Bishop's Transcript]",
+"discussion: "
+]
+
+
+}

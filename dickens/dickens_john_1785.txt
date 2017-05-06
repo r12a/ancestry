@@ -1,0 +1,56 @@
+§ 1785 Birth
+birth: dickens_john_1785
+
+
+§ 1792 event french_revolution
+
+§ 1806 event pitt_dies
+
+§ 1809 Marriage
+marriage: barrow_elizabeth_culliford_1789
+
+§ 1810 daughter born dickens_frances_elizabeth_1810
+
+§ 1812 son born dickens_charles_john_huffam_1812
+
+§ 1813 son born dickens_alfred_allen_1813
+
+§ 1813 son dies dickens_alfred_allen_1813
+
+§ 1815 event waterloo
+
+§ 1816 daughter born dickens_letitia_1816
+
+§ 1819 daughter born dickens_harriet_1819
+
+§ 1820 son born dickens_frederick_1820
+
+§ 1822 son born dickens_alfred_lamert_1822
+
+§ 1824 daughter dies dickens_harriet_1819
+
+§ 1824 notes Marshalsea debtor's prison
+source: https://en.wikipedia.org/wiki/Charles_Dickens#Early_years
+note: The family had left Kent amidst rapidly mounting debts, and, living beyond his means, {dickens_john_1785:kfx} was forced by his creditors into the Marshalsea debtors' prison in Southwark, London in 1824. His wife and youngest children joined him there, as was the practice at the time. {dickens_charles_john_huffam_1812:k}, then 12 years old, boarded with Elizabeth Roylance, a family friend, at 112 College Place, Camden Town.
+
+
+§ 1824 figure
+source: https://en.wikipedia.org/wiki/Marshalsea#/media/File:Plan_of_the_Marshalsea,_1843.jpg
+img: photos/dickens/marshalsea_prison_plan.jpg
+caption: Plan of the Marshalsea prison (in 1840s)
+
+
+§ 1827 son born dickens_augustus_1827
+
+§ 1833 event slavery_abolished
+
+§ 1836 son marries dickens_charles_john_huffam_1812+hogarth_catherine_thompson_1815
+
+§ 1838 event victoria_coronation
+
+§ 1848 daughter dies dickens_frances_elizabeth_1810
+
+§ 1851 Death
+death: dickens_john_1785
+link: Description of John's decease https://books.google.co.uk/books?id=TRhJluStCYUC&pg=RA1-PT163&lpg=RA1-PT163&dq=keppel+street+london+dickens&source=bl&ots=_7eQr6TVbL&sig=Fbam_ZRoNdLD9hYwFNyg_I-kikI&hl=en&sa=X&ved=0ahUKEwir2IqsmNvTAhUMAcAKHfLXBo8Q6AEIRDAG#v=onepage&q=keppel%20street%20london%20dickens&f=false
+

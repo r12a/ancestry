@@ -1,0 +1,84 @@
+{
+
+"intro":"Charles John Huffam Dickens was an English writer and social critic. He created some of the world's best-known fictional characters and is regarded by many as the greatest novelist of the Victorian era. His works enjoyed unprecedented popularity during his lifetime, and by the twentieth century critics and scholars had recognised him as a literary genius. His novels and short stories enjoy lasting popularity.",
+
+
+"birth": [
+"id: dickens_charles_john_huffam_1812",
+"place: Portsea, Hampshire",
+"source: Wikipedia https://en.wikipedia.org/wiki/Charles_Dickens",
+"[Born: 7 February 1812]",
+"source: Select Births and Christenings, 1538-1975 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=FS1EnglandBirthsandChristenings&h=152229257",
+"bapplace: St Marys, Portsea",
+"bapyear: 1812",
+"bapdate: 4 Mar",
+"[Name: Charles John Huffham Dickens]",
+"[Gender: Male]",
+"[BaptismDate: 4 Mar 1812]",
+"[BaptismPlace: Saint Marys,Portsea,Hampshire]",
+"[Father: John Dickens]",
+"[Mother: Elizabeth]",
+"gps: Portsea,Hampshire https://maps.google.com/maps?q=50.798778,-1.107263",
+"discussion: "
+],
+
+
+
+"marriages": {
+ 
+"hogarth_catherine_thompson_1815": [
+"record: Marriage record url:records/1836_dickens_charles_catherine_hogarth_m.jpg",
+"source: Church of England Marriages and Banns, 1754-1921 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=LMAmarriages&h=2187669",
+"year: 1836",
+"date: 2 Apr",
+"place: St Lukes, Chelsea parish, London",
+"gps: St Lukes church, Chelsea, London https://maps.google.com/maps?q=51.489569,,-0.169524",
+"groom: Charles John Huffam Dickens",
+"gid: dickens_charles_john_huffam_1812",
+"bride: Catherine Thompson Hogarth",
+"bid: hogarth_catherine_thompson_1815",
+"bage: less than 21",
+"gparish: Furnival's Inn, London",
+"bparish: Chelsea parish",
+"gstatus: bachelor",
+"bstatus: spinster",
+"bfather: George Hogarth",
+"witnesses: George Hogarth(?), Elizabeth Dickens, and others (writing illegible)",
+"by: licence",
+"[Name: Charles John Huffam Dickens]",
+"[Spouse: Catherine Thomson Hogarth]",
+"[RecordType: Marriage]",
+"[EventDate: 2 Apr 1836]",
+"[Parish: St Luke, Chelsea]",
+"[Borough: Kensington and Chelsea]",
+"[RegisterType: Parish Register]",
+"discussion: The consent field on the marriage register says 'George Hogarth the ... and daughter(?) father(?) of the said ...'"
+
+]
+ 
+},
+
+
+
+"death": [
+"id: dickens_charles_john_huffam_1812",
+"of: Gads Hill Place, near Rochester",
+"age: 58",
+"gps: Gads Hill Place, Higham, Kent https://maps.google.com/maps?q=51.411201,0.457370",
+"source: Civil Registration Death Index, 1837-1915 2a 257 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=FreeBMDDeath&h=9292484",
+"[Name: Charles Dickens]",
+"[Estimatedbirthyear: abt 1812]",
+"[RegistrationYear: 1870]",
+"[RegistrationQuarter: Apr-May-Jun]",
+"[AgeatDeath: 58]",
+"[Registrationdistrict: North Aylesford]",
+"record: Probate record url:records/1870_dickens_charles_probate.jpg",
+"source: National Probate Calendar (Index of Wills and Administrations), 1858-1966, 1973-1995 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=UKProbateCal&h=5862786",
+"probate: DICKENS Charles otherwise Charles John Huffham Esq. 19 July. The Will with a Codicil of Charles otherwise Charles John Huffham Dickens late of Gads Hill Place near Rochester in the County of Kent Esquire deceased who died 9 June 1870 at Gads Hill Place aforesaid was proved at the Principal Registry by the oaths of Georgina Hogarth and John Forster of Palace Gate House Kensington in the County of Middlesex Esquire the Executors. Effects under £80,000.",
+"discussion: "
+]
+
+
+
+
+}

@@ -1,0 +1,70 @@
+{
+
+
+"birth": [
+"id: dickens_catherine_elizabeth_macready_1839",
+"place: 1 Devonshire Terrace",
+"focc: Esquire",
+"record: Baptism record url:records/1839_dickens_catherine_elizabeth_macready_bap.jpg",
+"source: London, England, Church of England Births and Baptisms, 1813-1906 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=LMAbirths&h=1192646",
+"bapplace: St Marylebone, Westminster, London",
+"bapyear: 1840",
+"bapdate: 25 Aug",
+"[Born: 29 Oct 1839]",
+"[Abode: 1 Devonshire Terrace]",
+"[FatherOccupation: Esquire]",
+"[Name: Catharine Elizabeth Macready Dickens]",
+"[RecordType: Baptism]",
+"[BaptismDate: 25 Aug 1840]",
+"[Fathersname: Charles Dickens]",
+"[Mothersname: Catharine Dickens]",
+"[ParishorPoorLawUnion: St Marylebone]",
+"[Borough: Westminster]",
+"[RegisterType: Parish Registers]",
+"gps: 1 Devonshire Terrace, London https://maps.google.com/maps?q=51.513611,-0.179810",
+"discussion: "
+],
+
+
+"marriages": {
+ 
+"collins_charles_allston_1828": [
+"source: Civil Registration Marriage Index, 1837-1915 2a 253 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=FreeBMDMarriage&h=7931437",
+"year: 1860",
+"date: Jul-Sep",
+"place: North Aylesford RD, London",
+"id: dickens_catherine_elizabeth_macready_1839",
+"groom: Charles Allston Collins",
+"gid: collins_charles_allston_1828",
+"bride: Catherine Elizabeth Macready Dickens",
+"bid: dickens_catherine_elizabeth_macready_1839",
+"[Name: Catherine Elizabeth Macready Dickens]",
+"[RegistrationYear: 1860]",
+"[RegistrationQuarter: Jul-Aug-Sep]",
+"[Registrationdistrict: North Aylesford]",
+"[Spouse: Charles Allston Collins]",
+"discussion: "
+]
+ 
+},
+
+
+"death": [
+"id: dickens_catherine_elizabeth_macready_1839",
+"of: 3 Argyll Mansions, Beaufort St, Chelsea, London",
+"age: 89",
+"occ: Widow",
+"source: Civil Registration Death Index, 1916-2007 1a 444 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=ONSDeath93&h=15203415",
+"[Name: Kate M Perugini]",
+"[BirthDate: abt 1840]",
+"[DateofRegistration: Jun 1929]",
+"[AgeatDeath: 89]",
+"[Registrationdistrict: Chelsea]",
+"record: Probate record url:records/1929_perugini_catherine_probate.jpg",
+"source: National Probate Calendar (Index of Wills and Administrations), 1858-1966, 1973-1995 http://search.ancestry.co.uk/cgi-bin/sse.dll?indiv=try&db=UKProbateCal&h=3426901",
+"probate: PERUGINI Katherine Elizabeth Macready otherwise Kate Elizabeth Macready of 3 Argyll-mansions Beaufort-street Chelsea Middlesex widow died 9 May 1929 Probate London 27 June to sir Henry Fielding Dickens knight. Effects £5058 0s 3d. Resworn £5693 19s 8d.",
+"discussion: "
+]
+
+
+}
