@@ -4,7 +4,22 @@
 <meta charset="UTF-8">
 <title>Index</title>
 <link href="lib/style.css" rel="stylesheet">
-<script src="data/db.js" type="application/javascript"></script>
+<script>
+// read in project
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script')
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db)
+</script>
 <script>
 function filter (str) {
 	str = str.toLowerCase()
@@ -33,7 +48,7 @@ function secondFilter (str) {
 	}
 </script>
 </head>
-<body>
+<body onLoad="init()">
 <div id="out">
   <div id="banner">
     <div id="pagetitle">Index<br>
@@ -60,35 +75,37 @@ function secondFilter (str) {
 </div>
 
 <script>
-var out = ''
-var total = 0
-for (var person in db) {
-	//if (db[person].p) out += '<p><a href="data/'+person+'.html">'+db[person].f
-	//else 
-	out += '<p><a href="tree.html?person='+person+'">'+db[person].f
-	if (db[person].m) {
-		for (var i=0;i<db[person].m.length;i++) {
-			out += ' ('+db[person].m[i]+')'
+function init () {
+	var out = ''
+	var total = 0
+	for (var person in db) {
+		//if (db[person].p) out += '<p><a href="data/'+person+'.html">'+db[person].f
+		//else 
+		out += '<p><a href="tree.html?project='+project+'&person='+person+'">'+db[person].f
+		if (db[person].m) {
+			for (var i=0;i<db[person].m.length;i++) {
+				out += ' ('+db[person].m[i]+')'
+				}
 			}
+		out += ', '+db[person].g
+		if (db[person].b) {
+			out += ', '+db[person].b
+			if (db[person].d) out += '-'+db[person].d
+			}
+		else {
+			var temp = person.split('_')
+			out += ', ~'+temp[temp.length-1]
+			}
+		if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
+		out += '</a></p>'
+		total++
 		}
-	out += ', '+db[person].g
-	if (db[person].b) {
-		out += ', '+db[person].b
-		if (db[person].d) out += '-'+db[person].d
-		}
-	else {
-		var temp = person.split('_')
-		out += ', ~'+temp[temp.length-1]
-		}
-	if (db[person].p) out += '</a><a class="detaillink" href="person.html?person='+person+'">[details]'
-	out += '</a></p>'
-	total++
+	document.getElementById('total').textContent = total
+	
+	document.getElementById('listrecord').innerHTML = '<div>'+out+'</div>'
+	
+	document.getElementById('filter').focus()
 	}
-document.getElementById('total').textContent = total
-
-document.getElementById('listrecord').innerHTML = '<div>'+out+'</div>'
-
-document.getElementById('filter').focus()
 /*
 var sortkeys = []
 var names = document.querySelectorAll('#list p')
