@@ -128,7 +128,7 @@ function getPersonDetails (id, type, loc) {
 		if (loc) out += ' id="'+loc+'"'
 		out += '>'
 		
-		if (db[id].thumb) out += '<img src="'+window.project+'/_thumbs/'+id+'.jpg" alt=""/>'
+		if (db[id].thumb) out += '<img src="'+window.project+'/thumbs/'+id+'.jpg" alt=""/>'
 		else  { out += '<img src="lib/i/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
 
 		out += '<div class="data">'
