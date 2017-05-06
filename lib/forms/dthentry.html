@@ -9,7 +9,23 @@ td { vertical-align: top; padding-left: 1em; }
 details { margin-left: 2em; }
 </style>
 <script src="formentrylookup.js" type="application/javascript"></script>
-<script src="../../data/db.js" type="application/javascript"></script>
+<script>
+// read in project
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project) project = 'data'
+var db = document.createElement('script');
+db.src = '../../'+project+'/_db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
 <script>
 function doRelation (type) { console.log(type)
 	document.getElementById('relation').innerHTML = 'relation: '+type

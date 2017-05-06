@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>Make lists</title>
 <link href="../../lib/style.css" rel="stylesheet">
-<script src="../../data/db.js" type="application/javascript"></script>
+<script src="../../dickens/_db.js" type="application/javascript"></script>
 <script src="../script.js" type="application/javascript"></script>
-<script src="../../data/events.js" type="application/javascript"></script>
+<script src="../../events.js" type="application/javascript"></script>
 <script>
 
 function dump (individual) {
@@ -20,8 +20,6 @@ function dump (individual) {
 	var parent, sibling, siblingType, year, spouse, marriageList, child, childType, byear, dyear
 	
 	
-	// end head, start body
-	/*out += '</head>\n\n<body><div id="summaryIn"><p>'+getName('', individual, 'gkf', false)+'.</p></div>\n<div id="links">\n</div>\n<div id="in">\n\n' */
 
 	// get birth
 	if (person.b) records.push(cleanYear(person.b)+' § '+person.b+' Birth\nbirth: '+individual+'\n\n\n')
@@ -52,12 +50,8 @@ function dump (individual) {
 					if (db[sibling].male) siblingType = 'brother'
 					else siblingType = 'sister'
 		console.log(sibling, birth, death, db[sibling].b, db[sibling].d)
-					//if (data[sibling] && data[sibling].birth.year) byear = data[sibling].birth.year
-					//else byear = db[sibling].b
 					if (db[sibling].b && db[sibling].b !== '') byear = db[sibling].b.replace('~','')
 					else byear = ''
-					//if (data[sibling] && data[sibling].death.year) dyear = data[sibling].death.year
-					//else dyear = db[sibling].d
 					if (db[sibling].d && db[sibling].d !== '') dyear = db[sibling].d.replace('~','')
 					else dyear = ''
 					}
@@ -200,7 +194,7 @@ function cleanYear (year) {
 <body>
 <div id="out">
   <div id="banner">
-    <div id="pagetitle">Make lists<br>
+    <div id="pagetitle">Make lists: Dickens<br>
       <span id="bannerdates">Lancashire</span></div>
   </div>
   <div id="subbanner">
@@ -208,7 +202,6 @@ function cleanYear (year) {
   </div>
   <div id="subsubbanner">
     <div>
-    	<input type="text" id="projectId"/>
       <button onClick="document.getElementById('output').value = dump(document.getElementById('source').value); document.getElementById('output').select()">Go</button>
     </div>
   </div>
