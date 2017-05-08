@@ -170,8 +170,8 @@ function getPersonDetails (id, type, loc) {
 			out += '<div class="sp">'+temp+'</div>'
 			}
 		out += '<div class="showme">'
-		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'">Details</a>' }
-		if (! db[id].cstatus) out += ' &bull; <a href="descendants.html?person='+id+'&project='+window.project+'" style="font-size:120%;">▽</a>'
+		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'" style="margin-right:1em;">Details</a>' }
+		if (! db[id].cstatus) out += '<a href="descendants.html?person='+id+'&project='+window.project+'" style="font-size:120%;">▽</a>'
 		out += '</div>'
 		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
 			out += '<div class="stop">'+db[id].cstatus+'</div>'
