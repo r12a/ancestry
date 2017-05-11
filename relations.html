@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ancestor links chart</title>
+<script>
+// read in startPerson
+var startPerson = ''
+var targetPerson = ''
+var project = 'data'
+var parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	var pairs = parameters[p].split('=');
+	if (pairs[0] == 'first') { if (pairs[1]) { var startPerson = pairs[1] } }
+	if (pairs[0] == 'second') { if (pairs[1]) { var targetPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
+<link href="lib/article.css" rel="stylesheet">
+<script>
+var families = [{from:-1, id:'none'},{from:0, id:startPerson}]
+var otherancestors = [{from:-1, id:'none'}, {from:0, id:targetPerson}]
+var count = 0
+</script>
+<style>
+#topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
+table { margin: auto; font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; font-size: 14px; padding-bottom: 800px; }
+.fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,1.00); }
+td { padding: 0 1em; }
+.notes, .parents { color: #aaa; }
+.goto { font-size: 75%; color: brown; }
+table a { font-size: 75%; color: brown; }
+tr td:first-of-type+td { border-bottom-left-radius: 5px; border-top-left-radius: 5px; }
+tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5px; }
+.sort { display:none; }
+#link { text-align: center; }
+#chart td { vertical-align: top; text-align:center; line-height:1; }
+#chart p { margin: 1em 0; }
+#topjoin div {
+	border-top: 1px solid #aaa;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	width: 50%;
+	margin-left: 25%;
+	}
+#topjoin { width: 100%; text-align:center; }
+.id { font-size: 60%; }
+</style>
+</head>
+<body onLoad="start()">
+<div id="topMenu">
+	<a id="detailLink" href="#"></a>
+	<a id="fatherLink" href="#"></a>
+	<a href="#top">Top</a>
+	<a id="treeLink" href="#">Tree</a>
+	<a href="index.html" style="margin-right: 2em;">Index</a>
+	</div>
+	<div id="top"></div>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Relationships<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div><a href="#explanations">Total <span id="total"></span></a></div>
+  </div>
+  <article>
+      <table id="chart"><tbody>
+      <tr><td colspan="2" id="link"></td></tr>
+      <tr><td colspan="2" id="topjoin"></td></tr>
+      <tr>
+      	<td id="start"></td>
+        <td id="target"></td>
+        </tr>
+       </tbody></table>
+  </article>
+</div>
+
+<script>
+var upwards = []
+var downwards = []
+
+
+function getAncestors1 (id, ptr) {
+	if (db[id] && db[id].father && db[db[id].father]) window.families.push({from:ptr, id:db[id].father})
+	if (db[id] && db[id].father && db[db[id].father]) getAncestors1(db[id].father, window.families.length-1)
+	if (db[id] && db[id].mother && db[db[id].mother]) window.families.push({from:ptr, id:db[id].mother})
+	if (db[id] && db[id].mother && db[db[id].mother]) getAncestors1(db[id].mother, window.families.length-1)
+	}
+
+function getAncestors2old (id) {
+	if (db[id] && db[id].father && db[db[id].father]) window.otherancestors.push({from:id, id:db[id].father})
+	if (db[id] && db[id].mother && db[db[id].mother]) window.otherancestors.push({from:id, id:db[id].mother})
+	if (db[id] && db[id].father && db[db[id].father]) getAncestors2(db[id].father)
+	if (db[id] && db[id].mother && db[db[id].mother]) getAncestors2(db[id].mother)
+	}
+
+function getAncestors2 (id, ptr) {
+	if (db[id] && db[id].father && db[db[id].father]) window.otherancestors.push({from:ptr, id:db[id].father})
+	if (db[id] && db[id].father && db[db[id].father]) getAncestors2(db[id].father, window.otherancestors.length-1)
+	if (db[id] && db[id].mother && db[db[id].mother]) window.otherancestors.push({from:ptr, id:db[id].mother})
+	if (db[id] && db[id].mother && db[db[id].mother]) getAncestors2(db[id].mother, window.otherancestors.length-1)
+	}
+
+
+function makeTraceBack1 (start) {
+	while (families[start].from > -1) {
+		window.upwards.push(families[start].id)
+		start = families[start].from
+		}
+	window.upwards.push(window.startPerson)
+	console.log(upwards)
+	}
+
+
+function makeTraceBack2 (start) {
+	while (otherancestors[start].from > -1) {
+		window.downwards.push(otherancestors[start].id)
+		start = otherancestors[start].from
+		}
+	window.downwards.push(targetPerson)
+	console.log(downwards)
+	}
+
+
+
+
+function start () {
+	if (startPerson && db[startPerson]) { 
+		//window.families.push(startPerson)
+		getAncestors1(startPerson, 0)
+		getAncestors2(targetPerson, 0)
+		console.log(families)
+		console.log(otherancestors)
+		
+		found = false
+		for (var i=1;i<families.length;i++) {
+			for (var j=1;j<otherancestors.length;j++) {
+				if (families[i].id === otherancestors[j].id) {
+					found = true
+					console.log('Match found: ',families[i].id, i, j)
+					window.traceback1 = makeTraceBack1(i)
+					window.traceback2 = makeTraceBack2(j)
+					break
+					}
+				if (found) break
+				}
+			}
+
+		if (found) {
+			document.getElementById('link').innerHTML = '<p>'+db[upwards[0]].g+' '+db[upwards[0]].f+'<br/><span class="id">'+upwards[0]+'</span></p>'
+			if (downwards[1] != downwards[0] && upwards[1] != upwards[0]) document.getElementById('topjoin').innerHTML = '<div>&nbsp;</div>'
+			var out = ''
+			for (i=1;i<upwards.length;i++) {
+				if (upwards[1] != upwards[0]) out += '<p class="left">'+db[upwards[i]].g+' '+db[upwards[i]].f+'<br/><span class="id">'+upwards[i]+'</span></p>'
+				}
+			document.getElementById('start').innerHTML = out
+			var out = ''
+			for (i=1;i<downwards.length;i++) {
+				if (downwards[1] != downwards[0]) out += '<p class="right">'+db[downwards[i]].g+' '+db[downwards[i]].f+'<br/><span class="id">'+downwards[i]+'</span></p>'
+				}
+			document.getElementById('target').innerHTML = out
+			}
+		else {
+			document.getElementById('link').innerHTML = '<p>Not related.</p>'
+			document.getElementById('start').innerHTML = ''
+			document.getElementById('target').innerHTML = ''
+			}
+		}
+	}
+</script>
+</body>
+</html>
