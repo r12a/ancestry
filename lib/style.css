@@ -17,13 +17,24 @@ body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -m
 #in { display: none; }
 #summary { font-size: 120%; }
 .dateAndRecord { display: flex; flex-flow: row nowrap; }
-.record .recordTitle { color: #648200; font-size: 120%; font-weight: 400; margin-bottom: 0; line-height: 1.3; }
+
+.titleEtc { width: 25%; padding-right: 1em; display:flex; flex-direction: row-reverse; flex-wrap: wrap; align-items: flex-start; }
+.figure .titleEtc, .background .titleEtc { display: none; }
+.record .recordTitle { color: #706b63; color: #648200; font-size: 110%; font-weight: 400; margin-bottom: 0; line-height: 1.3; flex: 1; }
+.record .recordTitleAge { font-size: 4em; line-height: .6;color: blanchedalmond; text-align:right; vertical-align:top; padding-bottom: 10px; flex: 1; }
+.event .recordTitleAge, .familydeath .recordTitleAge { color: #FFDEAF; }
+
 .record { flex: 6; background-color: #fff; /*border: 1px solid #ccc;*/ border-radius: 5px; margin: .2em .7em; padding: .8em; display: flex; }
-.record p { margin: 0 0.5em 0.5em 0; padding: 0; }
+.record p { margin: 0 0.5em 0.5em 0; padding: 0; margin:0; }
 .record p:last-of-type { margin: 0; padding: 0; }
-.recordDate { height: 60px; width: 60px; border-radius: 50%; background-color: #60527E; text-align:center; color: white; font-size: 1em; margin: 1em;}
-.recordDate { display: flex; flex-flow: column nowrap; align-items: center; line-height: .9; }
-.recordDate span:first-of-type { font-size: 140%; margin-top:5px; }
+.recordDate { height: 50px; width: 60px; border-radius: 50%; background-color: #A398BC; background-color: #60527E; background-color: #C7C4BA; text-align:center; color: white; font-size: 1em; margin: 1em; font-weight:normal; }
+.recordDate { display: flex; align-items: center; align-content: center; font-size: 115%; }
+.recordDate span { width: 100%; }
+/*.recordDate { display: flex; flex-flow: column nowrap; align-items: center; line-height: .9; }
+.recordDate span:first-of-type { font-size: 140%; margin-top:5px; }*/
+.recordDateAge { display: none; }
+
+
 .other { background-color: #F0eee9; background-color: #f8f7f3; }
 summary { font-size: 90%; text-align: start; cursor: pointer; }
 details pre { font-size: 80%; white-space: pre-wrap; }
@@ -71,8 +82,6 @@ figcaption { font-style: italic; text-align: center; }
 code, samp { font-size: 80%; }
 
 
-.titleEtc { width: 25%; padding-right: 1em; }
-.figure .titleEtc, .background .titleEtc { display: none; }
 .descriptionText { width: 70%; }
 .figure .descriptionText, .background .descriptionText { width: 100%; }
 details { padding-left: 0.5em; }
@@ -80,7 +89,7 @@ details[open] { width: 100%; }
 summary { margin-right: 0; text-align: left;}
 
 
-section .recordTitle { color: #648200; font-size: 130%; font-weight: 400; margin-bottom: 0; line-height: 1.3; }
+section .recordTitle { color: #648200; font-size: 110%; font-weight: 400; margin-bottom: 0; line-height: 1.3; flex: 1; }
 section { background-color: #fff; border: 1px solid #ccc; border-radius: 5px; margin: 1em .7em; padding: .8em; }
 section:last-of-type { margin-top: 0; }
 section p { margin: 0 0.5em 0.5em 0; padding: 0; }
