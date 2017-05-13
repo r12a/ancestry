@@ -132,7 +132,7 @@ function getPersonDetails (id, type, loc) {
 		else  { out += '<img src="lib/i/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
 
 		out += '<div class="data">'
-		out += '<div class="name"><a href="tree.html?person='+id+'&project='+window.project+'">'
+		out += '<div class="name"><a href="tree.html?project='+window.project+'&person='+id+'">'
 		//out += db[id].g+' '
 		if (db[id].k) out += db[id].k+' ('+db[id].g+') '
 		else out += db[id].g+' '
