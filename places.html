@@ -84,7 +84,7 @@ for (var place in placeIndex) {
 		coords = coords.replace(/http:\/\/maps.google.com\/maps\?q=/,'')
 		out += '<p><span><a href="'+placeIndex[place].a+'" target="_blank">'+placeIndex[place].location+'</a> <span class="gpscoords" onclick="copyToClipboard(this)">🗆'+coords+'</span></span>'
 		for (j=0;j<placeIndex[place].list.length;j++) {
-			out += ' <a class="detaillink" href="data/'+placeIndex[place].list[j]+'.html" target="_blank">'+placeIndex[place].list[j]+'</a>'
+			out += ' <a class="detaillink" href="person.html?project=data&person='+placeIndex[place].list[j]+'" target="_blank">'+placeIndex[place].list[j]+'</a>'
 			}
 		out += '</a></p>'
 		}
