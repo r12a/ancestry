@@ -34,11 +34,35 @@ h[1856] = "The Treaty of Paris neutralises the Black Sea, holding back Russia fo
 	
 h[1861] = "The <a href='https://en.wikipedia.org/wiki/American_Civil_War' target='_blank'>American Civil War</a> starts on 12 Apr 1861 and concluded on 9 May 1865. The Union faces secessionists in eleven Southern states grouped together as the Confederate States of America."
 	
+h[1865] = "Lewis Carroll writes <cite>Alice's Adventures in Wonderland</cite>."
+	
 h[1867] = "Disraeli's <a href='https://en.wikipedia.org/wiki/Reform_Act_1867' target='_blank'>Reform Act</a> permits large extensions to the franchise, virtually doubling the electorate, enabling one-third of adult males in Britain and one-sixth in Ireland to vote in parliamentary elections. In a few urban constituencies, working men are an electoral majority."
+	
+h[1868] = "Gladstone proposes disestablishing the Protestant church in Ireland, and the newly enfranchised electorate approves, sweeping the Liberals into power. Gladstone will produce the beginnings of modern Britain.</p><p>Wilkie Collins published the <cite>Moonstone</cite>, sometimes called the first detective novel."
+	
+h[1869] = "Women gain the right to vote in municipal elections.</p><p>The Church Disestablishment Act means the tiny Anglican church is no longer the state church of Ireland."
+	
+h[1870] = "The 1870 Married Women's Property Act changes the previous legal situation, in which all property automatically transferred to the control of a husband on marriage, granting limited protection to a married woman's property allowing women to retain up to £200 of their own wages or earnings</p><p>W E Forster's Elementary Education Act  creates the first national education system, making education available to all children from 5 to 13, however it isn't compulsory until 1880, and isn't free until 1891.</p><p>An exam system is instituted for the civil service.</p><p>The Irish Land Act compells Irish landlords to compensate tenants for evictions who have made improvements in their holdings, and issues loans to enable tenants to settle land.</p><p>Charles Dickens dies."
+	
+h[1871] = "The Trade Union Act legalises trade unions as friendly societies.</p><p>Commanding rank in the army can no longer be obtained by purchasing a commission, and different branches of the army are merged under the secretary for war. Reform is aided, despite furious opposition and vested interests in the House of Lords, by the presence of the Prussians in France, just across the channel.</p><p>The University Test Act opens Oxbridge universities to non-Anglicans.</p><p>Three national bank holidays are introduced."
+	
+h[1872] = "The Secret Ballot Act removes voter intimidation.</p><p>The first women are accepted at Girton and Newnham in Cambrige, though they cannot yet take degrees. Oxford's Lady Margaret Hall and Somerville would follow in 1878.</p><p>Elliot publishes <cite>Middlemarch</cite>, and Hardy <cite>Under the Greenwood Tree</cite>."
+	
+h[1873] = "The Custody of Infants Act awards women access to their children in the event of divorce or separation."
+	
+h[1874] = "Dissatisfaction with Russia reclaiming the Black Sea and demands for reparations from the American civil war brings Disraeli and the Conservatives back to power. The Liberal cause is not helped by the 1872 Licensing Act."
+	
+h[1875] = "Realising the need to continue reforms to please the new electorate, Disraeli passes the Artisans Dwellings Act. This replaces slums with healthy housing, in particular in Birmingham under Joseph Chamberlain.</p><p>With a loan from the Rothschilds, Disraeli acquires a majority share in the Suez Canal, outmanoeuvering the French."
+	
+h[1876] = "Reversing his previous distaste for the colonies, Disraeli seeks to expand the British Empire, and makes Victoria Queen Empress of India."
 	
 h[1880] = "Although WE Forster's act of 1870 had greatly expanded education opportunities, and an act passed in Benjamin Disraeli's government of 1876 had set up school attendance committees, significant gaps remained. AJ Mundella introduces a bill on behalf of William Gladstone's Liberal government which makes school attendance compulsory from ages five to 10. State expenditure on education, about £1.25 million a year in 1870, will rise to £4 million, and would reach £12 million by the end of Victoria's reign."
 	
-h[1883] = "The 1870 Married Women's Property Act changes the previous legal situation, in which all property automatically transferred to the control of a husband on marriage, granting limited protection to a married woman's property allowing women to retain up to £200 of their own wages or earnings. A further act in 1883 addresses criticisms by allowing women to acquire and retain any property deemed separate from that of their husband's, and provided legal protection."
+h[1881] = "Disenchantment with military disasters in South Africa and Afghanistan, plus successive bad harvests from 1875-80, and a flood of cheap grain, thanks to their free trade policies, badly dents the Conservatives' reputation. Thousands of farmers had gone to the wall and left for towns or emigrated. The Liberals return under Gladstone with a huge majority."
+	
+h[1883] = "Following the 1870 Married Women's Property Act, which granted limited protection to a married woman's property, a further act now addresses criticisms by allowing women to acquire and retain any property deemed separate from that of their husband's, and provides legal protection."
+	
+h[1894] = "Women are allowed to serve on urban and district councils."
 	
 h[1901] = "As queen-empress <a target='_blank' href='https://en.wikipedia.org/wiki/Queen_Victoria'>Victoria</a> had ruled over almost a quarter of the world's population. Although wilful and narrow-minded in some respects, she established firm precedents for a hard-working 'constitutional monarch', operating as a head of state above the fray of party politics. Her death on 22 Jan, coming so soon after the end of the 19th century, is truly the end of an era."
 	
