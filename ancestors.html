@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pedigree chart</title>
+<script>
+// read in thisPerson
+thisPerson = ''
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
+<link href="lib/article.css" rel="stylesheet">
+<script>
+</script>
+<style>
+#topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
+img { max-width:40px; display:block; margin:auto; }
+.name { font-size: 100%; line-height: 1; }
+.gparent .name { font-size: 100%;}
+#ggparents { display:flex; flex-direction:row; flex-wrap:no-wrap; }
+.nodes { display: flex; flex-direction: row; flex-wrap:no-wrap; }
+.node {text-align: left;
+	border: 1px solid #ccc;
+	margin: .5em;
+	padding: 0.2em;
+	background-color: #D1CAB0;
+	background-color: #F0eee9;
+	border-radius: 4px;
+	font-size: 16px;
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	}
+.agex {
+	writing-mode: horizontal-tb;
+	}
+.data { 
+	/* writing-mode: vertical-rl; 
+	width: 50px; */
+	cursor: pointer;
+	}
+.nodes.tight .data {
+    writing-mode: vertical-rl;
+    width: 40px;
+	}
+.nodes.tightest .node {
+	margin: .25em;
+	}
+.nodes.tightest .data {
+    writing-mode: vertical-rl;
+    width: 15px;
+	font-size: 80%;
+	line-height: 1;
+	}
+.nodes.tightest .dates, .nodes.tightest .occ {
+    display: none;
+	}
+table { margin:auto; }
+.occ, .age, .bplace { display: none; font-size: 80%; }
+.dates { font-size: 80%; }
+.thisPerson .data { font-size: 140%; }
+#buttons, #whois { text-align: center; }
+</style>
+</head>
+<body onLoad="start()">
+<div id="topMenu">
+	<a id="detailLink" href="#"></a>
+	<a id="fatherLink" href="#"></a>
+	<a href="#top">Top</a>
+	<a id="treeLink" href="tree.html#">Tree</a>
+	<a href="index.html" style="margin-right: 2em;">Index</a>
+	</div>
+	<div id="top"></div>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Ancestors<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div>Show &nbsp;
+      <button onClick="show('.occ')">Occupations</button> <button onClick="show('.age')">Age</button> <button onClick="show('.bplace')">Birth place</button> <button onClick="restoreDefaults()">Default view</button>
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div><span id="whois">&nbsp;</span></div>
+  </div>
+  <article>
+
+  <table><tbody><tr><td id="outTable">
+  
+  </td></tr></tbody></table>
+  
+  </article>
+</div>
+
+<script>
+function whoIs (person) {
+	var name = ''
+	if (person === '') name = '?'
+	else {
+		if (db[person]) {
+			if (db[person].g) name += db[person].g
+			name += ' '
+			if (db[person].f) name += db[person].f
+			}
+		}
+	document.getElementById('whois').textContent = name
+	}
+
+function showX (type) {
+	var nodes = document.querySelectorAll('.node')
+	for (var i=0;i<nodes.length;i++) {
+		//console.log(nodes[i].querySelector(type))
+		var defaults = nodes[i].querySelectorAll('.name,.dates,.occ,.age,.bplace')
+		for (var j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
+		curr = nodes[i].querySelector(type)
+		if (curr) curr.style.display = 'block'
+		}	
+	}
+
+
+function show (type) {
+	var nodes = document.querySelectorAll('.node')
+	var j
+	for (var i=0;i<nodes.length;i++) {
+		//console.log(nodes[i].querySelector(type))
+		var defaults = nodes[i].querySelectorAll('.name')
+		for (j=0;j<defaults.length;j++) defaults[j].style.visibility = 'hidden'
+		var defaults = nodes[i].querySelectorAll('.dates,.occ,.age,.bplace')
+		for (j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
+		curr = nodes[i].querySelector(type)
+		if (curr) curr.style.display = 'block'
+		}	
+	}
+
+
+function restoreDefaultsX () {
+	var nodes = document.querySelectorAll('.node')
+	for (var i=0;i<nodes.length;i++) {
+		var defaults = nodes[i].querySelectorAll('.name,.dates,.occ,.age,.bplace')
+		for (var j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
+		var defaults = nodes[i].querySelectorAll('.name,.dates,.occ,.age,.bplace')
+		for (var j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
+		curr = nodes[i].querySelector('.name')
+		if (curr) curr.style.display = 'block'
+		curr = nodes[i].querySelector('.dates')
+		if (curr && ! curr.parentNode.parentNode.parentNode.classList.contains('tightest')) curr.style.display = 'block'
+		}	
+	}
+
+
+function restoreDefaults () {
+	var nodes = document.querySelectorAll('.node')
+	var j
+	for (var i=0;i<nodes.length;i++) {
+		var defaults = nodes[i].querySelectorAll('.name')
+		for (j=0;j<defaults.length;j++) defaults[j].style.visibility = 'visible'
+		var defaults = nodes[i].querySelectorAll('.dates,.occ,.age,.bplace')
+		for (j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
+		curr = nodes[i].querySelector('.name')
+		if (curr) curr.style.display = 'block'
+		curr = nodes[i].querySelector('.dates')
+		if (curr && ! curr.parentNode.parentNode.parentNode.classList.contains('tightest')) curr.style.display = 'block'
+		}	
+	}
+
+
+// get parents
+function getParents (person) {
+	if (person === '') return ['', '']
+	var parents = []
+	if (db[person].father && db[db[person].father]) parents[0] = db[person].father
+	else parents[0] = ''
+	if (db[person].mother && db[db[person].mother]) parents[1] = db[person].mother
+	else parents[1] = ''
+	return parents
+	}
+
+function getAge (birth, death) {
+	if (birth !== '' && death !== '') {
+		birth = parseInt(birth.replace('~',''))
+		death = parseInt(death.replace('~',''))
+		return death-birth
+		}
+	else return ''
+	}
+
+function addMarkup (list) {
+	var out = ''
+	for (var i=0;i<list.length;i++) {
+		out += '<div class="node" onmouseover="whoIs(\''+list[i]+'\')">'
+      	out += '<div class="data" title="'+list[i]+'">'
+		if (db[list[i]]) {
+			out += '<div class="name"><a href="tree.html?project='+window.project+'&amp;person='+list[i]+'">'
+			out += db[list[i]].f+', '
+			if (db[list[i]].k) out += db[list[i]].k
+			else out += db[list[i]].g
+			out += '&nbsp;<a href="descendants.html?project='+window.project+'&amp;person='+list[i]+'">▽</a>'
+			out += '&nbsp;<a href="ancestors.html?project='+window.project+'&amp;person='+list[i]+'">△</a>'
+			out += '</a></div>'
+			
+			out += '<div class="dates">'
+			out += db[list[i]].b+'- '+db[list[i]].d
+			//out += ' <span class="detaileddates">'+getAge(db[list[i]].b, db[list[i]].d)+'</span>'
+			out += '</div>'
+			
+			out += '<div class="age">'
+			out += getAge(db[list[i]].b, db[list[i]].d)
+			out += '</div>'
+			
+			out += '<div class="occ">'
+			if (db[list[i]].occ) out += db[list[i]].occ
+			else out += '-'
+			out += '</div>'
+			
+			out += '<div class="bplace">'
+			if (db[list[i]].bplace) out += db[list[i]].bplace
+			else out += '-'
+			out += '</div>'
+			}
+		else out += '<div class="name">?</div>'
+		out += '</div>'
+		out += '</div>'
+		}
+	return out
+	}
+
+function start () {
+	var i
+		
+	document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Ancestors</span>'
+	document.getElementById('treeLink').href = 'tree.html?project='+project+'&person='+thisPerson
+
+	var parents = getParents(window.thisPerson)
+	
+	var gparents = []
+	for (i=0;i<parents.length;i++) gparents = gparents.concat(getParents(parents[i]))
+	
+	var ggparents = []
+	for (i=0;i<gparents.length;i++) ggparents = ggparents.concat(getParents(gparents[i]))
+	
+	var gggparents = []
+	for (i=0;i<ggparents.length;i++) gggparents = gggparents.concat(getParents(ggparents[i]))
+	
+	var ggggparents = []
+	for (i=0;i<gggparents.length;i++) ggggparents = ggggparents.concat(getParents(gggparents[i]))
+	
+	var out = ''
+	
+	out += '<div class="nodes tightest">'
+	out += addMarkup(ggggparents)
+	out += '</div>'
+	
+	out += '<div class="nodes tight">'
+	out += addMarkup(gggparents)
+	out += '</div>'
+	
+	out += '<div class="nodes">'
+	out += addMarkup(ggparents)
+	out += '</div>'
+	
+	out += '<div class="nodes">'
+	out += addMarkup(gparents)
+	out += '</div>'
+	
+	out += '<div class="nodes">'
+	out += addMarkup(parents)
+	out += '</div>'
+	
+	out += '<div class="nodes thisPerson">'
+	out += addMarkup([thisPerson])
+	out += '</div>'
+	
+	document.getElementById('outTable').innerHTML = out
+	}
+
+</script>
+</body>
+</html>
