@@ -23,8 +23,6 @@ db.async = false
 document.head.appendChild(db);
 </script>
 <link href="lib/article.css" rel="stylesheet">
-<script>
-</script>
 <style>
 #topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
 img { max-width:40px; display:block; margin:auto; }
@@ -38,6 +36,7 @@ img { max-width:40px; display:block; margin:auto; }
 	padding: 0.2em;
 	background-color: #D1CAB0;
 	background-color: #F0eee9;
+	background-color: rgba(243,210,147,0.30);
 	border-radius: 4px;
 	font-size: 16px;
 	flex: 1;
@@ -109,7 +108,7 @@ table { margin:auto; }
 <script>
 function whoIs (person) {
 	var name = ''
-	if (person === '') name = '?'
+	if (person === '') name = '\u00A0'
 	else {
 		if (db[person]) {
 			if (db[person].g) name += db[person].g
@@ -118,17 +117,6 @@ function whoIs (person) {
 			}
 		}
 	document.getElementById('whois').textContent = name
-	}
-
-function showX (type) {
-	var nodes = document.querySelectorAll('.node')
-	for (var i=0;i<nodes.length;i++) {
-		//console.log(nodes[i].querySelector(type))
-		var defaults = nodes[i].querySelectorAll('.name,.dates,.occ,.age,.bplace')
-		for (var j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
-		curr = nodes[i].querySelector(type)
-		if (curr) curr.style.display = 'block'
-		}	
 	}
 
 
@@ -146,20 +134,6 @@ function show (type) {
 		}	
 	}
 
-
-function restoreDefaultsX () {
-	var nodes = document.querySelectorAll('.node')
-	for (var i=0;i<nodes.length;i++) {
-		var defaults = nodes[i].querySelectorAll('.name,.dates,.occ,.age,.bplace')
-		for (var j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
-		var defaults = nodes[i].querySelectorAll('.name,.dates,.occ,.age,.bplace')
-		for (var j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
-		curr = nodes[i].querySelector('.name')
-		if (curr) curr.style.display = 'block'
-		curr = nodes[i].querySelector('.dates')
-		if (curr && ! curr.parentNode.parentNode.parentNode.classList.contains('tightest')) curr.style.display = 'block'
-		}	
-	}
 
 
 function restoreDefaults () {
@@ -189,6 +163,7 @@ function getParents (person) {
 	return parents
 	}
 
+
 function getAge (birth, death) {
 	if (birth !== '' && death !== '') {
 		birth = parseInt(birth.replace('~',''))
@@ -197,6 +172,8 @@ function getAge (birth, death) {
 		}
 	else return ''
 	}
+
+
 
 function addMarkup (list) {
 	var out = ''
@@ -231,7 +208,7 @@ function addMarkup (list) {
 			else out += '-'
 			out += '</div>'
 			}
-		else out += '<div class="name">?</div>'
+		else out += '<div class="name">&nbsp;</div>'
 		out += '</div>'
 		out += '</div>'
 		}
@@ -242,6 +219,7 @@ function start () {
 	var i
 		
 	document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Ancestors</span>'
+	
 	document.getElementById('treeLink').href = 'tree.html?project='+project+'&person='+thisPerson
 
 	var parents = getParents(window.thisPerson)
