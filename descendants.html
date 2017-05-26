@@ -43,12 +43,12 @@ function findFamily (id) {
 			out += '<td class="year">'+fg[g][0]+'</td>'
 			
 			// given name
-			out += '<td class="n">'+person.g+' &nbsp;<a id="fg_'+id+'_'+g+'" href="#'+id+'">'+person.b+'</a><br/>'
+			out += '<td class="n"><a href="tree.html?project='+window.project+'&person='+id+'">'+person.g+'</a><br/>'
 			if (db[person.fg[g][1]]) {
-				out += '<span class="wifen">'+db[person.fg[g][1]].g+'</span></td>'
+				out += '<span class="wifen"><a href="tree.html?project='+window.project+'&person='+person.fg[g][1]+'">'+db[person.fg[g][1]].g+'</a></span></td>'
 				}
 			else if (person.fg[g][1]) {
-				out += '<span class="wifen">'+person.fg[g][1]+'</span></td>'
+				out += '<span class="wifen"><a href="tree.html?project='+window.project+'&person='+person.fg[g][1]+'">'+person.fg[g][1]+'</a></span></td>'
 				}
 
 			// family name
@@ -72,6 +72,9 @@ function findFamily (id) {
 			if (db[person.fg[g][1]] && db[person.fg[g][1]].bplace) out += db[person.fg[g][1]].bplace 
 			else out += '&nbsp;'
 			out += '</td>'
+
+			// link to birth line
+			out += '<td class="links"><a onmouseover="document.getElementById(\''+id+'\').parentNode.style.backgroundColor=\'rgba(243,210,147,1.00)\'" onmouseout="document.getElementById(\''+id+'\').parentNode.style.backgroundColor=\'transparent\'" id="fg_'+id+'_'+g+'" id="fg_'+id+'_'+g+'" href="#'+id+'">'+person.b+'</a><br/>'
 
 			// death year
 			out += '<td class="dth">'
@@ -98,9 +101,9 @@ function findFamily (id) {
 			out += '</td>'
 
 			// link
-			out += '<td class="newpage"><a href="descendants.html?person='+id+'">🔗</a><br/>'
+			out += '<td class="newpage"><a href="ancestors.html?project='+window.project+'&person='+id+'">△</a>&nbsp;<a href="descendants.html?project='+window.project+'&person='+id+'">▽</a><br/>'
 			if (db[person.fg[g][1]]) {
-				out += '<a href="descendants.html?person='+person.fg[g][1]+'">🔗</a></td>'
+				out += '<a href="ancestors.html?project='+window.project+'&person='+person.fg[g][1]+'">△</a>&nbsp;<a href="descendants.html?project='+window.project+'&person='+person.fg[g][1]+'">▽</a></td>'
 				}
 
 			out += '</tr>\n'
@@ -111,20 +114,28 @@ function findFamily (id) {
 					out += '<tr class="ind">'
 					out += '<td class="sort"></td>'
 					out += '<td class="year" id="'+fg[g][p]+'">'+child.b+'</td>'
-					out += '<td class="n">'+child.g
-					if (child.fg) {
-						for (l=0;l<child.fg.length;l++) out += ' <a href="#fg_'+fg[g][p]+'_'+l+'">'+child.fg[l][0]+'</a>'
-						}
-					else if (child.cstatus) out += ' &bull;'
+					out += '<td class="n"><a href="tree.html?project='+window.project+'&person='+fg[g][p]+'">'+child.g
+					//if (child.fg) {
+					//	for (l=0;l<child.fg.length;l++) out += '</a> <a href="#fg_'+fg[g][p]+'_'+l+'">'+child.fg[l][0]+'</a>'
+					//	}
+					//else if (child.cstatus) out += ' &bull;'
+					if (child.cstatus) out += ' &bull;'
 					out += '</td>'
 					out += '<td class="fn">'+child.f+'</td>'
 					out += '<td class="notes">'+child.bplace+'</td>'
+					out += '<td class="links">'
+					if (child.fg) {
+						for (l=0;l<child.fg.length;l++) out += ' <a onmouseover="document.getElementById(\'fg_'+fg[g][p]+'_'+l+'\').parentNode.parentNode.style.backgroundColor=\'rgba(243,210,147,1.00)\'" onmouseout="document.getElementById(\'fg_'+fg[g][p]+'_'+l+'\').parentNode.parentNode.style.backgroundColor=\'rgba(243,210,147,0.30)\'" href="#fg_'+fg[g][p]+'_'+l+'">'+child.fg[l][0]+'</a>'
+						}
+					else if (child.cstatus) out += ' &bull;'
+					out += '</td>'
 					out += '<td class="dth">'+child.d+'</td>'
 					out += '<td class="notes">'+child.dplace+'</td>'
 					if (child.occ) out += '<td class="notes">'+child.occ+'</td>'
 					else  out += '<td class="notes">&nbsp;</td>'
 					out += '</td>'
-					out += '<td class="notes"><a href="descendants.html?person='+fg[g][p]+'">🔗</span></td>'
+					//out += '<td class="notes"><a href="descendants.html?person='+fg[g][p]+'">🔗</span></td>'
+					out += '<td class="notes"><a href="ancestors.html?project='+window.project+'&person='+fg[g][p]+'">△</a>&nbsp;<a href="descendants.html?project='+window.project+'&person='+fg[g][p]+'">▽</span></td>'
 					out += '</tr>\n'
 					count++
 					}
@@ -139,14 +150,16 @@ function findFamily (id) {
 <style>
 #topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
 table { margin: auto; font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; font-size: 14px; padding-bottom: 800px; }
-.fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,1.00); }
+.fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,0.50); border: 1px solid #ccc; }
+.fg a { font-size: 115%; line-height: 1.1; }
 td { padding: 0 1em; }
 .notes, .parents { color: #aaa; }
 .goto { font-size: 75%; color: brown; }
-table a { font-size: 75%; color: brown; }
+table a { font-size: 100%; color: #648200; }
 tr td:first-of-type+td { border-bottom-left-radius: 5px; border-top-left-radius: 5px; }
 tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5px; }
 .sort { display:none; }
+.links { font-size: 90%; text-align: center; line-height: 1; }
 </style>
 </head>
 <body onLoad="start()">
@@ -178,22 +191,23 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 <script>
 function start () {
 	if (thisPerson && db[thisPerson]) { 
+		var tableHead = '<tr><th style="font-size:70%">Born /<br/>Married</th><th>Given name</th><th>Family name</th><th>Birth place</th><th style="font-size:70%">Jump to<br/>marr/birth</th><th>Died</th><th>Death place</th><th>Occupation</th><th>Links</th></tr>'
 		document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Descendants</span>'
 		findFamily(thisPerson)
 		families.sort()
 		console.log(families)
 		out = ''
 		for (i=0;i<families.length;i++) out += families[i]
-		document.getElementById('outTable').innerHTML = out
+		document.getElementById('outTable').innerHTML = tableHead + out
 		document.getElementById('total').innerHTML = count
 		document.getElementById('treeLink').href = 'tree.html?project='+project+'&person='+thisPerson
-		if (db[thisPerson] && db[thisPerson].p) {
-			document.getElementById('detailLink').href = 'person.html?project='+project+'&person='+thisPerson
-			document.getElementById('detailLink').textContent = 'Details'
-			}
+		//if (db[thisPerson] && db[thisPerson].p) {
+		//	document.getElementById('detailLink').href = 'person.html?project='+project+'&person='+thisPerson
+		//	document.getElementById('detailLink').textContent = 'Details'
+		//	}
 		if (db[thisPerson] && db[thisPerson].father && db[db[thisPerson].father]) {
 			document.getElementById('fatherLink').href = 'descendants.html?project='+project+'&person='+db[thisPerson].father
-			document.getElementById('fatherLink').textContent = 'Father'
+			document.getElementById('fatherLink').textContent = 'Show father'
 			}
 		} 
 	}
