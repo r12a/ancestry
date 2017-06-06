@@ -91,7 +91,7 @@ function autoPropagate (person) {
 		// add the spouse id
 		if (db[person].fg && db[person].fg.length === 1) {
 			document.getElementById('spouseIdIn').value = db[person].fg[0][1]
-			document.getElementById('spouseId').textContent = '"'+db[person].fg[0][1]+'"'
+			document.getElementById('spouseId').textContent = '"'+db[person].fg[0][1]+'": ['
 			}
 		// get this person's name and id
 		if (db[person].male) {
@@ -195,6 +195,19 @@ function addQuotesTo (content) {
 	return out
 	}
 
+function clearAll () {
+	inputs = document.querySelectorAll('input, textarea')
+	for (var i=0;i<inputs.length;i++) inputs[i].value = ''
+	
+	divs =  document.getElementById('draft').querySelectorAll('div')
+	for (i=0;i<divs.length;i++) divs[i].textContent = ''
+	document.getElementById('discussion').textContent = '"discussion: "'
+	document.getElementById('start').textContent = '"marriages": {'
+	document.getElementById('spouseId').textContent = ': ['
+	document.getElementById('arrayEnd').textContent = "]"
+	document.getElementById('end').textContent = "}"
+	}
+
 </script>
 <style>
 #draft p {
@@ -242,8 +255,11 @@ function addQuotesTo (content) {
         <td>Id:</td>
         <td><input type="text" id="idIn" 
         	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-            onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span></td>
-      </tr>
+            onChange="autoPropagate(this.value);"/>
+            <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span>
+             <span class="redo" onClick="clearAll();">❌</span>
+             </td>
+     </tr>
        <tr>
         <td>Year:</td>
         <td><input type="text" id="yearIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="document.getElementById('year').textContent = '&quot;year: '+this.value.trim()+'&quot;,';"/></td>
@@ -432,9 +448,8 @@ function addQuotesTo (content) {
    
    
     <div id="draft" style="margin:2em;">
-    <div>"marriages": {</div>
-    <div>&nbsp;</div>
-      <div><span id="spouseId"></span>: [</div>
+    <div id="start">"marriages": {</div>
+      <div id="spouseId">: [</div>
       <div id="marrRecord"></div>
       <div id="marrSource"></div>
 
@@ -486,9 +501,8 @@ function addQuotesTo (content) {
       <div id="fnote"></div>
       
      <div id="discussion">&quot;discussion: &quot;</div>
-      <div>]</div>
-      <div>&nbsp;</div>
-      <div>},</div>
+      <div id="arrayEnd">]</div>
+      <div id="end">}</div>
       </div>
       
       
