@@ -2,13 +2,33 @@ var h = {}
 
 h[1766] = "The United States Declaration of Independence is ratified on July 4, 1776. It declares that the Americans were no longer under British rule. Instead, the thirteen British colonies come together to become a new country."
 	
-h[1792] = "The <a href='https://en.wikipedia.org/wiki/French_Revolution' target='_blank'>French Revolution</a> covered the years 1789-1799, in which the monarchy was overthrown and radical restructuring was forced upon the Roman Catholic Church. The French Republic is declared on 21 Sep, and Louis XVI is executed on 21 Jan 1793. The reign of terror lasts 1793-4."
+h[1788] = "The continent of Australia was founded as a penal colony, since the government was no longer able to send prisoners to America. Convicts in temporary prison hulks on the Thames were sent there, and by 1830 over 50,000 convicts had arrived.</p><p>George III suddenly loses his wits and becomes a violent maniac."
 	
-h[1833] = "The <a href='https://en.wikipedia.org/wiki/Slavery_Abolition_Act_1833' target='_blank'>Slavery Abolition Act</a> is a result of a movement growing since the early 1780s, and abolishes slavery throughout the British Empire (with a few exceptions that were dealt with later). Slaves over 6 years old become 'apprentices' until 1838 or 1840, when their servitude is finally abolished."
+h[1789] = "Louis XVI calls the first meeting of the Etats-General since 1614 on 6 August in order to raise taxes, because 100 years of wars had bankrupted the state. The people instead create the National Assembly and adopt the Declaration of the Rights of Man, influenced by American independence and Rousseau's <cite>Social Contract</cite>. Initially British politicians and literary figures welcomed the <a href='https://en.wikipedia.org/wiki/French_Revolution' target='_blank'>French Revolution</a>. Corresponding Societies were to spring up around the country, following the new social experiment with interest."
+	
+h[1790] = "Faced with increasing terror and mob rule, boat-loads of wealthy refugees cross the channel seeking refuge in Britain."
+	
+h[1792] = "The <a href='https://en.wikipedia.org/wiki/French_Revolution' target='_blank'>French Revolution</a> covered the years 1789-1799, in which the monarchy was overthrown and radical restructuring was forced upon the Roman Catholic Church. The French Republic is declared on 21 Sep.</p><p>The <i class='foreign'>levée en masse</i>, a ragtag army of citizens, begins to stream out of France and defeat European powers.</p><p>Tom Paine's <cite>Rights of Man</cite> sells 200,000 copies in Britain, but further 'seditious' writing is forbidden by law, and Paine escapes by the skin of his teeth to France."
+	
+h[1793] = "Louis XVI is executed on 21 Jan 1793. The reign of terror begins and will last until 1794.</p><p>Pitt initially refuses to be drawn into war, but when France threatens the neutrality of Holland and declares war on Holland and Britain, it becomes unavoidable."
+	
+h[1794] = "With the onset of the war, a regime of complete repression is instituted in Britain. Members of political clubs, such as the Corresponding Societies, that won't abolish themselves are imprisoned. In May 1794 habeus corpus, the foundation of British liberties is suspended by the Whigs with very little opposition in parliament, and contact with France was forbidden as a treasonable act punishable by death."
+	
+h[1797] = "Despite trade surpluses, the costs of the war and the payments to European allies empty the Treasury. This is coupled with severe social distress due to poor harvests. A parliamentary bill is passed so that Bank of England notes replace gold throughout the country with bank notes, with the exception of the armed forces, until 1819."
+	
+h[1798] = "Pitt introduces a very unpopular rising scale of income tax to help pay for the war.</p><p>When Napoleon captures Malta, Nelson's intuition is that he is headed for Egypt and India. Acting on his own initiative, he eventually comes across the French fleet in Aboukir Bay, near Alexandria, and with unexpected dispatch destroys French naval power in the Mediterranean. He becomes the hero of the hour."
+	
+h[1800] = "After serious uprisings in Ireland, the Act of Union is brought in by Pitt, with the concession that 100 Irish members were admitted to parliament. Until that time, Catholics could not occupy seats in Parliament. It was only a few years before that they had been allowed to act as jurists and vote in elections."
+	
+h[1803] = "Napoleon begins massing an army of 150,000 to invade England, while stirring revolt in Ireland and India. Held back by weather, and then realising the strength of British superiority at sea, Napoleon forces Charles IV of Spain to enlarge his fleet and join with the French."
+	
+h[1805] = "After the French fleet in Toulon escapes the British blockade due to a storm, they join the Spanish near Cadiz. Pitt sends Nelson to deal with what he considered the biggest threat to England of the time. After weeks, Admiral Villeneuve is lured out to fight the British and defeated, although Nelson is also killed by a French sharpshooter."
 	
 h[1806] = "After 20 years at the helm <a href='https://en.wikipedia.org/wiki/William_Pitt_the_Younger' target='_blank'>Prime Minister William Pitt the Younger</a> (28 May 1759 – 23 January 1806) dies. For most of that time he was considered an inspiring figure, and in England 'there was a sense of loss almost as if the sun had fallen from the sky'."
 	
 h[1815] = "At the <a href='https://en.wikipedia.org/wiki/Battle_of_Waterloo' target='_blank'>Battle of Waterloo</a>, which takes place in Belgium on June 18, the Duke of Wellington secures the final defeat of French military leader and emperor Napoleon Bonaparte (1769-1821), who conquered much of continental Europe in the early 19th century."
+	
+h[1833] = "The <a href='https://en.wikipedia.org/wiki/Slavery_Abolition_Act_1833' target='_blank'>Slavery Abolition Act</a> is a result of a movement growing since the early 1780s, and abolishes slavery throughout the British Empire (with a few exceptions that were dealt with later). Slaves over 6 years old become 'apprentices' until 1838 or 1840, when their servitude is finally abolished."
 	
 h[1834] = "The <a href='https://en.wikipedia.org/wiki/Tolpuddle_Martyrs' target='_blank'>Tolpuddle Martyrs</a> are sentenced to deportation for taking secret oaths, such is the reactionary government's fear of revolution. It causes a public outcry."
 	
