@@ -26,6 +26,16 @@ h[1805] = "After the French fleet in Toulon escapes the British blockade due to 
 	
 h[1806] = "After 20 years at the helm <a href='https://en.wikipedia.org/wiki/William_Pitt_the_Younger' target='_blank'>Prime Minister William Pitt the Younger</a> (28 May 1759 – 23 January 1806) dies. For most of that time he was considered an inspiring figure, and in England 'there was a sense of loss almost as if the sun had fallen from the sky'."
 	
+h[1807] = "Charles James Fox's effort lead to the passage of a bill outlawing the slave trade – the first country to do so. However, the fear of revolution and the unrelenting war effort mean that social reforms for those virtually enslaved by early factories are ignored."
+	
+h[1808] = "After the future Lord Wellington liberates Portugal from the French, other British generals evacuate the troops with their arms and booty back to France at British expense, causing an outcry in Britain and major inquiry. Meanwhile Napoleon returns to Madrid. General Sir John Moore only finds out about the routing of the Spanish when he reaches Salamanca, but heroically draws the Napoleonic army north to La Coruña, where he is killed due to administrative delays over evacuation."
+	
+h[1809] = "Further military failures, political corruption and trade slumps plague Britain. The future Wellington however returns to Portugal, and begins the process that will eventually defeat Napoleon."
+	
+h[1811] = "His father George III being declared incurably mad, the Prince of Wales becomes Regent.<p></p>Wellington winters his troops in Portugal behind the Torres Vedras, while the French besiegers are driven to starvation."
+	
+h[1812] = "Prime Minister Spencer Perceval is shot by a crazed businessman named Bellingham in the lobby of House of Commons. He is succeeded by Castlereagh.<p></p>As Napolean undertakes a disastrous campaign against Russia, Wellington makes significant headway against his troops in Spain."
+	
 h[1815] = "At the <a href='https://en.wikipedia.org/wiki/Battle_of_Waterloo' target='_blank'>Battle of Waterloo</a>, which takes place in Belgium on June 18, the Duke of Wellington secures the final defeat of French military leader and emperor Napoleon Bonaparte (1769-1821), who conquered much of continental Europe in the early 19th century."
 	
 h[1833] = "The <a href='https://en.wikipedia.org/wiki/Slavery_Abolition_Act_1833' target='_blank'>Slavery Abolition Act</a> is a result of a movement growing since the early 1780s, and abolishes slavery throughout the British Empire (with a few exceptions that were dealt with later). Slaves over 6 years old become 'apprentices' until 1838 or 1840, when their servitude is finally abolished."
