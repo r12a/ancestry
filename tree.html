@@ -43,6 +43,7 @@ document.head.appendChild(db);
 //localStorage.treeDetailed = 'yes'
 //console.log(localStorage); 
 
+if (localStorage.treeDetailed != 'no') localStorage.treeDetailed = 'yes'
 if (localStorage.treeDetailed == 'yes') document.getElementById('detailSwitch').textContent = 'Less detail'
 
 function displayPerson (individual, project) {
@@ -81,7 +82,9 @@ function displayPerson (individual, project) {
 	
 	// get siblings
 	if (db[person.father] && db[person.father].fg) {
-		out = '<details><summary class="fgroup">Siblings</summary>'
+		out = '<details'
+        if (localStorage.treeSiblings == 'yes') out += ' open'
+        out += '><summary class="fgroup" onclick="if (this.parentNode.open){ localStorage.treeSiblings = \'no\';} else { localStorage.treeSiblings = \'yes\';}">Siblings</summary>'
 		for (var ffg=0;ffg<db[person.father].fg.length;ffg++) {
 			out += getSiblings(db[person.father].fg[ffg], individual)
 			//console.log(db[person.father].fg)
