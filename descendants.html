@@ -23,37 +23,92 @@ db.async = false
 document.head.appendChild(db);
 </script>
 <link href="lib/article.css" rel="stylesheet">
+<style>
+summary { font-size: 100%; }
+summary:hover { background-color: #eee; }
+.spouse { margin-top: 0; margin-bottom: 0; margin-left: 1em; /*background-color: #eee;*/ font-style: italic; color: gray; }
+details { margin-left: 3em; border-left: 1px solid #ccc; color: #333; /*border-bottom: 1px solid #ccc;*/  }
+details[open] { width: auto; }
+.dates, .bplace, .occ { font-size: 70%; margin-left: 1em; color: gray; }
+details a { float:right; }
+.bplace, .occ { display: none; }
+
+/* styles for summary marker - a bit kludgey until fully supported */
+
+summary.lineHead, summary.lineEnd, summary.lineTBD { display: block;}
+summary.lineHead::-webkit-details-marker { display: none; }
+summary.lineHead::before { content: '\25B6'; padding-right: 0.5em; }
+summary.lineEnd::-webkit-details-marker { display: none; }
+summary.lineEnd::before { content: '\25CF'; padding-right: 0.5em; }
+summary.lineTBD::-webkit-details-marker { display: none; }
+summary.lineTBD::before { content: '\25CB'; padding-right: 0.5em; }
+details[open] > summary.lineHead::before { content: '\25BC'; }
+details[open] > summary.lineEnd::before { content: '\25CF'; }
+details[open] > summary.lineTBD::before { content: '\25CB'; }
+
+</style>
+
 <script>
 var families = []
 var count = 0
+
+function openAll () {
+    ds = document.querySelectorAll('details')
+    for (let i=0;i<ds.length;i++) ds[i].open = true
+    }
+
+function closeAll () {
+    ds = document.querySelectorAll('details')
+    for (let i=0;i<ds.length;i++) ds[i].open = false
+    var first = document.querySelector('details')
+    first.open = true
+    first.style.marginLeft = '0'
+    }
 
 function findFamily (id) {
 	out = ''
 	if (db[id] && db[id].fg) {
 		var person = db[id]
 		var fg = person.fg
-		
+        out += '<details>'
+
+        // show the fg head
+		out += '<summary class="lineHead"><span class="n">'+person.g+' '+person.f+'<\span>'
+        if (person.cstatus) out += ' <strong>&bull;</strong>'
+        out += ' <a href="tree.html?project='+window.project+'&person='+id+'">🌳</a>'
+        out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
+        out += ' <span class="bplace">'+person.bplace+'</span>'
+        out += ' <span class="occ">'+person.occ+'</span>'
+        out += '</summary>'
+
 		// show the family group
 		for (var g=0;g<fg.length;g++) {
-			out = '<tr class="fg">'
 			
+			// spouse name
+			if (db[person.fg[g][1]]) {
+				out += '<p class="spouse"><span class="spousen">'+db[person.fg[g][1]].g+' '+db[person.fg[g][1]].f+' <a href="tree.html?project='+window.project+'&person='+person.fg[g][1]+'">🌳</a></span>'
+                out += ' <span class="dates">'+db[person.fg[g][1]].b+'–'+db[person.fg[g][1]].d+', &nbsp; marr '+person.fg[g][0]+'</span>'
+                out += ' <span class="bplace">'+db[person.fg[g][1]].bplace+'</span>'
+                out += ' <span class="occ">'+db[person.fg[g][1]].occ+'</span>'
+                out += '</p>'
+			}
+			else if (person.fg[g][1]) {
+				out += '<p class="spouse"><span class="spousen">'+person.fg[g][1]+'</span></p>'
+				}
+            
+            for (let i=2;i<person.fg[g].length;i++) out += findFamily(person.fg[g][i])
+           }
+        out += "</details>"
+            // spouse name
+            /*
 			// year
 			var year = fg[g][0].trim().replace('~','').replace('?','')
 			out += '<td class="sort">'+year+'</td>'
 			out += '<td class="year">'+fg[g][0]+'</td>'
 			
-			// given name
-			out += '<td class="n"><a href="tree.html?project='+window.project+'&person='+id+'">'+person.g+'</a><br/>'
-			if (db[person.fg[g][1]]) {
-				out += '<span class="wifen"><a href="tree.html?project='+window.project+'&person='+person.fg[g][1]+'">'+db[person.fg[g][1]].g+'</a></span></td>'
-				}
-			else if (person.fg[g][1]) {
-				out += '<span class="wifen"><a href="tree.html?project='+window.project+'&person='+person.fg[g][1]+'">'+person.fg[g][1]+'</a></span></td>'
-				}
 
 			// family name
 			fname = person.f
-			if (person.male) fname = fname.toUpperCase()
 			out += '<td><span class="fn">'+fname+'</span><br/>'
 			if (db[person.fg[g][1]]) {
 				fname = db[person.fg[g][1]].f
@@ -142,10 +197,44 @@ function findFamily (id) {
 				}
 			families.push(out)
 			for (p=2; p<fg[g].length; p++) findFamily(fg[g][p])
-			}
+            */
 		}
+ 	else if (db[id]) {
+		var person = db[id]
+        out += '<details>'
+		out += '<summary'
+        if (person.cstatus) out += ' class="lineEnd"'
+        else out += ' class="lineTBD"'
+        out += '><span class="n">'+person.g+' '+person.f+'<\span> '
+//		out += '<summary><span class="n">'+person.g+' '+person.f+'<\span> '
+//        if (person.cstatus) out += '<strong>&bull;</strong>'
+//        else out += '...'
+        out += ' <a href="tree.html?project='+window.project+'&person='+id+'">🌳</a>'
+        out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
+        out += ' <span class="occ">'+person.occ+'</span>'
+        out += ' <span class="bplace">'+person.bplace+'</span>'
+        out += '</summary>'
+        out += '</details>'
+        }
+   return out
 	}
 
+function show (type) {
+    var dates = document.querySelectorAll('.dates')
+    var bplace = document.querySelectorAll('.bplace')
+    var occ = document.querySelectorAll('.occ')
+    
+    console.log(dates.length, bplace.length, occ.length)
+    
+    for (let i=0;i<dates.length;i++) dates[i].style.display = 'none'
+    for (let i=0;i<bplace.length;i++) bplace[i].style.display = 'none'
+    for (let i=0;i<occ.length;i++) occ[i].style.display = 'none'
+    
+    if (type === 'dates') for (let i=0;i<dates.length;i++) dates[i].style.display = 'inline'
+    else if (type === 'bplace') for (let i=0;i<bplace.length;i++) bplace[i].style.display = 'inline'
+    else if (type === 'occ')for (let i=0;i<occ.length;i++) occ[i].style.display = 'inline'
+    }
+    
 </script>
 <style>
 #topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
@@ -167,7 +256,8 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
 	<a href="#top">Top</a>
-	<a id="treeLink" href="#">Tree</a>
+	<a id="treeLink" href="#" onClick="openAll(); return false">Open all</a>
+	<a id="treeLink" href="#" onClick="closeAll(); return false">Close all</a>
 	<a href="index.html" style="margin-right: 2em;">Index</a>
 	</div>
 	<div id="top"></div>
@@ -177,23 +267,29 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
     </div>
   </div>
   <div id="subbanner">
-    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    <div><!--button onClick="openAll()">Open all</button> <button onClick="closeAll()">Close all</button-->
+    Show: <button onClick="show('dates')">Dates</button> <button onClick="show('bplace')">Birth place</button> <button onClick="show('occ')">Occupation</button>
     </div>
   </div>
   <div id="subsubbanner">
-    <div><a href="#explanations">Total <span id="total"></span></a></div>
+  <div><a href="#explanations">Total <span id="total"></span></a></div>
   </div>
   <article>
-      <table id="outTable"></table>
+      <div id="outTable"></div>
   </article>
 </div>
 
 <script>
 function start () {
 	if (thisPerson && db[thisPerson]) { 
-		var tableHead = '<tr><th style="font-size:70%">Born /<br/>Married</th><th>Given name</th><th>Family name</th><th>Birth place</th><th style="font-size:70%">Jump to<br/>marr/birth</th><th>Died</th><th>Death place</th><th>Occupation</th><th>Links</th></tr>'
+		//var tableHead = '<tr><th style="font-size:70%">Born /<br/>Married</th><th>Given name</th><th>Family name</th><th>Birth place</th><th style="font-size:70%">Jump to<br/>marr/birth</th><th>Died</th><th>Death place</th><th>Occupation</th><th>Links</th></tr>'
 		document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Descendants</span>'
-		findFamily(thisPerson)
+		document.getElementById('outTable').innerHTML = findFamily(thisPerson)
+        var first = document.querySelector('details')
+        first.open = true
+        first.style.marginLeft = '0'
+        
+        /*
 		families.sort()
 		console.log(families)
 		out = ''
@@ -209,6 +305,7 @@ function start () {
 			document.getElementById('fatherLink').href = 'descendants.html?project='+project+'&person='+db[thisPerson].father
 			document.getElementById('fatherLink').textContent = 'Show father'
 			}
+        */
 		} 
 	}
 </script>
