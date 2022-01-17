@@ -1,0 +1,74 @@
+HOW TO CREATE DATA
+
+
+You can set up separate projects by creating separate top-level directories. The default project should have the name 'data'. Use whatever name you want for other projects.
+
+
+[1] ADD TO THE DB.JS FILE
+
+Add details for a new person to the db.js file in alphabetical order. This file is found in your project directory.
+
+An example entry is:
+
+keam_grace_1827:{
+g:"Grace", k:"", f:"Keam", bdate:"~19 Nov", b:"1827", ddate:"Oct-Dec", d:"1894",
+bplace:"St Austell", dplace:"St Austell", thumb:false, p:true,
+father:"keam_peter_1791", mother:"crossman_jane_jennifer_1791", occ:"", m:['Peters'],
+fg:[["1853", "peters_william_1828", "peters_charles_1856", "peters_william_henry_1857", "peters_thomas_1859", "peters_edwin_1863"]],
+recordData:
+{}
+},
+
+The id key (in this case keam_grace_1827) should be be full name of the person and the year of their birth. If two or more people with the same name are born in the same year, add a, b, etc to the year. These names need to be unique.
+
+Fill in the values for the other keys as follows:
+g: Given names
+k: Known as, if different from given name, or if there is more than one given name
+f: Family name
+m: A list of other family names for that person. Usually for women who adopt their husbands names, but occasionally for men also, if the name changes through adoption, etc.
+bdate: Date and month of birth. Use 3-letter names for months (eg. Nov). If the only date known is a baptism date, or the birth date is approximate, use ~ before the date. For date ranges, eg. from BMD indexes, use something like Oct-Dec.
+b: Birth year
+ddate: Death date and month. Same conventions as for bdate.
+d: Death year.
+upto: To prevent the automatic generation of data going past the date for which you have information about a person, use the end date as the value of this, WITHOUT quotes, eg. upto:1845.
+bplace: Birth place. Use a short place name only.
+dplace: Death place. Ditto.
+thumb: true or false. True indicates that there is a thumbnail portrait of this person in the <project>/thumbs directory. Thumbnails should have a file name that matches the id key for this person.
+p: true or false. True indicates that there is a detailed page for this person.
+male: true or false. Use for males only, set to true.
+father: The id key for the person's father, if known, otherwise the father's name, or nothing if not known.
+mother: Likewise for the mother.
+occ: The occupation of the person. May be omitted for females who had no particular occupation.
+fg: A list of family groups. Each list surrounded by [ ] brackets. Each fg list contains the following, in order: the marriage date, the spouse's id key, the id keys of each of the children, in order of birth.
+cstatus: Used for someone who died young or single. Typical values are "Died as infant", or "Died single" or "No children".
+recordData: Add here the birth, marriage, and death information, aggregated using the forms for creating that information.  You only need to create marriage information for one spouse per marriage. This information is also read by pages of relations as well as the person in question.
+
+
+[2] CREATE A JSON FILE WITH BIRTH, MARRIAGE, AND DEATH INFORMATION  (obsoleted by the recordData field in the previous section!)
+
+Information for these (and similar) records can be created using the forms at lib/forms/birthentry.html etc. Add whatever information you have, using the prompts, and you'll see some code being generated at the bottom of the page. Once you have entered all the information, copy the script code to a file named <id_key>.json (eg. keam_grace_1827.json).
+
+This file should contain all information you have for birth, marriage and death, except that you only need to create marriage information for one spouse per marriage. (The other spouse will pick up the same information automatically.) This information is stored in the json file so that it can be read by pages of relations as well as the person in question.  Other information will go in a file called <id_key>.txt (eg. keam_grace_1827.txt).
+
+
+[3] CREATE A TEXT FILE WITH OTHER INFORMATION
+
+Open lib/forms/makelist.html, enter the person's key id, and click on GO.  This will generate an initial template for the file <id_key>.txt (eg. keam_grace_1827.txt), by reading in information from the relatives and the json file you just created.  Copy and paste this into that file.
+
+You should now add other information you have for this person to the same file, in particular census information. 
+
+Census information can be prepared using the the input forms in lib/forms/censusentry.html and copied into the file.
+
+All information added to this file should be in chronological order.
+
+You can add other entries, using the Notes keyword. Here is an example:
+
+§ 1831 Notes Move to Wrexham area
+note: Some time before 1831, Joseph moved to the Wrexham area, where he was to become the resident minister at Holt in Denbighshire.
+gps: Holt, Denbighshire https://maps.google.com/maps?q=53.0778969,-2.8824384
+note: The following information is copied from the Lakelin family bible. [Wrexham being the nearest large town to Holt.]
+quote: Mary Cooper being left a wid. with these 3 children went to Nth America to Taunton, Nr. Boston, Massachusetts to her brother George in June 1831 and at her request the Rev. Joseph Lakelin registered their children in this place. Two of Mary Cooper's children were registered in the Wrexham Baptist Register book 1831.
+source: Lakelin Family Bible
+discussion: In the transcription I have, the registration date is given as 1837, but I think that must be a transcription error.
+
+ 

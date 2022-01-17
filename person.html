@@ -3,10 +3,10 @@
 <meta charset="utf-8">
 <title>Person page</title>
 <link href="lib/style.css" rel="stylesheet" />
-<script src="lib/script.js" type="application/javascript"></script>
-<!--script src="data/db.js" type="application/javascript"></script-->
-<!--script src="events.js" type="application/javascript"></script-->
-<script src="history.js" type="application/javascript"></script>
+<script src="lib/script.js"></script>
+<!--script src="data/db.js"></script-->
+<!--script src="events.js"></script-->
+<script src="history.js"></script>
 
 </head>
 
@@ -26,6 +26,12 @@ var db = document.createElement('script')
 db.src = project+'/db.js'
 db.async = false
 document.head.appendChild(db)
+
+// load the appropriate timeline file	
+var tl = document.createElement('script')
+tl.src = project+'/'+thisPerson+'.txt'
+tl.async = false
+document.head.appendChild(tl)
 
 </script>
 

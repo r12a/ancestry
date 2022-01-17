@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Descendants chart</title>
+<title>Ancestors chart</title>
 <script>
 // read in thisPerson
 thisPerson = ''
@@ -64,16 +64,43 @@ function closeAll () {
     first.open = true
     first.style.marginLeft = '0'
     }
+    
+
+
+function returnName (personID) {
+    // get markup for a given id (person), will be called recursively
+    console.log('returnName (person:',personID,')')
+    if (typeof db[personID] === 'undefined' || personID === '') return ''
+    
+    var out = ''
+    var personRec = db[personID]
+    console.log(personID, personRec.father, personRec.mother)
+    out += '<details>'
+        
+    out += `<summary><span class="n"><input type="checkbox" checked title="${ personID }"> ${ personRec.g } <strong>${ personRec.f }</strong></span>`
+    out += ` <a href="tree.html?project=${ window.project }&person=${ personID }">🌳</a>`
+    out += ' <span class="dates">'+personRec.b+'–'+personRec.d+'</span>'
+    out += ' <span class="bplace">'+personRec.bplace+'</span>'
+    out += ' <span class="occ">'+personRec.occ+'</span>'
+    out += `</summary>`
+
+        if (personRec.father) out += returnName(personRec.father)
+        console.log('BETWEEN',personRec.father, 'and', personRec.mother)
+        if (personRec.mother) out += returnName(personRec.mother)
+
+    out += '</details>'
+    return out
+    }
+
 
 function findFamily (id) {
 	out = ''
-	if (db[id] && db[id].fg) {
+	if (db[id]) {
 		var person = db[id]
-		var fg = person.fg
         out += '<details>'
 
-        // show the fg head
-		out += `<summary class="lineHead"><span class="n"><input type="checkbox" checked title="${ id }" onclick="if (this.checked===false) clearChecks(this.parentNode.parentNode.parentNode)"> ${ person.g } ${ person.f }<\span>`
+        // show the root person
+		out += `<summary class="lineHead"><span class="n"><input type="checkbox" checked title="${ id }"> ${ person.g } ${ person.f }<\span>`
         if (person.cstatus) out += ' <strong>&bull;</strong>'
         out += ' <a href="tree.html?project='+window.project+'&person='+id+'">🌳</a>'
         out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
@@ -81,42 +108,12 @@ function findFamily (id) {
         out += ' <span class="occ">'+person.occ+'</span>'
         out += '</summary>'
 
-		// show the family group
-		for (var g=0;g<fg.length;g++) {
-			
-			// spouse name
-			if (db[person.fg[g][1]]) {
-				out += `<p class="spouse"><span class="spousen"><input type="checkbox" checked title="${ person.fg[g][1] }"> ${ db[person.fg[g][1]].g } ${ db[person.fg[g][1]].f } <a href="tree.html?project=${ window.project }&person=${ person.fg[g][1] }">🌳</a></span>`
-                out += ' <span class="dates">'+db[person.fg[g][1]].b+'–'+db[person.fg[g][1]].d+', &nbsp; marr '+person.fg[g][0]+'</span>'
-                out += ' <span class="bplace">'+db[person.fg[g][1]].bplace+'</span>'
-                out += ' <span class="occ">'+db[person.fg[g][1]].occ+'</span>'
-                out += '</p>'
-			}
-			else if (person.fg[g][1]) {
-				out += `<p class="spouse"><span class="spousen"><input type="checkbox" checked title="${ id }"> ${ person.fg[g][1] }</span></p>`
-				}
-            
-            for (let i=2;i<person.fg[g].length;i++) out += findFamily(person.fg[g][i])
-           }
+		// show the parents
+        out += returnName(person.father)
+        out += returnName(person.mother)
         out += "</details>"
 		}
- 	else if (db[id]) {
-		var person = db[id]
-        out += '<details>'
-		out += '<summary'
-        if (person.cstatus) out += ' class="lineEnd"'
-        else out += ' class="lineTBD"'
-        out += '><span class="n"><input type="checkbox" checked title="'+ id +'"> '+person.g+' '+person.f+'<\span> '
-//		out += '<summary><span class="n">'+person.g+' '+person.f+'<\span> '
-//        if (person.cstatus) out += '<strong>&bull;</strong>'
-//        else out += '...'
-        out += ' <a href="tree.html?project='+window.project+'&person='+id+'">🌳</a>'
-        out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
-        out += ' <span class="occ">'+person.occ+'</span>'
-        out += ' <span class="bplace">'+person.bplace+'</span>'
-        out += '</summary>'
-        out += '</details>'
-        }
+
    return out
 	}
 
@@ -191,7 +188,7 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 	<div id="top"></div>
 <div id="out">
   <div id="banner">
-    <div id="pagetitle">Descendants<br>
+    <div id="pagetitle">Ancestors<br>
     </div>
   </div>
   <div id="subbanner">
@@ -211,30 +208,11 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 <script>
 function start () {
 	if (thisPerson && db[thisPerson]) { 
-		//var tableHead = '<tr><th style="font-size:70%">Born /<br/>Married</th><th>Given name</th><th>Family name</th><th>Birth place</th><th style="font-size:70%">Jump to<br/>marr/birth</th><th>Died</th><th>Death place</th><th>Occupation</th><th>Links</th></tr>'
-		document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Descendants</span>'
+		document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Ancestors</span>'
 		document.getElementById('outTable').innerHTML = findFamily(thisPerson)
         var first = document.querySelector('details')
         first.open = true
         first.style.marginLeft = '0'
-        
-        /*
-		families.sort()
-		console.log(families)
-		out = ''
-		for (i=0;i<families.length;i++) out += families[i]
-		document.getElementById('outTable').innerHTML = tableHead + out
-		document.getElementById('total').innerHTML = count
-		document.getElementById('treeLink').href = 'tree.html?project='+project+'&person='+thisPerson
-		//if (db[thisPerson] && db[thisPerson].p) {
-		//	document.getElementById('detailLink').href = 'person.html?project='+project+'&person='+thisPerson
-		//	document.getElementById('detailLink').textContent = 'Details'
-		//	}
-		if (db[thisPerson] && db[thisPerson].father && db[db[thisPerson].father]) {
-			document.getElementById('fatherLink').href = 'descendants.html?project='+project+'&person='+db[thisPerson].father
-			document.getElementById('fatherLink').textContent = 'Show father'
-			}
-        */
 		} 
 	}
 </script>
