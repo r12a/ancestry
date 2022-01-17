@@ -8,10 +8,10 @@
 td { vertical-align: top; padding-left: 1em; }
 details { margin-left: 2em; }
 </style>
-<script src="formentrylookup.js" type="application/javascript"></script>
+<script src="formentrylookup.js"></script>
 <script>
 // read in project
-project = 'data'
+var project
 parameters = location.search.split('&');
 parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
@@ -20,56 +20,13 @@ for (var p=0;p<parameters.length;p++) {
 	}
 
 // load the appropriate db file	
-if (! project) project = 'data'
+if (! project) alert('Specify the project name in the URL, using ?project=...')
 var db = document.createElement('script');
 db.src = '../../'+project+'/db.js'
 db.async = false
 document.head.appendChild(db);
 </script>
 <script>
-function doRelation (type) { console.log(type)
-	document.getElementById('relation').innerHTML = 'relation: '+type
-	switch (type) {
-		case 'head': document.getElementById('headId').value = document.getElementById('censusId').value; break
-		case 'wife': document.getElementById('wifeId').value = document.getElementById('censusId').value; break
-		}
-	}
-
-function addChild () {
-	var input = document.createElement('input')
-	currentChildren = document.getElementById('children').querySelectorAll('input')
-	if (currentChildren) numberOfChildren = currentChildren.length+1
-	else numberOfChildren = 1
-	input.style.width = '400px'
-	input.id = 'child'+numberOfChildren
-	input.oninput = function () { updateField(this.id+'out', 'child: '+this.value) }
-	document.getElementById('children').appendChild(document.createElement('br'))
-	document.getElementById('children').appendChild(input)
-	
-	p = document.createElement('p')
-	p.id = input.id+'out'
-	document.getElementById('childrenOut').appendChild(p)
-	}
-
-function addField (type) {
-	var input = document.createElement('input')
-	currentPeople = document.getElementById(type).querySelectorAll('input')
-	if (currentPeople) numberOfPeople = currentPeople.length+1
-	else currentPeople = 1
-	input.style.width = '400px'
-	input.id = type+numberOfPeople
-	input.oninput = function () { updateField(this.id+'out', type+': '+this.value) }
-	document.getElementById(type).appendChild(document.createElement('br'))
-	document.getElementById(type).appendChild(input)
-	
-	p = document.createElement('p')
-	p.id = input.id+'out'
-	document.getElementById(type+'Out').appendChild(p)
-	}
-
-function updateField (id, content) { console.log('hell')
-	document.getElementById(id).innerHTML = content
-	}
 
 function makeNotes (content, target) {
 	segments = content.split('\n')
@@ -79,8 +36,23 @@ function makeNotes (content, target) {
 	}
 
 function autoPropagate (person) {
-	if (person!='') {listRelations(person);} 
-	if (db[person]) {
+    // Pull up a list of ids for related people, and fill in some fields automatically
+    if (person === '') {
+        alert('No id provided.')
+        return
+        }
+    
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placeIndex) 
+        out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+    document.getElementById('gpsList').innerHTML = out
+
+
+	listRelations(person)
+
+
+    if (db[person]) {
 		//document.getElementById('nameIn').value = db[person].g+' '+db[person].f
 		//document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
 		}
@@ -133,6 +105,7 @@ function formatGPS (str) {
 #references {
 	font-size: 80%;
 	float: right;
+    margin-block-start: 4rem;
 	}
 #references p {
 	margin: 0;
@@ -145,7 +118,238 @@ function formatGPS (str) {
 .copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
 .heading { font-weight:bold; padding-top: 1em; font-size: 110%; }
 </style>
+
+<script>
+
+
+
+function draftResult () {
+    // called each time a field is changed; updates the output
+    
+    document.getElementById('id').textContent = `"id: ${ document.getElementById('idIn').value.trim() }",`
+
+
+// index
+    if (document.getElementById('indexSourceIn').value.trim() || document.getElementById('indexSourceURLIn').value.trim())
+        document.getElementById('indexSource').textContent = `"<br>SOURCE: ${ document.getElementById('indexSourceIn').value.trim() }  ${ document.getElementById('indexSourceURLIn').value.trim() }",` 
+    else document.getElementById('indexSource').textContent = ''
+ 
+    if (document.getElementById('indexPastedIn').value.trim()) 
+        document.getElementById('indexPasted').textContent = addQuotesTo(document.getElementById('indexPastedIn').value.trim())
+    else document.getElementById('indexPasted').textContent = ''
+ 
+    if (document.getElementById('indexTextIn').value.trim()) 
+        document.getElementById('indexText').textContent = `"text: ${ document.getElementById('indexTextIn').value.trim() }",`
+    else document.getElementById('indexText').textContent = ''
+ 
+
+// certificate
+    if (document.getElementById('certImageIn').value.trim()) 
+        document.getElementById('certImage').textContent = `"record: Death certificate  url:records/${ document.getElementById('certImageIn').value.trim() }",`
+    else document.getElementById('certImage').textContent = ''
+ 
+    if (document.getElementById('certImageIn').value.trim()) 
+        document.getElementById('certImage').textContent = `"record: Death certificate  url:records/${ document.getElementById('certImageIn').value.trim() }${ document.getElementById('certImageExtIn').value.trim() }",`
+    else document.getElementById('certImage').textContent = ''
+
+    if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceURLIn').value.trim())
+        document.getElementById('certSource').textContent = `"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceURLIn').value.trim() }",` 
+    else document.getElementById('certSource').textContent = ''
+ 
+    if (document.getElementById('certWhenIn').value.trim()) 
+        document.getElementById('certWhen').textContent = `"[When: ${ document.getElementById('certWhenIn').value.trim() }]",`
+    else document.getElementById('certWhen').textContent = ''
+ 
+    //if (document.getElementById('certWhereIn').value.trim()) 
+    //    document.getElementById('certWhere').textContent = `"[Where: ${ document.getElementById('certWhereIn').value.trim() }]",`
+    //else document.getElementById('certWhere').textContent = ''
+ 
+    if (document.getElementById('certNameIn').value.trim()) 
+        document.getElementById('certName').textContent = `"[Name: ${ document.getElementById('certNameIn').value.trim() }]",`
+    else document.getElementById('certName').textContent = ''
+ 
+    if (document.getElementById('certAgeIn').value.trim()) 
+        document.getElementById('certAge').textContent = `"[Age: ${ document.getElementById('certAgeIn').value.trim() }]",`
+    else document.getElementById('certAge').textContent = ''
+ 
+    if (document.getElementById('certOccIn').value.trim()) 
+        document.getElementById('certOcc').textContent = `"[Occupation: ${ document.getElementById('certOccIn').value.trim() }]",`
+    else document.getElementById('certOcc').textContent = ''
+ 
+    if (document.getElementById('certCauseIn').value.trim()) 
+        document.getElementById('certCause').textContent = `"[Cause: ${ document.getElementById('certCauseIn').value.trim() }]",`
+    else document.getElementById('certCause').textContent = ''
+ 
+    if (document.getElementById('certInformantIn').value.trim()) 
+        document.getElementById('certInformant').textContent = `"[Informant: ${ document.getElementById('certInformantIn').value.trim() }]",`
+    else document.getElementById('certInformant').textContent = ''
+ 
+    if (document.getElementById('certRegdIn').value.trim()) 
+        document.getElementById('certRegd').textContent = `"[Informant: ${ document.getElementById('certRegdIn').value.trim() }]",`
+    else document.getElementById('certRegd').textContent = ''
+ 
+    if (document.getElementById('certOtherIn').value.trim()) 
+        document.getElementById('certOther').textContent = `"[Other: ${ document.getElementById('certOtherIn').value.trim() }]",`
+    else document.getElementById('certOther').textContent = ''
+
+
+// second source
+    if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
+        document.getElementById('secondSource').textContent = `"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
+    else document.getElementById('secondSource').textContent = ''
+ 
+    if (document.getElementById('secondImageIn').value.trim()) 
+        document.getElementById('secondImage').textContent = `"record: Death url:records/${ document.getElementById('secondImageIn').value.trim() }${ document.getElementById('secondImageExtIn').value.trim() }",`
+    else document.getElementById('secondImage').textContent = ''
+
+    if (document.getElementById('secondPastedIn').value.trim()) 
+        document.getElementById('secondPasted').textContent = addQuotesTo(document.getElementById('secondPastedIn').value.trim())
+    else document.getElementById('secondPasted').textContent = ''
+ 
+    if (document.getElementById('secondTextIn').value.trim()) 
+        document.getElementById('secondText').textContent = `"text: ${ document.getElementById('secondTextIn').value.trim() }",`
+    else document.getElementById('secondText').textContent = ''
+ 
+    /*if (document.getElementById('secondNameIn').value.trim()) 
+        document.getElementById('secondName').textContent = `"Name: ${ document.getElementById('secondNameIn').value.trim() }",`
+    else document.getElementById('secondName').textContent = ''
+ 
+    if (document.getElementById('secondAgeIn').value.trim()) 
+        document.getElementById('secondAge').textContent = `"Age: ${ document.getElementById('secondAgeIn').value.trim() }",`
+    else document.getElementById('secondAge').textContent = ''
+ 
+    if (document.getElementById('secondAgeIn').value.trim()) 
+        document.getElementById('secondAge').textContent = `"Age: ${ document.getElementById('secondAgeIn').value.trim() }",`
+    else document.getElementById('secondAge').textContent = ''*/
+
+
+
+// burial record
+    if (document.getElementById('burSourceIn').value.trim() || document.getElementById('burSourceURLIn').value.trim())
+        document.getElementById('burSource').textContent = `"<br>SOURCE: ${ document.getElementById('burSourceIn').value.trim() }  ${ document.getElementById('burSourceURLIn').value.trim() }",` 
+    else document.getElementById('burSource').textContent = ''
+ 
+    if (document.getElementById('burImageIn').value.trim()) 
+        document.getElementById('burImage').textContent = `"record: Death url:records/${ document.getElementById('burImageIn').value.trim() }${ document.getElementById('burImageExtIn').value.trim() }",`
+    else document.getElementById('burImage').textContent = ''
+
+    if (document.getElementById('burPastedIn').value.trim()) 
+        document.getElementById('burPasted').textContent = addQuotesTo(document.getElementById('burPastedIn').value.trim())
+    else document.getElementById('burPasted').textContent = ''
+ 
+    if (document.getElementById('burTextIn').value.trim()) 
+        document.getElementById('burText').textContent = `"text: ${ document.getElementById('burTextIn').value.trim() }",`
+    else document.getElementById('burText').textContent = ''
+ 
+ 
+ 
+    if (document.getElementById('burYearIn').value.trim()) 
+        document.getElementById('buryear').textContent = `"buryear: ${ document.getElementById('burYearIn').value.trim() }",`
+    else document.getElementById('buryear').textContent = ''
+ 
+    if (document.getElementById('burDateIn').value.trim()) 
+        document.getElementById('burdate').textContent = `"burdate: ${ document.getElementById('burDateIn').value.trim() }",`
+    else document.getElementById('burdate').textContent = ''
+ 
+    if (document.getElementById('burPlaceIn').value.trim()) 
+        document.getElementById('burplace').textContent = `"burplace: ${ document.getElementById('burPlaceIn').value.trim() }",`
+    else document.getElementById('burplace').textContent = ''
+ 
+    if (document.getElementById('denominationIn').value.trim()) 
+        document.getElementById('denomination').textContent = `"denomination: ${ document.getElementById('denominationIn').value.trim() }",`
+    else document.getElementById('denomination').textContent = ''
+
+
+
+
+// grave inscription
+    if (document.getElementById('graveSourceIn').value.trim() || document.getElementById('graveSourceURLIn').value.trim())
+        document.getElementById('graveSource').textContent = `"<br>SOURCE: ${ document.getElementById('graveSourceIn').value.trim() }  ${ document.getElementById('graveSourceURLIn').value.trim() }",` 
+    else document.getElementById('graveSource').textContent = ''
+ 
+    if (document.getElementById('graveImageIn').value.trim()) 
+        document.getElementById('graveImage').textContent = `"record: Gravestone url:records/${ document.getElementById('graveImageIn').value.trim() }${ document.getElementById('graveImageExtIn').value.trim() }",`
+    else document.getElementById('graveImage').textContent = ''
+
+    if (document.getElementById('graveTextIn').value.trim()) 
+        document.getElementById('graveText').textContent = `"text: ${ document.getElementById('graveTextIn').value.trim() }",`
+    else document.getElementById('graveText').textContent = ''
+
+
+
+
+// probate
+    if (document.getElementById('probateSourceIn').value.trim() || document.getElementById('probateSourceURLIn').value.trim())
+        document.getElementById('probateSource').textContent = `"<br>SOURCE: ${ document.getElementById('probateSourceIn').value.trim() }  ${ document.getElementById('probateSourceURLIn').value.trim() }",` 
+    else document.getElementById('probateSource').textContent = ''
+ 
+    if (document.getElementById('probateImageIn').value.trim()) 
+        document.getElementById('probateImage').textContent = `"record: Probate url:records/${ document.getElementById('probateImageIn').value.trim() }${ document.getElementById('probateImageExtIn').value.trim() }",`
+    else document.getElementById('probateImage').textContent = ''
+
+    if (document.getElementById('probatePastedIn').value.trim()) 
+        document.getElementById('probatePasted').textContent = addQuotesTo(document.getElementById('probatePastedIn').value.trim())
+    else document.getElementById('probatePasted').textContent = ''
+ 
+    if (document.getElementById('probateTextIn').value.trim()) 
+        document.getElementById('probateText').textContent = `"probate: ${ document.getElementById('probateTextIn').value.trim() }",`
+    else document.getElementById('probateText').textContent = ''
+
+
+
+
+    if (document.getElementById('ofIn').value.trim()) 
+        document.getElementById('of').textContent = `"of: ${ document.getElementById('ofIn').value.trim() }",`
+    else document.getElementById('of').textContent = ''
+ 
+    if (document.getElementById('deathPlaceIn').value.trim()) 
+        document.getElementById('deathPlace').textContent = `"deathPlace: ${ document.getElementById('deathPlaceIn').value.trim() }",`
+    else document.getElementById('deathPlace').textContent = ''
+ 
+    if (document.getElementById('ageIn').value.trim()) 
+        document.getElementById('age').textContent = `"age: ${ document.getElementById('ageIn').value.trim() }",`
+    else document.getElementById('age').textContent = ''
+ 
+    if (document.getElementById('causeIn').value.trim()) 
+        document.getElementById('cause').textContent = `"cause: ${ document.getElementById('causeIn').value.trim() }",`
+    else document.getElementById('cause').textContent = ''
+ 
+    if (document.getElementById('informantIn').value.trim()) 
+        document.getElementById('informant').textContent = `"informant: ${ document.getElementById('informantIn').value.trim() }",`
+    else document.getElementById('informant').textContent = ''
+ 
+    if (document.getElementById('occIn').value.trim()) 
+        document.getElementById('occ').textContent = `"occ: ${ document.getElementById('occIn').value.trim() }",`
+    else document.getElementById('occ').textContent = ''
+
+
+
+
+    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
+        document.getElementById('gps').textContent = `"gps: ${ document.getElementById('gpsPlace').value.trim() }` 
+        if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim() }` 
+        document.getElementById('gps').textContent += `",`
+        }
+    else document.getElementById('gps').textContent = ''
+
+
+
+   }
+
+
+function checkDB (fieldname, dbfield, checkID) {
+    // checks certain values against what currently in the top-level db, and raises flags if they differ
+
+    thisPerson = document.getElementById('idIn').value.trim()
+
+    if (document.getElementById(fieldname).value.trim() !== db[thisPerson][dbfield])  document.getElementById(checkID).textContent = `The database currently has ${ db[thisPerson][dbfield] }`
+    else { document.getElementById(checkID).textContent = `` }
+
+    }
+</script>
 </head>
+
+
 <body>
 <div id="out">
   <div id="banner">
@@ -157,294 +361,433 @@ function formatGPS (str) {
   </div>
   <div id="subsubbanner">
     <div>
-      <button onClick="dump()">Go</button>
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
     </div>
   </div>
   <div id="main">
-    <h2>Death</h2>
     
       <div id="references">
       </div>
       
-    <p style="margin: 2em;">
-        <strong>Id:</strong> 
-        <input type="text" id="idIn" style="width:200px;"
-        	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-            onChange="autoPropagate(this.value);"/> 
-            <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> 
-            <span class="redo" onClick="clearAll();">❌</span>
-  </p>
-      
-        	
-      
-      <details>
-    <summary class="heading">Death index</summary>
-    <table>
-    <tr>
-        <td>Source:</td>
-        <td><input type="text" id="deathSourceIn"
-         onInput="document.getElementById('deathSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="deathSourceURLIn" 
-          onInput="document.getElementById('deathSource').textContent = '&quot;source: '+document.getElementById('deathSourceIn').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td rowspan="3">Paste:</td>
-        <td rowspan="3"><textarea id="deathPastedIn" style="width:400px;" onInput="document.getElementById('deathPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-        <td>Name:</td>
-        <td><input type="text" id="indexNameIn" style="width:200px;" 
-        onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Age:</td>
-        <td><input type="text" id="indexAgeIn" style="width:200px;" onInput="document.getElementById('indexAge').textContent = '&quot;[Age: '+this.value+']&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('indexAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('indexAgeIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Text:</td>
-        <td><input type="text" id="deathTextIn" style="width:200px;" onInput="document.getElementById('deathText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      </table></details>
-
-
-    <details>
-    <summary class="heading">Death certificate</summary>
-    <table>
-      <tr>
-        <td>Record:</td>
-        <td><input type="text" id="deathRecordInC" style="width:200px;" 
-        onInput="document.getElementById('deathRecordC').textContent = '&quot;record: Death certificate  url:records/'+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Source:</td>
-        <td><input type="text" id="deathSourceInC"
-         onInput="document.getElementById('deathSourceC').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn2').value+'&quot;,';"/>
-          <input type="text" id="deathSourceURLInC" 
-          onInput="document.getElementById('deathSourceC').textContent = '&quot;source: '+document.getElementById('deathSourceInC').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>When:</td>
-        <td><input type="text" id="certWhenIn" style="width:200px;" onInput="document.getElementById('certWhen').textContent = '&quot;[When: '+this.value+']&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Where:</td>
-        <td><input type="text" id="certWhereIn" style="width:200px;" onInput="document.getElementById('certWhere').textContent = '&quot;[Where: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('of').textContent = '&quot;of: '+document.getElementById('certWhereIn').value+'&quot;,'; document.getElementById('ofIn').value = document.getElementById('certWhereIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Name:</td>
-        <td><input type="text" id="certNameIn" style="width:200px;" onInput="document.getElementById('certName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/> <!--span class="copy" title="Add to aggregate fields." onClick="document.getElementById('name').textContent = '&quot;name: '+document.getElementById('certNameIn').value+'&quot;,'; document.getElementById('nameIn').value = document.getElementById('certNameIn').value;">✚</span--></td>
-      </tr>
-      <tr>
-        <td>Age:</td>
-        <td><input type="text" id="certAgeIn" style="width:200px;" onInput="document.getElementById('certAge').textContent = '&quot;[Age: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('certAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('certAgeIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Occupation:</td>
-        <td><input type="text" id="certOccIn" style="width:200px;" onInput="document.getElementById('certOcc').textContent = '&quot;[Occupation: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('occ').textContent = '&quot;occ: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('occIn').value = document.getElementById('certOccIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Cause:</td>
-        <td><input type="text" id="certCauseIn" style="width:200px;" onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,'; document.getElementById('causeIn').value = this.value;"/></td>
-      </tr>
-      <tr>
-        <td>Informant:</td>
-        <td><input type="text" id="certInformantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,'; document.getElementById('informantIn').value = this.value;"/></td>
-      </tr>
-      <tr>
-        <td>Reg. date:</td>
-        <td><input type="text" id="certRegdIn" style="width:200px;" onInput="document.getElementById('certRegd').textContent = '&quot;[RegDate: '+this.value+']&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Other:</td>
-        <td><textarea id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
-    </table>
-    </details>
-
-
-    <details>
-    <summary class="heading">Other source</summary>
-    <table>
-      <tr>
-        <td>Source:</td>
-        <td><input type="text" id="deathSourceIn2"
-         onInput="document.getElementById('deathSource2').textContent = '&quot;source: '+this.value+' '+document.getElementById('deathSourceURLIn2').value+'&quot;,';"/>
-          <input type="text" id="deathSourceURLIn2" 
-          onInput="document.getElementById('deathSource2').textContent = '&quot;source: '+document.getElementById('deathSourceIn2').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Record:</td>
-        <td><input type="text" id="deathRecordIn2" style="width:200px;" 
-        onInput="document.getElementById('deathRecord2').textContent = '&quot;record: Death record  url:records/'+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Text:</td>
-        <td><input type="text" id="deathTextIn2" style="width:200px;" onInput="document.getElementById('deathText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Paste:</td>
-        <td><textarea id="deathPastedIn2" style="width:400px;" onInput="document.getElementById('deathPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
-    </table>
-    </details>
-
-
-
-
-    <details>
-    <summary class="heading">Burial record</summary>
-    <table>
-    <tr>
-        <td>Record:</td>
-        <td><input type="text" id="burRecordIn" style="width:200px;" 
-        onInput="document.getElementById('burRecord').textContent = '&quot;record: Burial record  url:records/'+this.value+'&quot;,';"/></td>
-      </tr>
-     <tr>
-        <td>Source:</td>
-        <td><input type="text" id="burSourceIn"
-         onInput="document.getElementById('burSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('burSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="burSourceURLIn" 
-          onInput="document.getElementById('burSource').textContent = '&quot;source: '+document.getElementById('burSourceIn').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td rowspan="4">Paste:</td>
-        <td rowspan="4"><textarea id="burPastedIn" style="width:400px; height: 150px;" onInput="document.getElementById('burPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-        <td>Name:</td>
-        <td><input type="text" id="burNameIn" style="width:200px;" 
-        onInput="document.getElementById('burName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Abode:</td>
-        <td><input type="text" id="burAbodeIn" style="width:200px;" 
-        onInput="document.getElementById('burAbode').textContent = '&quot;[Abode: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('of').textContent = '&quot;of: '+document.getElementById('burAbodeIn').value+'&quot;,'; document.getElementById('ofIn').value = document.getElementById('burAbodeIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Age:</td>
-        <td><input type="text" id="burAgeIn" style="width:200px;" 
-        onInput="document.getElementById('burAge').textContent = '&quot;[Age: '+this.value+']&quot;,';"/> <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('burAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('burAgeIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Text:</td>
-        <td><input type="text" id="burTextIn" style="width:200px;" onInput="document.getElementById('burText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Year:</td>
-        <td><input type="text" id="burYearIn"  style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('burYear').textContent = '&quot;buryear: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Date:</td>
-        <td><input type="text" id="burDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('burDate').textContent = '&quot;burdate: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Place:</td>
-        <td><input type="text" id="burPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('burPlace').textContent = '&quot;burplace: '+this.value+'&quot;,';"/> <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
-      </tr>
-      </table></details>
+<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">The  fields in the expanding headings allow for capture of the available source information, and on the person summary page that information can be revealed using a toggle switch. The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
+<details>
+<summary class="heading">Death index</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="indexSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="indexSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="indexPastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="indexTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
 
 
 
 
 
 
-      <details>
-    <summary class="heading">Grave inscription</summary>
-    <table>
-    <tr>
-        <td>Source:</td>
-        <td><input type="text" id="graveSourceIn"
-         onInput="document.getElementById('graveSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('graveSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="graveSourceURLIn" 
-          onInput="document.getElementById('graveSource').textContent = '&quot;source: '+document.getElementById('graveSourceIn').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Inscription:</td>
-        <td><textarea id="inscriptionIn" style="width:400px;" onInput="document.getElementById('inscription').textContent = '&quot;gravestone: '+this.value+'&quot;,';"></textarea></td>
-        </tr></table></details>
 
+<details>
+<summary class="heading">Death certificate</summary>
+<table>
+<!--tr>
+<td>Image:</td>
+<td><input type="text" id="certImageInx" style="width:25rem;"
+    placeholder="File name (no extension) of image on disk."
+    onInput="draftResult()"/>
+    </td>
+</tr-->
+<tr>
+<td>Image:</td>
+<td><input type="text" id="certImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="certImageExtIn" class="imageExtBox" 
+    placeholder="Extension" value=".jpg"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="certSourceIn"
+        placeholder="Source name."
+        onInput="draftResult()">
+    <input type="text" id="certSourceURLIn"
+        placeholder="Source URL."
+        onInput="draftResult()"></td>
+</tr>
 
-      <details>
-    <summary class="heading">Probate</summary>
-    <table>
-      <tr>
-        <td>Record:</td>
-        <td><input type="text" id="probateRecordIn" style="width:200px;" 
-        onInput="document.getElementById('probateRecord').textContent = '&quot;record: Probate record  url:records/'+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Source:</td>
-        <td><input type="text" id="probateSourceIn"
-         onInput="document.getElementById('probateSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('probateSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="probateSourceURLIn" 
-          onInput="document.getElementById('probateSource').textContent = '&quot;source: '+document.getElementById('probateSourceIn').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Probate text:</td>
-        <td><textarea id="probateIn" style="width:400px;" onInput="document.getElementById('probate').textContent = '&quot;probate: '+this.value+'&quot;,';"></textarea></td>
-      </tr>
-      </table></details>
-
-
-      </table>
-      <table style="margin: 2em;">
-     <tr>
-       <td colspan="2" class="heading">Metadata</td></tr>
-      <tr>
-        <td>Of:</td>
-        <td><input type="text" id="ofIn" style="color:red; width:200px;" placeholder="Fill in this or place." onInput="document.getElementById('of').textContent = '&quot;of: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Place of death:</td>
-        <td><input type="text" id="deathPlaceIn" style="color:red; width:200px;" placeholder="Fill in this and/or old." onInput="document.getElementById('deathPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Age:</td>
-        <td><input type="text" id="ageIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('age').textContent = '&quot;age: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Cause:</td>
-        <td><input type="text" id="causeIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('cause').textContent = '&quot;cause: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Informant:</td>
-        <td><input type="text" id="informantIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Occupation:</td>
-        <td><input type="text" id="occIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('occ').textContent = '&quot;occ: '+this.value+'&quot;,';"/></td>
-      </tr>
-
-
-      <!--tr>
-        <td>Father:</td>
-        <td><input type="text" id="fatherIn" style="width:200px;" onInput="document.getElementById('father').textContent = '&quot;father: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Father id:</td>
-        <td><input type="text" id="fatherIdIn" style="width:200px;" onInput="document.getElementById('fatherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Father occ:</td>
-        <td><input type="text" id="foccIn" style="width:200px;" onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Mother:</td>
-        <td><input type="text" id="motherIn" style="width:200px;" onInput="document.getElementById('mother').textContent = '&quot;mother: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Mother id:</td>
-        <td><input type="text" id="motherIdIn" style="width:200px;" onInput="document.getElementById('motherId').textContent = '&quot;fid: '+this.value+'&quot;,';"/></td>
-      </tr-->
-      <tr>
-        <td>New GPS:</td>
-        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
-          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
-      </tr>
-       <tr>
-        <td>GPS paste:</td>
-        <td><input type="text" id="gpsPaste" onInput="parts=this.value.split('🗆'); document.getElementById('gps').innerHTML = '&quot;gps: '+ parts[0].trim()+' https://maps.google.com/maps?q='+parts[1].trim()+'&quot;,'" style="width: 300px;"/>
+<tr>
+<td>When &amp; where:</td>
+<td><input type="text" id="certWhenIn" style="width:25rem;"
+        onInput="draftResult()"></td>
+</tr>
+<!--tr>
+<td>Where died:</td>
+<td><input type="text" id="certWhereIn" style="width:200px;" 
+        onInput="draftResult()"> 
+    <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('of').textContent = '&quot;of: '+document.getElementById('certWhereIn').value+'&quot;,'; document.getElementById('ofIn').value = document.getElementById('certWhereIn').value;">✚</span></td>
+</tr-->
+<tr>
+<td>Name:</td>
+<td><input type="text" id="certNameIn" style="width:25rem;" 
+        onInput="draftResult()"/> <!--span class="copy" title="Add to aggregate fields." onClick="document.getElementById('name').textContent = '&quot;name: '+document.getElementById('certNameIn').value+'&quot;,'; document.getElementById('nameIn').value = document.getElementById('certNameIn').value;">✚</span--></td>
+</tr>
+<tr>
+<td>Age:</td>
+<td><input type="text" id="certAgeIn" style="width:25rem;" 
+        onInput="draftResult()"/>
+        <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('age').textContent = '&quot;age: '+document.getElementById('certAgeIn').value+'&quot;,'; document.getElementById('ageIn').value = document.getElementById('certAgeIn').value;">✚</span></td>
+</tr>
+<tr>
+<td>Occupation:</td>
+<td><input type="text" id="certOccIn" style="width:25rem;"
+        onInput="draftResult()"/>
+        <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('occ').textContent = '&quot;occ: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('occIn').value = document.getElementById('certOccIn').value;">✚</span></td>
+</tr>
+<tr>
+<td>Cause:</td>
+<td><input type="text" id="certCauseIn" style="width:25rem;"
+        onInput="draftResult()">
         </td>
+</tr>
+<tr>
+  <td>Informant:</td>
+  <td><input type="text" id="certInformantIn" style="width:25rem;"
+          onInput="draftResult()">
+          </td>
+</tr>
+<tr>
+  <td>Reg. date:</td>
+  <td><input type="text" id="certRegdIn" style="width:25rem;"
+          onInput="draftResult()">
+          </td>
+</tr>
+<tr>
+  <td>Other:</td>
+  <td><textarea name="certOtherIn" id="certOtherIn" style="width:25rem;"
+          onInput="draftResult()"></textarea></td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+<details>
+<summary class="heading">Other source</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="secondSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="secondSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="secondImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="secondImageExtIn" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="secondPastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="secondTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Burial record</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="burSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="burSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="burImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="burImageExtIn" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="burPastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="burTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Grave inscription</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="graveSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="graveSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="graveImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="graveImageExtIn" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Inscription:</td>
+<td><textarea id="graveTextIn" class="pasteBox"  style="color:red;"
+    placeholder="Copy-paste or write the inscription here. This will be shown on the person's summary page."
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+<details>
+<summary class="heading">Probate</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="probateSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="probateSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="probateImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="probateImageExtIn" value=".jpg" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="probatePastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Probate text:</td>
+<td><textarea id="probateTextIn" class="pasteBox"   style="color:red;"
+    placeholder="Copy-paste or write the probate summary text here. This will be shown on the person's summary page."
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+<table style="margin-inline-start: 2rem; color: chocolate;">
+<tr>
+<td colspan="2" class="heading">Data for building the page</td></tr>
+     <tr>
+        <td>Year of death:</td>
+        <td colspan="3"><input type="text" id="deathYearIn"
+            placeholder="YYYY"
+            onInput="checkDB('deathYearIn', 'd', 'dCheck')">
+            <span class="instructions" id="dCheck" style="color:red;"></span></td>
       </tr>
+     <tr>
+        <td>Date of death:</td>
+        <td colspan="3"><input type="text" id="deathDateIn"
+            placeholder="DD MMM or MMM-MMM, etc."
+            onInput="checkDB('deathDateIn', 'ddate', 'ddateCheck')">
+            <span class="instructions" id="ddateCheck" style="color:red;"></span></td>
+      </tr>
+<tr>
+<td>Of:</td>
+<td><input type="text" id="ofIn" 
+    placeholder="Place where they lived." style="width:25rem;"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Place of death:</td>
+<td><input type="text" id="deathPlaceIn"  
+    placeholder="Place where they died (if different)." style="width:25rem;"
+    onInput="draftResult(); checkDB('deathPlaceIn', 'dplace', 'dplaceCheck')">
+    <span class="instructions" id="dplaceCheck" style="color:red;"></span></td>
+</tr>
+<tr>
+<td>Age:</td>
+<td><input type="text" id="ageIn"  
+    placeholder="DD (actual)"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Cause:</td>
+<td><input type="text" id="causeIn" 
+    placeholder="Cause (certified?)" style="width:25rem;"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Informant:</td>
+<td><input type="text" id="informantIn"  
+    placeholder="Name, relation, present at death?" style="width:25rem;"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Occupation:</td>
+<td><input type="text" id="occIn" 
+    placeholder="Add if you can." style="width:25rem;"
+    onInput="draftResult()"></td>
+</tr>
+
+
+      <tr>
+        <td>Burial year:</td>
+        <td><input type="text" id="burYearIn"  
+            placeholder="YYYY"
+            onInput="draftResult()"></td>
+      </tr>
+      <tr>
+        <td>Burial date:</td>
+        <td><input type="text" id="burDateIn"  
+            placeholder="DD MMM"
+        onInput="draftResult()"></td>
+      </tr>
+      <tr>
+        <td>Burial place:</td>
+        <td><input type="text" id="burPlaceIn"  
+            placeholder="Cemetery, town, county, etc." style="width:25rem;"
+            onInput="draftResult()"> 
+            <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
+      </tr>
+      <tr>
+        <td>Denomination:</td>
+        <td><input type="text" id="denominationIn"  
+            placeholder="Religion" style="width:25rem;"
+            onInput="draftResult()">
+            </td>
+      </tr>
+
+
+
+
+    <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            document.getElementById('gpsPlace').value=this.value.split(':')[0]
+            document.getElementById('gpsCoords').value=this.value.split(':')[1]
+            draftResult()
+            "></select></td>
+        </tr>
+
+
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input type="text" id="gpsPlace" placeholder="Name of location" onInput="draftResult()" onChange="draftResult()">
+            <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" onInput="draftResult()" onChange="draftResult()">
+            </td>
+      </tr>
+
+
+
+
       <tr>
         <td>Notes:</td>
         <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
@@ -461,8 +804,11 @@ function formatGPS (str) {
    
    
    
-    <div id="draft" style="margin:2em;">
-      <div id="start">"death": [</div>
+   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+   
+   
+    <div id="draft" style="margin:2rem; color: teal;">
+      <div id="start">death: [</div>
       <div id="id"></div>
       <div id="name"></div>
       <div id="of"></div>
@@ -470,7 +816,12 @@ function formatGPS (str) {
       <div id="age"></div>
       <div id="cause"></div>
       <div id="occ"></div>
-      
+
+      <div id="buryear"></div>
+      <div id="burdate"></div>
+      <div id="burplace"></div>
+      <div id="denomination"></div>
+
       <div id="father"></div>
       <div id="fatherId"></div>
       <div id="focc"></div>
@@ -480,18 +831,19 @@ function formatGPS (str) {
       <div id="gps"></div>
       
       
-      
-      <div id="deathSource"></div>
-      <div id="deathText"></div>
+      <!-- index -->
+      <div id="indexSource" style="margin-block-start: 2rem;"></div>
+      <div id="indexText"></div>
       <div id="indexName"></div>
       <div id="indexAge"></div>
-      <div id="deathPasted" style="white-space:pre-line"></div>
+      <div id="indexPasted" style="white-space:pre-line"></div>
       <div id="deathRecord"></div>
       
-      <div id="deathRecordC"></div>
-      <div id="deathSourceC"></div>
+      <!-- certificate -->
+      <div id="certSource" style="margin-block-start: 2rem;"></div>
+      <div id="certImage"></div>
       <div id="certWhen"></div>
-      <div id="certWhere"></div>
+      <!--div id="certWhere"></div-->
       <div id="certName"></div>
       <div id="certAge"></div>
       <div id="certOcc"></div>
@@ -500,33 +852,36 @@ function formatGPS (str) {
       <div id="certRegd"></div>
       <div id="certOther" style="white-space:pre-line"></div>
       
-      <div id="deathSource2"></div>
-      <div id="deathText2"></div>
-      <div id="deathPasted2" style="white-space:pre-line"></div>
-      <div id="deathRecord2"></div>
+      <!-- 2nd source -->
+      <div id="secondSource" style="margin-block-start: 2rem;"></div>
+      <div id="secondImage"></div>
+      <div id="secondPasted" style="white-space:pre-line"></div>
+      <div id="secondText"></div>
       
-      <div id="burRecord"></div>
-      <div id="burSource"></div>
-      <div id="burYear"></div>
-      <div id="burDate"></div>
-      <div id="burPlace"></div>
+      <!-- burial -->
+      <div id="burSource" style="margin-block-start: 2rem;"></div>
+      <div id="burImage"></div>
       <div id="burText"></div>
       <div id="burName"></div>
       <div id="burAbode"></div>
       <div id="burAge"></div>
       <div id="burPasted" style="white-space:pre-line"></div>
       
+      <!-- gravestone -->
+      <div id="graveSource" style="margin-block-start: 2rem;"></div>
+      <div id="graveImage"></div>
+      <div id="graveText"></div>
 
-      <div id="graveSource"></div>
-      <div id="inscription"></div>
+      <!-- probate -->
+      <div id="probateSource" style="margin-block-start: 2rem;"></div>
+      <div id="probateImage"></div>
+      <div id="probatePasted"></div>
+      <div id="probateText"></div>
 
-      <div id="probateRecord"></div>
-      <div id="probateSource"></div>
-      <div id="probate"></div>
-
+      <div>&nbsp;</div>
       <div id="note"></div>
       <div id="fnote"></div>
-     <div id="discussion">"discussion: "</div>
+      <div id="discussion">"discussion: "</div>
       <div id="end">]</div>
       </div>
       
@@ -535,5 +890,9 @@ function formatGPS (str) {
     </pre>
   </div>
 </div>
+
+<script>
+document.getElementById('clearAll').href = document.location
+</script>
 </body>
 </html>

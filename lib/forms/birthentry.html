@@ -8,10 +8,10 @@
 td { vertical-align: top; padding-left: 1em; }
 details { margin-left: 2em; }
 </style>
-<script src="formentrylookup.js" type="application/javascript"></script>
+<script src="formentrylookup.js"></script>
 <script>
 // read in project
-project = 'data'
+var project
 parameters = location.search.split('&');
 parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
@@ -20,73 +20,15 @@ for (var p=0;p<parameters.length;p++) {
 	}
 
 // load the appropriate db file	
-if (! project) project = 'data'
+if (! project) alert('Specify the project name in the URL, using ?project=...')
 var db = document.createElement('script');
 db.src = '../../'+project+'/db.js'
 db.async = false
 document.head.appendChild(db);
 </script>
 <script>
-function getDate (year) { console.log(year)
-	var date
-	switch (year) {
-		case '1841': date = '6 Jun'; break
-		case '1851': date = '30 Mar'; break
-		case '1861': date = '7 Apr'; break
-		case '1871': date = '2 Apr'; break
-		case '1881': date = '3 Apr'; break
-		case '1891': date = '5 Apr'; break
-		case '1901': date = '31 Mar'; break
-		case '1911': date = '2 Apr'; break
-		case '1939': date = '29 Sep'; break		
-		}
-	document.getElementById('year').textContent = year
-	document.getElementById('date').textContent = 'date: '+date
-	}
 
-function doRelation (type) { console.log(type)
-	document.getElementById('relation').innerHTML = 'relation: '+type
-	switch (type) {
-		case 'head': document.getElementById('headId').value = document.getElementById('censusId').value; break
-		case 'wife': document.getElementById('wifeId').value = document.getElementById('censusId').value; break
-		}
-	}
 
-function addChild () {
-	var input = document.createElement('input')
-	currentChildren = document.getElementById('children').querySelectorAll('input')
-	if (currentChildren) numberOfChildren = currentChildren.length+1
-	else numberOfChildren = 1
-	input.style.width = '400px'
-	input.id = 'child'+numberOfChildren
-	input.oninput = function () { updateField(this.id+'out', 'child: '+this.value) }
-	document.getElementById('children').appendChild(document.createElement('br'))
-	document.getElementById('children').appendChild(input)
-	
-	p = document.createElement('p')
-	p.id = input.id+'out'
-	document.getElementById('childrenOut').appendChild(p)
-	}
-
-function addField (type) {
-	var input = document.createElement('input')
-	currentPeople = document.getElementById(type).querySelectorAll('input')
-	if (currentPeople) numberOfPeople = currentPeople.length+1
-	else currentPeople = 1
-	input.style.width = '400px'
-	input.id = type+numberOfPeople
-	input.oninput = function () { updateField(this.id+'out', type+': '+this.value) }
-	document.getElementById(type).appendChild(document.createElement('br'))
-	document.getElementById(type).appendChild(input)
-	
-	p = document.createElement('p')
-	p.id = input.id+'out'
-	document.getElementById(type+'Out').appendChild(p)
-	}
-
-function updateField (id, content) { console.log('hell')
-	document.getElementById(id).innerHTML = content
-	}
 
 function makeNotes (content, target) {
 	segments = content.split('\n')
@@ -95,9 +37,26 @@ function makeNotes (content, target) {
 	document.getElementById(target).innerHTML = out
 	}
 
+
+
 function autoPropagate (person) {
-	if (person!='') {listRelations(person);} 
-	if (db[person]) {
+    // Pull up a list of ids for related people, and fill in some fields automatically
+    if (person === '') {
+        alert('No id provided.')
+        return
+        }
+    
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placeIndex) {
+	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+	}
+    document.getElementById('gpsList').innerHTML = out
+
+    
+	listRelations(person)
+
+    if (db[person]) {
 		if (fid = db[person].father) {
 			if (db[fid]) { 
 				document.getElementById('bapFatherIn').value = db[fid].g+' '+db[fid].f
@@ -176,6 +135,7 @@ function formatGPS (str) {
 #references {
 	font-size: 80%;
 	float: right;
+    margin-block-start: 4rem;
 	}
 #references p {
 	margin: 0;
@@ -189,7 +149,197 @@ function formatGPS (str) {
 .accept:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
 .heading { font-weight:bold; padding-top: 1em; font-size: 110%; }
 </style>
-</head>
+
+<script>
+
+function draftResult () {
+    // called each time a field is changed; updates the output
+    
+    document.getElementById('id').textContent = `"id: ${ document.getElementById('idIn').value.trim() }",`
+
+    if (document.getElementById('indexSourceIn').value.trim() || document.getElementById('indexSourceURLIn').value.trim())
+        document.getElementById('indexSource').textContent = `\n"SOURCE: ${ document.getElementById('indexSourceIn').value.trim() }  ${ document.getElementById('indexSourceURLIn').value.trim() }",` 
+    else document.getElementById('indexSource').textContent = ''
+    
+    if (document.getElementById('indexPastedIn').value.trim()) 
+        document.getElementById('indexPasted').textContent = addQuotesTo(document.getElementById('indexPastedIn').value.trim())
+    else document.getElementById('indexPasted').textContent = ''
+ 
+
+// certificate
+    // if (document.getElementById('certImageIn').value.trim()) 
+    //    document.getElementById('certImage').textContent = `"record: Birth certificate  url:records/${ document.getElementById('certImageIn').value.trim() }",`
+    //else document.getElementById('certImage').textContent = ''
+
+    if (document.getElementById('certImageIn').value.trim()) 
+        document.getElementById('certImage').textContent = `"record: Birth certificate url:records/${ document.getElementById('certImageIn').value.trim() }${ document.getElementById('certImageExtIn').value.trim() }",`
+    else document.getElementById('certImage').textContent = ''
+
+
+    if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceInURL').value.trim())
+        document.getElementById('certSource').textContent = `"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceInURL').value.trim() }",` 
+    else document.getElementById('certSource').textContent = ''
+ 
+    if (document.getElementById('certWhenIn').value.trim()) 
+        document.getElementById('certWhen').textContent = `"[When: ${ document.getElementById('certWhenIn').value.trim() }]",`
+    else document.getElementById('certWhen').textContent = ''
+ 
+    //if (document.getElementById('certWhereIn').value.trim()) 
+    //    document.getElementById('certWhere').textContent = `"[Where: ${ document.getElementById('certWhereIn').value.trim() }]",`
+    //else document.getElementById('certWhere').textContent = ''
+ 
+    if (document.getElementById('certNameIn').value.trim()) 
+        document.getElementById('certName').textContent = `"[Name: ${ document.getElementById('certNameIn').value.trim() }]",`
+    else document.getElementById('certName').textContent = ''
+ 
+    if (document.getElementById('certFNameIn').value.trim()) 
+        document.getElementById('certFName').textContent = `"[FatherName: ${ document.getElementById('certFNameIn').value.trim() }]",`
+    else document.getElementById('certFName').textContent = ''
+ 
+    if (document.getElementById('certMNameIn').value.trim()) 
+        document.getElementById('certMName').textContent = `"[MotherName: ${ document.getElementById('certMNameIn').value.trim() }]",`
+    else document.getElementById('certMName').textContent = ''
+ 
+    if (document.getElementById('certOccIn').value.trim()) 
+        document.getElementById('certOcc').textContent = `"[FatherOccupation: ${ document.getElementById('certOccIn').value.trim() }]",`
+    else document.getElementById('certOcc').textContent = ''
+ 
+    if (document.getElementById('certInformantIn').value.trim()) 
+        document.getElementById('certInformant').textContent = `"[Informant: ${ document.getElementById('certInformantIn').value.trim() }]",`
+    else document.getElementById('certInformant').textContent = ''
+ 
+    if (document.getElementById('certRegdIn').value.trim()) 
+        document.getElementById('certRegd').textContent = `"[Regd: ${ document.getElementById('certRegdIn').value.trim() }]",`
+    else document.getElementById('certRegd').textContent = ''
+ 
+    if (document.getElementById('certOtherIn').value.trim()) 
+        document.getElementById('certOther').textContent = `"[Other: ${ document.getElementById('certOtherIn').value.trim() }]",`
+    else document.getElementById('certOther').textContent = ''
+
+
+
+
+// second source
+    if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
+        document.getElementById('secondSource').textContent = `"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
+    else document.getElementById('secondSource').textContent = ''
+ 
+    if (document.getElementById('secondImageIn').value.trim()) 
+        document.getElementById('secondImage').textContent = `"record: Birth url:records/${ document.getElementById('secondImageIn').value.trim() }${ document.getElementById('secondImageExtIn').value.trim() }",`
+    else document.getElementById('secondImage').textContent = ''
+
+    if (document.getElementById('secondPastedIn').value.trim()) 
+        document.getElementById('secondPasted').textContent = addQuotesTo(document.getElementById('secondPastedIn').value.trim())
+    else document.getElementById('secondPasted').textContent = ''
+ 
+    if (document.getElementById('secondTextIn').value.trim()) 
+        document.getElementById('secondText').textContent = `"text: ${ document.getElementById('secondTextIn').value.trim() }",`
+    else document.getElementById('secondText').textContent = ''
+
+
+
+
+// third source
+    if (document.getElementById('thirdSourceIn').value.trim() || document.getElementById('thirdSourceURLIn').value.trim())
+        document.getElementById('thirdSource').textContent = `"<br>SOURCE: ${ document.getElementById('thirdSourceIn').value.trim() }  ${ document.getElementById('thirdSourceURLIn').value.trim() }",` 
+    else document.getElementById('thirdSource').textContent = ''
+ 
+    if (document.getElementById('thirdImageIn').value.trim()) 
+        document.getElementById('thirdImage').textContent = `"record: Birth url:records/${ document.getElementById('thirdImageIn').value.trim() }${ document.getElementById('thirdImageExtIn').value.trim() }",`
+    else document.getElementById('thirdImage').textContent = ''
+
+    if (document.getElementById('thirdPastedIn').value.trim()) 
+        document.getElementById('thirdPasted').textContent = addQuotesTo(document.getElementById('thirdPastedIn').value.trim())
+    else document.getElementById('thirdPasted').textContent = ''
+ 
+    if (document.getElementById('thirdTextIn').value.trim()) 
+        document.getElementById('thirdText').textContent = `"text: ${ document.getElementById('thirdTextIn').value.trim() }",`
+    else document.getElementById('thirdText').textContent = ''
+
+
+
+
+
+
+// baptism record
+    if (document.getElementById('bapSourceIn').value.trim() || document.getElementById('bapSourceURLIn').value.trim())
+        document.getElementById('bapSource').textContent = `"<br>SOURCE: ${ document.getElementById('bapSourceIn').value.trim() }  ${ document.getElementById('bapSourceURLIn').value.trim() }",` 
+    else document.getElementById('bapSource').textContent = ''
+ 
+    if (document.getElementById('bapImageIn').value.trim()) 
+        document.getElementById('bapImage').textContent = `"record: Death url:records/${ document.getElementById('bapImageIn').value.trim() }${ document.getElementById('bapImageExtIn').value.trim() }",`
+    else document.getElementById('bapImage').textContent = ''
+
+    if (document.getElementById('bapPastedIn').value.trim()) 
+        document.getElementById('bapPasted').textContent = addQuotesTo(document.getElementById('bapPastedIn').value.trim())
+    else document.getElementById('bapPasted').textContent = ''
+ 
+    if (document.getElementById('bapTextIn').value.trim()) 
+        document.getElementById('bapText').textContent = `"text: ${ document.getElementById('bapTextIn').value.trim() }",`
+    else document.getElementById('bapText').textContent = ''
+ 
+ 
+    if (document.getElementById('bapPlaceIn').value.trim()) 
+        document.getElementById('bapPlace').textContent = `"bapplace: ${ document.getElementById('bapPlaceIn').value.trim() }",`
+    else document.getElementById('bapPlace').textContent = ''
+ 
+    if (document.getElementById('bapYearIn').value.trim()) 
+        document.getElementById('bapYear').textContent = `"bapyear: ${ document.getElementById('bapYearIn').value.trim() }",`
+    else document.getElementById('bapYear').textContent = ''
+ 
+    if (document.getElementById('bapDateIn').value.trim()) 
+        document.getElementById('bapDate').textContent = `"bapdate: ${ document.getElementById('bapDateIn').value.trim() }",`
+    else document.getElementById('bapDate').textContent = ''
+ 
+    if (document.getElementById('denominationIn').value.trim()) 
+        document.getElementById('denomination').textContent = `"denomination: ${ document.getElementById('denominationIn').value.trim() }",`
+    else document.getElementById('denomination').textContent = ''
+
+
+
+
+// harvested data
+    if (document.getElementById('birthDateIn').value.trim())
+        document.getElementById('birthDate').textContent = `"date: ${ document.getElementById('birthDateIn').value.trim() }",`
+    else document.getElementById('birthDate').textContent = ''
+
+    if (document.getElementById('birthPlaceIn').value.trim()) 
+        document.getElementById('birthPlace').textContent = `"place: ${ document.getElementById('birthPlaceIn').value.trim() }",`
+    else document.getElementById('birthPlace').textContent = ''
+
+    if (document.getElementById('foccIn').value.trim()) 
+        document.getElementById('focc').textContent = `"focc: ${ document.getElementById('foccIn').value.trim() }",`
+    else document.getElementById('focc').textContent = ''
+
+    if (document.getElementById('informantIn').value.trim()) 
+        document.getElementById('informant').textContent = `"informant: ${ document.getElementById('informantIn').value.trim() }",`
+    else document.getElementById('informant').textContent = ''
+
+
+
+    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
+        document.getElementById('gps').textContent = `"gps: ${ document.getElementById('gpsPlace').value.trim() }` 
+        if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim() }` 
+        document.getElementById('gps').textContent += `",`
+        }
+    else document.getElementById('gps').textContent = ''
+
+
+    }
+
+
+function checkDB (fieldname, dbfield, checkID) {
+    // checks certain values against what currently in the top-level db, and raises flags if they differ
+
+    thisPerson = document.getElementById('idIn').value.trim()
+
+    if (document.getElementById(fieldname).value.trim() !== db[thisPerson][dbfield])  document.getElementById(checkID).textContent = `The database currently has ${ db[thisPerson][dbfield] }`
+    else { document.getElementById(checkID).textContent = `` }
+
+    }
+</script></head>
+
+
 <body>
 <div id="out">
   <div id="banner">
@@ -201,239 +351,387 @@ function formatGPS (str) {
   </div>
   <div id="subsubbanner">
     <div>
-      <button onClick="dump()">Go</button>
-    </div>
-  </div>
-  <div id="main">
-    <h2>Birth</h2>
+      <!--button onClick="dump()">Go</button-->&nbsp;
+    <strong>Id:</strong> 
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+
     
-      <div id="references">
-      </div>
-      
-      
-    <p style="margin: 2em;">
-        <strong>Id:</strong> 
-        <input type="text" id="idIn" style="width:200px;"
-        	onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-            onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo" onClick="clearAll();">❌</span>
-  </p>
-  
+</div>
+</div>
+<div id="main">
+
+<div id="references">
+</div>
+
+
+<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">The  fields in the expanding headings allow for capture of the available source information, and on the person summary page that information can be revealed using a toggle switch. The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
       
 <details>
-          <summary class="heading">Birth index</summary>
-          <table>
-      <tr>
-        <td>Source:</td>
-        <td><input type="text" id="birthSourceIn"
-         onInput="document.getElementById('birthSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('birthSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="birthSourceURLIn" 
-          onInput="document.getElementById('birthSource').textContent = '&quot;source: '+document.getElementById('birthSourceIn').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td rowspan="2">Paste:</td>
-        <td rowspan="2"><textarea id="birthPastedIn" style="width:400px;" onInput="document.getElementById('birthPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-        <td>Text:</td>
-        <td><input type="text" id="birthTextIn" style="width:200px;" onInput="document.getElementById('birthText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Name:</td>
-        <td><input type="text" id="indexNameIn" style="width:200px;" 
-        onInput="document.getElementById('indexName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
-      </tr>
-	</table></details>
+<summary class="heading">Birth index</summary>
+<table>
+    <tr>
+    <td>Source:</td>
+    <td>
+    <input type="text" id="indexSourceIn"  class="sourceBox"
+        onInput="draftResult()"
+        placeholder="Source name.">
+    <input type="text" id="indexSourceURLIn"  class="sourceBox"
+            onInput="draftResult()" 
+            placeholder="Source URL.">
+    </td>
+    </tr>
+    
+    <tr>
+    <td>Paste:</td>
+    <td><textarea id="indexPastedIn"  class="pasteBox"
+        placeholder="Copy-paste lists here from transcript pages. (Each line should be [type: value]. Only lines with a colon are captured.)"
+        onInput="draftResult()"></textarea></td>
+    </tr>
+    
+    <tr>
+    <td rowspan="2">Text:</td>
+     <td><textarea id="indexTextIn" class="textBox" 
+        placeholder="Copy-paste or write textual information here."
+        onInput="draftResult()"></textarea>
+        </td>
+    </tr>
+</table>
+</details>
       
       
-      
-      <details>
-          <summary class="heading">Birth certificate</summary>
-          <table>
-            <tr>
-              <td>Record:</td>
-              <td><input type="text" id="certRecordIn" style="width:200px;" 
-        onInput="document.getElementById('certRecord').textContent = '&quot;record: Birth certificate  url:records/'+this.value+'.jpg&quot;,';"/></td>
-            </tr>
-            <tr>
-              <td>Source:</td>
-              <td><input type="text" id="certSourceIn1"
-         onInput="document.getElementById('certSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('certSourceIn2').value+'&quot;,';"/>
-                <input type="text" id="certSourceIn2" 
-          onInput="document.getElementById('certSource').textContent = '&quot;source: '+document.getElementById('certSourceIn1').value+' '+this.value+'&quot;,';"/></td>
-            </tr>
-            <tr>
-              <td>When:</td>
-              <td><input type="text" id="certWhenIn" style="width:200px;" onInput="document.getElementById('certWhen').textContent = '&quot;[When: '+this.value+']&quot;,';"/></td>
-            </tr>
-            <tr>
-              <td>Where:</td>
-              <td><input type="text" id="certWhereIn" style="width:200px;" onInput="document.getElementById('certWhere').textContent = '&quot;[Where: '+this.value+']&quot;,';"/>
-                <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('certWhereIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('certWhereIn').value;">✚</span></td>
-            </tr>
-            <tr>
-              <td>Name:</td>
-              <td><input type="text" id="certNameIn" style="width:200px;" onInput="document.getElementById('certName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
-            </tr>
-            <tr>
-              <td>Father's name:</td>
-              <td><input type="text" id="certFNameIn" style="width:200px;" onInput="document.getElementById('certFName').textContent = '&quot;[FatherName: '+this.value+']&quot;,';"/>
-            <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certFName').textContent = '&quot;[Father: '+document.getElementById('certFNameIn').value+']&quot;,'">✔</span></td>
-            </tr>
-            <tr>
-              <td>Mother's name:</td>
-              <td><input type="text" id="certMNameIn" style="width:200px;" onInput="document.getElementById('certMName').textContent = '&quot;[MotherName: '+this.value+']&quot;,';"/>
-            <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certMName').textContent = '&quot;[Father: '+document.getElementById('certMNameIn').value+']&quot;,'">✔</span></td>
-            </tr>
-            <tr>
-              <td>Father occupation:</td>
-              <td><input type="text" id="certOccIn" style="width:200px;" onInput="document.getElementById('certOcc').textContent = '&quot;[FatherOccupation: '+this.value+']&quot;,';"/>
-                <span class="copy" title="Add to metadata." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('certOccIn').value;">✚</span></td>
-            </tr>
-            <tr>
-              <td>Informant:</td>
-              <td><input type="text" id="certInformantIn" style="width:200px;" onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,'; document.getElementById('informantIn').value = this.value;"/></td>
-            </tr>
-            <tr>
-              <td>Reg. date:</td>
-              <td><input type="text" id="certRegdIn" style="width:200px;" onInput="document.getElementById('certRegd').textContent = '&quot;[RegDate: '+this.value+']&quot;,';"/></td>
-            </tr>
-            <tr>
-              <td>Paste:</td>
-              <td><textarea name="certOtherIn" id="certOtherIn" style="width:400px;" onInput="document.getElementById('certOther').textContent = addQuotesTo(this.value);"></textarea></td>
-            </tr>
-          </table>
-        </details>
 
 
 
 
 
 
-    <details>
-    <summary class="heading">Other source</summary>
-    <table>
+<details>
+<summary class="heading">Birth certificate</summary>
+<table>
+<tr>
+  <td>Source:</td>
+  <td><input type="text" id="certSourceIn"
+        placeholder="Source name"
+        onInput="draftResult()"/>
+    <input type="text" id="certSourceInURL" 
+        placeholder="Source URL"
+        onInput="draftResult()"/></td>
+</tr>
+<!--tr>
+  <td>Record:</td>
+  <td><input type="text" id="certRecordIn" style="width:25rem;" 
+      placeholder="File name (no extension) of image on disk."
+      onInput="document.getElementById('certRecord').textContent = '&quot;record: Birth certificate  url:records/'+this.value+'.jpg&quot;,';"/></td>
+</tr-->
+<tr>
+<td>Image:</td>
+<td><input type="text" id="certImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="certImageExtIn" class="imageExtBox" 
+    placeholder="Extension" value=".jpg"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+  <td>Where &amp; when:</td>
+  <td><input type="text" id="certWhenIn" style="width:25rem;"
+        onInput="draftResult()"></td>
+</tr>
+<!--tr>
+  <td>Where born:</td>
+  <td><input type="text" id="certWhereIn" style="width:25rem;"
+        onInput="draftResult()"> 
+        <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('certWhereIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('certWhereIn').value;">✚</span></td>
+</tr-->
+<tr>
+  <td>Name:</td>
+  <td><input type="text" id="certNameIn" style="width:25rem;"
+          onInput="document.getElementById('certName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
+</tr>
+<tr>
+  <td>Father:</td>
+  <td><input type="text" id="certFNameIn" style="width:25rem;"
+          onInput="draftResult()">
+          <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certFName').textContent = '&quot;[Father: '+document.getElementById('certFNameIn').value+']&quot;,'">✔</span></td>
+</tr>
+<tr>
+  <td>Mother:</td>
+  <td><input type="text" id="certMNameIn" style="width:25rem;"
+          onInput="draftResult()">
+          <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certMName').textContent = '&quot;[Father: '+document.getElementById('certMNameIn').value+']&quot;,'">✔</span></td>
+</tr>
+<tr>
+  <td>Father occupation:</td>
+  <td><input type="text" id="certOccIn" style="width:25rem;"
+          onInput="draftResult()"/>
+          <span class="copy" title="Add to metadata." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('certOccIn').value;">✚</span></td>
+</tr>
+<tr>
+  <td>Informant:</td>
+  <td><input type="text" id="certInformantIn" style="width:25rem;"
+          onInput="draftResult()">
+          </td>
+</tr>
+<tr>
+  <td>Reg. date:</td>
+  <td><input type="text" id="certRegdIn" style="width:25rem;"
+          onInput="draftResult()">
+          </td>
+</tr>
+<tr>
+  <td>Other:</td>
+  <td><textarea name="certOtherIn" id="certOtherIn" style="width:400px;"
+          onInput="draftResult()"></textarea></td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Parish record</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="bapSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="bapSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="bapImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="bapImageExtIn" value=".jpg" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="bapPastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="bapTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Other source</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="secondSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="secondSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="secondImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="secondImageExtIn" value=".jpg" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="secondPastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="secondTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Other source</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="thirdSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="thirdSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="thirdImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="thirdImageExtIn" value=".jpg" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Paste:</td>
+<td><textarea id="thirdPastedIn" class="pasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="thirdTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+<!-- items that get filled in by autoPropagate, but that are no longer used.
+Need to fix this properly at some point. -->
+<div style="display: none">
+<p id="bapFatherIn"></p>
+<p id="bapMotherIn"></p>
+</div>
+
+
+
+<table style="margin-inline-start: 2rem; color: chocolate;">
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="birthRecordIn2" style="width:200px;" 
-        onInput="document.getElementById('birthRecord2').textContent = '&quot;record: Birth record  url:records/'+this.value+'.jpg&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Source:</td>
-        <td><input type="text" id="birthSourceIn2"
-         onInput="document.getElementById('birthSource2').textContent = '&quot;source: '+this.value+' '+document.getElementById('birthSourceURLIn2').value+'&quot;,';"/>
-          <input type="text" id="birthSourceURLIn2" 
-          onInput="document.getElementById('birthSource2').textContent = '&quot;source: '+document.getElementById('birthSourceIn2').value+' '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Paste:</td>
-        <td><textarea id="birthPastedIn2" style="width:400px;" onInput="document.getElementById('birthPasted2').textContent = addQuotesTo(this.value);"></textarea></td>
-      </tr>
-      <tr>
-        <td>Text:</td>
-        <td><input type="text" id="birthTextIn2" style="width:200px;" onInput="document.getElementById('birthText2').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-    </table>
-    </details>
-
-
-      <details>
-    <summary class="heading">Baptism record</summary>
-    <table>
-        <tr>
-        <td>Record:</td>
-        <td><input type="text" id="bapRecordIn" style="width:200px;" 
-        onInput="document.getElementById('bapRecord').textContent = '&quot;record: Baptism record  url:records/'+this.value+'.jpg&quot;,';"/></td>
+        <td colspan="4" class="heading">Data for building the page:</td></tr>
+ 
+     <tr>
+        <td>Year of birth:</td>
+        <td colspan="3"><input type="text" id="birthYearIn"
+            placeholder="YYYY"
+            onInput="checkDB('birthYearIn', 'b', 'bCheck')">
+            <span class="instructions" id="bCheck" style="color:red;"></span></td>
       </tr>
      <tr>
-        <td>Source:</td>
-        <td><input type="text" id="bapSourceIn"
-         onInput="document.getElementById('bapSource').textContent = '&quot;source: '+this.value+' '+document.getElementById('bapSourceURLIn').value+'&quot;,';"/>
-          <input type="text" id="bapSourceURLIn" 
-          onInput="document.getElementById('bapSource').textContent = '&quot;source: '+document.getElementById('bapSourceIn').value+' '+this.value+'&quot;,';"/></td>
+        <td>Date of birth:</td>
+        <td colspan="3"><input type="text" id="birthDateIn"
+            placeholder="DD MMM or MMM-MMM, etc."
+            onInput="checkDB('birthDateIn', 'bdate', 'bdateCheck')">
+            <span class="instructions" id="bdateCheck" style="color:red;"></span></td>
       </tr>
-      <tr>
-        <td rowspan="7">Paste:</td>
-        <td rowspan="7"><textarea id="bapPastedIn" style="width:400px; height: 200px;" onInput="document.getElementById('bapPasted').textContent = addQuotesTo(this.value);"></textarea></td>
-        <td>Born:</td>
-        <td><input type="text" id="bapBornIn" style="width:200px;" 
-        onInput="document.getElementById('bapBorn').textContent = '&quot;[Born: '+this.value+']&quot;,';"/></td>
-      </tr>
-        <tr>
-          <td>Name:</td>
-          <td><input type="text" id="bapNameIn" style="width:200px;" onInput="document.getElementById('bapName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
-        </tr>
-      <tr>
-        <td>Father:</td>
-        <td><input type="text" id="bapFatherIn" style="width:200px;" onInput="document.getElementById('bapFather').textContent = '&quot;[Father: '+this.value+']&quot;,';"/>
-            <span class="accept" title="Add to baptism data." onClick="document.getElementById('bapFather').textContent = '&quot;[Father: '+document.getElementById('bapFatherIn').value+']&quot;,'">✔</span></td>
-      </tr>
-      <tr>
-        <td>Mother:</td>
-        <td><input type="text" id="bapMotherIn" style="width:200px;" onInput="document.getElementById('bapMother').textContent = '&quot;[Mother: '+this.value+']&quot;,';"/>
-            <span class="accept" title="Add to baptism data." onClick="document.getElementById('bapMother').textContent = '&quot;[Mother: '+document.getElementById('bapMotherIn').value+']&quot;,'">✔</span></td>
-      </tr>
-      <tr>
-        <td>Text:</td>
-        <td><input type="text" id="bapTextIn" style="width:200px;" onInput="document.getElementById('bapText').textContent = '&quot;text: '+this.value+'&quot;,';"/></td>
-      </tr>
-        <tr>
-          <td>Abode:</td>
-          <td><input type="text" id="bapWhereIn" style="width:200px;" onInput="document.getElementById('bapAbode').textContent = '&quot;[Abode: '+this.value+']&quot;,';"/>
-            <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapWhereIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapWhereIn').value;">✚</span></td>
-        </tr>
-        <tr>
-          <td>Father occ:</td>
-          <td><input type="text" id="bapOccIn" style="width:200px;" onInput="document.getElementById('bapOcc').textContent = '&quot;[FatherOccupation: '+this.value+']&quot;,';"/>
-            <span class="copy" title="Add to aggregate fields." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('bapOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('bapOccIn').value;">✚</span></td>
-        </tr>
-      <tr>
-        <td>Place:</td>
-        <td><input type="text" id="bapPlaceIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('bapPlace').textContent = '&quot;bapplace: '+this.value+'&quot;,';"/>
-                <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapPlaceIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapPlaceIn').value;">✚</span></td>
-      </tr>
-      <tr>
-        <td>Year:</td>
-        <td><input type="text" id="bapYearIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('bapYear').textContent = '&quot;bapyear: '+this.value+'&quot;,';"/></td>
-      </tr>
-      <tr>
-        <td>Date:</td>
-        <td><input type="text" id="bapDateIn" style="color:red; width:200px;" placeholder="Fill me in." 
-        onInput="document.getElementById('bapDate').textContent = '&quot;bapdate: '+this.value+'&quot;,';"/></td>
-      </tr>
-</table></details>     
-      
-
-
-
-      </table>
-      <table style="margin: 2em;">
-      <tr>
-        <td colspan="4" class="heading">Metadata</td></tr>
       <tr>
         <td>Place of birth:</td>
-        <td colspan="3"><input type="text" id="birthPlaceIn" style="color:red; width:200px;" placeholder="Fill me in."  onInput="document.getElementById('birthPlace').textContent = '&quot;place: '+this.value+'&quot;,';"/></td>
-      </tr>
+        <td colspan="3"><input type="text" id="birthPlaceIn"
+            placeholder="Place where they lived." style="width:25rem;"
+            onInput="draftResult(); checkDB('birthPlaceIn', 'bplace', 'bplaceCheck')">
+            <span class="instructions" id="bplaceCheck" style="color:red;"></span></td>
+     </tr>
       <tr>
         <td>Father occ:</td>
-        <td colspan="3"><input type="text" id="foccIn"  style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('focc').textContent = '&quot;focc: '+this.value+'&quot;,';"/></td>
+        <td colspan="3"><input type="text" id="foccIn"
+            placeholder="Add if you can." style="width:25rem;"
+            onInput="draftResult()"></td>
       </tr>
       <tr>
         <td>Informant:</td>
-        <td colspan="3"><input type="text" id="informantIn" style="color:teal; width:200px;" placeholder="Add if you can." onInput="document.getElementById('informant').textContent = '&quot;informant: '+this.value+'&quot;,';"/></td>
+        <td colspan="3"><input type="text" id="informantIn"  
+            placeholder="Name, relationship." style="width:25rem;"
+            onInput="draftResult()"></td>
       </tr>
 
-
-       <tr>
-        <td>New GPS:</td>
-        <td colspan="3"><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)+'&quot;,'"/>
-          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = '&quot;gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)+'&quot;,'"/></td>
-      </tr>
-       <tr>
-        <td>GPS paste:</td>
-        <td colspan="3"><input type="text" id="gpsPaste" onInput="parts=this.value.split('🗆'); document.getElementById('gps').innerHTML = '&quot;gps: '+ parts[0].trim()+' https://maps.google.com/maps?q='+parts[1].trim()+'&quot;,'" style="width: 300px;"/>
-        </td>
-      </tr>
+<tr>
+<td>Baptism place:</td>
+<td><input type="text" id="bapPlaceIn" 
+    placeholder="Church, town, county."  style="width:25rem;"
+    onInput="draftResult()">
+    <span class="copy" title="Add to metadata." onClick="document.getElementById('birthPlace').textContent = '&quot;place: '+document.getElementById('bapPlaceIn').value+'&quot;,'; document.getElementById('birthPlaceIn').value = document.getElementById('bapPlaceIn').value;">✚</span></td>
+</tr>
+<tr>
+<td>Baptism year:</td>
+<td><input type="text" id="bapYearIn" 
+    placeholder="YYYY" style="width:200px;"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Baptism date:</td>
+<td><input type="text" id="bapDateIn"
+    placeholder="DD MMM" style="width:200px;"
+    onInput="draftResult()"></td>
+</tr>
       <tr>
+        <td>Denomination:</td>
+        <td><input type="text" id="denominationIn"  
+            placeholder="Religion" style="width:25rem;"
+            onInput="draftResult()">
+            </td>
+      </tr>
+
+
+
+      <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            document.getElementById('gpsPlace').value=this.value.split(':')[0]
+            document.getElementById('gpsCoords').value=this.value.split(':')[1]
+            draftResult()
+            "></select></td>
+      </tr>
+
+
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input type="text" id="gpsPlace" placeholder="Name of location" onInput="draftResult()" onChange="draftResult()">
+            <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" onInput="draftResult()" onChange="draftResult()">
+      </td>
+      </tr>
+
+
+    <tr>
         <td>Notes:</td>
         <td colspan="3"><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
       </tr>
@@ -448,11 +746,14 @@ function formatGPS (str) {
    </table>
    
    
+   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
    
-    <div id="draft" style="margin:2em;">
-      <div id="start">"birth": [</div>
+   
+    <div id="draft" style="margin:2rem; color: teal;">
+      <div id="start">birth: [</div>
       <div id="id"></div>
       <div id="name"></div>
+      <div id="birthDate"></div>
       <div id="birthPlace"></div>
       <div id="father" style="display:none;"></div>
       <div id="fatherId" style="display:none;"></div>
@@ -462,12 +763,17 @@ function formatGPS (str) {
       <div id="mmn" style="display:none;"></div>
       <div id="siblings"></div>
       <div id="informant"></div>
+      <div id="bapPlace"></div>
+      <div id="bapYear"></div>
+      <div id="bapDate"></div>
+      <div id="denomination"></div>
+     
       
-      
-      <div id="certRecord"></div>
+      <!-- certificate -->
       <div id="certSource"></div>
+      <div id="certImage"></div>
       <div id="certWhen"></div>
-      <div id="certWhere"></div>
+      <!--div id="certWhere"></div-->
       <div id="certName"></div>
       <div id="certFName"></div>
       <div id="certMName"></div>
@@ -477,22 +783,16 @@ function formatGPS (str) {
       <div id="certRegd"></div>
       <div id="certOther" style="white-space:pre-line"></div>
       
-      <div id="birthSource"></div>
+      <!-- index -->
+      <div id="indexSource"></div>
       <div id="birthText"></div>
       <div id="indexName"></div>
-      <div id="birthPasted" style="white-space:pre-line"></div>
+      <div id="indexPasted" style="white-space:pre-line"></div>
       <div id="birthRecord"></div>
       
-      <div id="birthRecord2"></div>
-      <div id="birthSource2"></div>
-      <div id="birthText2"></div>
-      <div id="birthPasted2" style="white-space:pre-line"></div>
-      
-      <div id="bapRecord"></div>
+      <!-- baptism -->
       <div id="bapSource"></div>
-      <div id="bapPlace"></div>
-      <div id="bapYear"></div>
-      <div id="bapDate"></div>
+      <div id="bapImage"></div>
       <div id="bapBorn"></div>
       <div id="bapName"></div>
       <div id="bapFather"></div>
@@ -502,7 +802,6 @@ function formatGPS (str) {
       <div id="bapText"></div>
       <div id="bapPasted" style="white-space:pre-line"></div>
       
-      
       <div id="place"></div>
       <div id="gps"></div>
       <div id="relation"></div>
@@ -510,6 +809,7 @@ function formatGPS (str) {
       <div id="note"></div>
       <div id="fnote"></div>
       
+      <!-- census >
       <div id="source"></div>
       <div><span id="cparish"></span> <span id="srd"></span> <span id="rd"></span></div>
       <div id="head"></div>
@@ -518,7 +818,20 @@ function formatGPS (str) {
       <div id="otherOut"></div>
       <div id="servOut"></div>
       <div id="visitorOut"></div>
-      <div id="record"></div>
+      <div id="record"></div-->
+      
+      <!-- 2nd source -->
+      <div id="secondSource"></div>
+      <div id="secondImage"></div>
+      <div id="secondPasted" style="white-space:pre-line"></div>
+      <div id="secondText"></div>
+      
+      <!-- 3rd source -->
+      <div id="thirdSource"></div>
+      <div id="thirdImage"></div>
+      <div id="thirdPasted" style="white-space:pre-line"></div>
+      <div id="thirdText"></div>
+
       <div id="discussion">"discussion: "</div>
       <div id="end">]</div>
       </div>
@@ -528,5 +841,9 @@ function formatGPS (str) {
     </pre>
   </div>
 </div>
+
+<script>
+document.getElementById('clearAll').href = document.location
+</script>
 </body>
 </html>

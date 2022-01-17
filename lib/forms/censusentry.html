@@ -4,26 +4,80 @@
 <meta charset="UTF-8">
 <title>Census form</title>
 <link href="../../lib/style.css" rel="stylesheet">
-<script src="formentrylookup.js" type="application/javascript"></script>
-<!--script src="../../data/db.js" type="application/javascript"></script-->
+<script src="formentrylookup.js"></script>
 <script>
 // read in project
-project = 'data'
+var project
 parameters = location.search.split('&');
 parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
 	pairs = parameters[p].split('=');
-	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	if (pairs[0] == 'project' && pairs[1]) project = pairs[1] 
 	}
 
 // load the appropriate db file	
-if (! project) project = 'data'
-var db = document.createElement('script');
+if (! project) alert('Specify the project name in the URL, using ?project=...')
+var db = document.createElement('script')
 db.src = '../../'+project+'/db.js'
 db.async = false
-document.head.appendChild(db);
+document.head.appendChild(db)
 </script>
+
+
 <script>
+
+function draftNotes () {
+    var out = ''
+    var node = document.getElementById('censusNotes')
+    var headId = document.getElementById('headId').value
+    var wifeId = document.getElementById('wifeId').value
+    out += `{${ headId }:kx}, AGE, was a OCCUPATION.`
+    if (wifeId) out += ` His wife was AGE.`
+    
+    var children = document.getElementById('child').querySelectorAll('input')
+    
+    if (children && children.length>0) {
+        out += ` The children were`
+        for (var i=0;i<children.length;i++) {
+            if (i>1) out += ', '
+            if (i === children.length-1) out += 'and '
+            out += ` {child_id:k}, AGE`
+            }
+        out += '.'
+        }
+    
+    var others = []; var servs = []; var visitors = []
+    others = document.getElementById('other').querySelectorAll('input')
+    servs = document.getElementById('serv').querySelectorAll('input')
+    visitors = document.getElementById('visitor').querySelectorAll('input')
+   
+    var allothers = others.length + servs.length + visitors.length
+    
+    if (allothers>0 ) {
+        out += `\nAlso at the house`
+        if (allothers.length === 1) out += ' was '
+        else out += ' were '
+        for (var i=0;i<allothers;i++) {
+            if (i>0) out += ', '
+            if (i === allothers-1) out += ' and '
+            out += ` {other_id:kf}, AGE, OCCUPATION`
+            }
+        out += '.'
+        }
+
+    node.value = out
+    }
+
+function fillPlacesPulldown () {
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placeIndex) {
+	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+	}
+    document.getElementById('gpsList').innerHTML = out
+    }
+
+
 function getDate (year) { 
 	var date
 	switch (year) {
@@ -111,6 +165,98 @@ function formatGPS (str) {
 	return str
 	}
 
+
+
+
+
+function draftResult () {
+    // called each time a field is changed; updates the output
+    
+    //document.getElementById('id').textContent = `"id: ${ document.getElementById('idIn').value.trim() }",`
+    
+    
+    
+    
+    getDate(document.getElementById('yearList').elements['censusYear'].value)
+
+    doRelation(document.getElementById('relationToHead').elements['censusRelation'].value)
+
+    
+    if (document.getElementById('censusRecordURL').value.trim()) {
+        if (document.getElementById('yearList').elements['censusYear'].value == '1939') var recordType='Registration'
+        else recordType='Census'
+        document.getElementById('record').textContent = `record: ${ recordType } record url:records/${ document.getElementById('censusRecordURL').value.trim() }.jpg`
+        }
+    else document.getElementById('record').textContent = ''
+    
+    if (document.getElementById('censusSourceName').value.trim() || document.getElementById('censusSourceURL').value.trim()) document.getElementById('source').textContent = `source: ${ document.getElementById('censusSourceName').value.trim() } ${ document.getElementById('censusSourceURL').value }` 
+    else document.getElementById('source').textContent = ''
+    
+    if (document.getElementById('censusSourceDetails').value.trim()) document.getElementById('sourceDetails').textContent = `details: ${ document.getElementById('censusSourceDetails').value.trim() }` 
+    else document.getElementById('sourceDetails').textContent = ''
+    
+  
+      
+    if (document.getElementById('censusCParish').value.trim() || document.getElementById('censusSRD').value.trim() || document.getElementById('censusRD').value.trim()) {
+        out = ''
+        out += `div: `
+        if (document.getElementById('censusCParish').value.trim()) out += 'cparish ' + document.getElementById('censusCParish').value.trim()
+        if (document.getElementById('censusSRD').value.trim() || document.getElementById('censusRD').value.trim()) out += ', '
+        if (document.getElementById('censusSRD').value.trim()) out +=  'srd ' + document.getElementById('censusSRD').value.trim()
+        if (document.getElementById('censusRD').value.trim()) out += ', '
+        if (document.getElementById('censusRD').value.trim()) out +=  'rd ' + document.getElementById('censusRD').value.trim()
+        document.getElementById('cparish').textContent = out
+        }
+    else document.getElementById('cparish').textContent = ''
+  
+  
+    if (document.getElementById('censusPlace').value.trim()) document.getElementById('place').textContent = `place: ${ document.getElementById('censusPlace').value.trim() }` 
+    else document.getElementById('place').textContent = ''
+    
+    if (document.getElementById('roomsIn').value.trim()) document.getElementById('rooms').textContent = `rooms: ${ document.getElementById('roomsIn').value.trim() }` 
+    else document.getElementById('rooms').textContent = ''
+    
+    
+    
+    if (document.getElementById('headId').value.trim() || document.getElementById('censusHead').value.trim())
+        document.getElementById('head').textContent = `head: ${ document.getElementById('headId').value.trim() }, ${ document.getElementById('censusHead').value.trim() }` 
+    else document.getElementById('head').textContent = ''
+    
+    if (document.getElementById('wifeId').value.trim() || document.getElementById('censusWife').value.trim())
+        document.getElementById('wife').textContent = `wife: ${ document.getElementById('wifeId').value.trim() }, ${ document.getElementById('censusWife').value.trim() }` 
+    else document.getElementById('wife').textContent = ''
+    
+  
+    if (document.getElementById('marriedIn').value.trim()) document.getElementById('married').textContent = `married: ${ document.getElementById('marriedIn').value.trim() }` 
+    else document.getElementById('married').textContent = ''
+    
+    if (document.getElementById('censusOcc').value.trim()) document.getElementById('occ').textContent = `occ: ${ document.getElementById('censusOcc').value.trim() }` 
+    else document.getElementById('occ').textContent = ''
+
+    
+
+    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
+        document.getElementById('gps').textContent = `gps: ${ document.getElementById('gpsPlace').value.trim() }` 
+        if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim() }` 
+        document.getElementById('gps').textContent += `,`
+        }
+    else document.getElementById('gps').textContent = ''
+    
+
+    
+    if (document.getElementById('censusNotes').value.trim()) makeNotes(document.getElementById('censusNotes').value.trim(),'note') 
+    else document.getElementById('note').textContent = ''
+
+    if (document.getElementById('censusFNotes').value.trim()) makeNotes(document.getElementById('censusFNotes').value.trim(),'fnote') 
+    else document.getElementById('fnote').textContent = ''
+
+    if (document.getElementById('censusDisc').value.trim()) makeNotes(document.getElementById('censusDisc').value.trim(),'discussion') 
+    else document.getElementById('discussion').textContent = ''
+
+
+
+
+    }
 </script>
 <style>
 #draft p {
@@ -140,21 +286,22 @@ function formatGPS (str) {
   </div>
   <div id="subsubbanner">
     <div>
-      <button onClick="dump()">Go</button>
+      <!--textarea placeholder="Drop existing code here to partially complete the page."></textarea> <button onClick="dump()">Go</button-->
+    <strong>Id:</strong> 
+<input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
     </div>
   </div>
   <div id="main">
-    <h2>Census</h2>
     
       <div id="references">
       </div>
       
       
-    <table id="census" style="margin: 2em;">
-      <tr>
+    <table id="census" style="margin: 0 0 2em 2em;">
+      <!--tr>
         <td>Id:</td>
-        <td><input type="text" id="censusId" onChange="if (this.value!='') {listRelations(this.value);}"/>  <span class="redo" onClick="listRelations(document.getElementById('censusId').value);">🔁</span></td>
-      </tr>
+        <td><input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span></td>
+      </tr-->
       <tr>
         <td>Year:</td>
         <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
@@ -187,7 +334,7 @@ function formatGPS (str) {
       </tr>
       <tr>
         <td>Relation:</td>
-        <td><form onChange="doRelation(this.elements['censusRelation'].value)">
+        <td><form id="relationToHead" onChange="doRelation(this.elements['censusRelation'].value)">
             <input type="radio" name="censusRelation" value="head" 
             	onClick="document.getElementById('headId').value = document.getElementById('censusId').value;"/>
             head &nbsp;
@@ -206,41 +353,43 @@ function formatGPS (str) {
       </tr>
       <tr>
         <td>Record:</td>
-        <td><input type="text" id="censusRecordURL" style="width:200px;" onInput="if (document.getElementById('yearList').elements['censusYear'].value == '1939') {recordType='Registration';} else {recordType='Census';} document.getElementById('record').textContent = ' record: '+recordType+' record url:records/'+this.value+'.jpg';"/></td>
+        <td><input type="text" id="censusRecordURL" style="width:200px;" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Source:</td>
-        <td><input type="text" id="censusSourceName" onInput="document.getElementById('source').textContent = 'source: '+this.value+' '+document.getElementById('censusSourceURL').value;"/>
-          <input type="text" id="censusSourceURL" onInput="document.getElementById('source').textContent = 'source: '+document.getElementById('censusSourceName').value+' '+this.value;"/></td>
+        <td>
+        <input type="text" id="censusSourceName" onInput="draftResult()" placeholder="Source name.">
+        <input type="text" id="censusSourceURL" onInput="draftResult()" placeholder="Source URL."><br>
+        <input type="text" id="censusSourceDetails" onInput="draftResult()" placeholder="Copy here the detailed info for ED, Piece, etc." style="width:40em;">
+        </td>
       </tr>
        <tr>
         <td>CParish</td>
         <td>
-          <input type="text" id="censusCParish" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('cparish').innerHTML = 'div: cparish '+this.value+comma;"/>
+          <input type="text" id="censusCParish" onInput="draftResult()"/>
           SRD
-          <input type="text" id="censusSRD" onInput="if(this.value != ''){comma=',';} else{comma='';} document.getElementById('srd').innerHTML = 'srd '+this.value+comma;"/>
+          <input type="text" id="censusSRD" onInput="draftResult()"/>
           RD
-          <input type="text" id="censusRD" onInput="document.getElementById('rd').innerHTML = 'rd '+this.value;"/></td>
+          <input type="text" id="censusRD" onInput="draftResult()"/></td>
       </tr>
      <tr>
         <td>Place:</td>
-        <td><input type="text" id="censusPlace" style="width:400px;" onInput="document.getElementById('place').textContent = 'place: '+this.value;"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="document.getElementById('rooms').textContent = 'rooms: '+this.value;"/> rooms</td>
+        <td><input type="text" id="censusPlace" style="width:400px;" onInput="draftResult()"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="draftResult()"/> rooms</td>
       </tr>
      <tr>
         <td>Head:</td>
-        <td><input type="text" id="headId"  onInput="comma=''; if (this.value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+this.value+comma+document.getElementById('censusHead').value"/>
-          ,
-          <input type="text" id="censusHead" style="width: 400px;" onInput="comma=''; if (document.getElementById('headId').value != '') comma = ', '; document.getElementById('head').innerHTML = 'head: '+document.getElementById('headId').value+comma+this.value"/></td>
+        <td><input type="text" id="headId" placeholder="Id of head of household" onInput="draftResult()"/>,
+          <input type="text" id="censusHead" placeholder="Details provided for the head" style="width: 400px;" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Wife:</td>
         <td>
-          <input type="text" id="wifeId"  oninput="comma=''; if (this.value != '') comma = ', '; document.getElementById('wife').innerHTML = 'wife: '+this.value+comma+document.getElementById('censusWife').value"/>,
-        <input type="text" id="censusWife" style="width: 400px;" onInput="comma=''; if (document.getElementById('wifeId').value != '') comma=', '; document.getElementById('wife').innerHTML = 'wife: '+document.getElementById('wifeId').value+comma+this.value"/></td>
+          <input type="text" id="wifeId" placeholder="Id of wife of household" oninput="draftResult()"/>,
+        <input type="text" id="censusWife" placeholder="Details provided for the wife" style="width: 400px;" onInput="draftResult()"/></td>
       </tr>
        <tr>
         <td>Married:</td>
-        <td><input type="text" id="marriedIn" style="width:400px;" onInput="document.getElementById('married').textContent = 'married: '+this.value;"/></td>
+        <td><input type="text" id="marriedIn" placeholder="Number of years married" style="width:400px;" onInput="draftResult()"/></td>
       </tr>
       <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
       <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
@@ -248,31 +397,59 @@ function formatGPS (str) {
       <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
       <tr>
         <td>Occupation:</td>
-        <td><input type="text" id="censusOcc" style="width:200px;" onInput="document.getElementById('occ').textContent = 'occ: '+this.value;"/></td>
+        <td><input type="text" id="censusOcc" placeholder="of targeted individual (may be infant, etc.)" style="width:400px;" onInput="draftResult()"/></td>
       </tr>
+ 
+
+
       <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            document.getElementById('gpsPlace').value=this.value.split(':')[0]
+            document.getElementById('gpsCoords').value=this.value.split(':')[1]
+            "></select></td>
+        </tr>
+
+
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input type="text" id="gpsPlace" placeholder="Name of location" onInput="draftResult()" onChange="draftResult()">
+            <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" onInput="draftResult()" onChange="draftResult()">
+            </td>
+      </tr>
+
+
+     <!--tr>
         <td>GPS:</td>
         <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = 'gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)"/>
           <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)"/></td>
-      </tr>
+      </tr-->
       <tr style="visibility:hidden;">
         <td>Record title:</td>
         <td><input type="text" id="censusTitle" style="width:400px;" onInput="document.getElementById('title').textContent = this.value;"/></td>
       </tr>
       <tr>
-        <td>Notes:</td>
-        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')">{xxxx:kx} was</textarea></td>
+        <td style="vertical-align: top;">Notes:<br><button onClick="draftNotes()">Draft</button></td>
+        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')" style="padding: 1rem; font-size: 100%; height: 15rem;"></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
-        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')" placeholder="Each paragraph here will be listed below the entry as footnotes.  As for the notes field, used {xxxx:kx} for people's names."></textarea></td>
       </tr>
       <tr>
         <td>Discussion:</td>
         <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
       </tr>
    </table>
-    <div id="draft" style="margin:2em;">
+
+
+
+
+   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+
+
+    <div id="draft" style="margin:2em; color: teal;">
       <div>§ <span id="year"></span> Census <span id="title"></span></div>
       <div id="gps"></div>
       <div id="date"></div>
@@ -281,6 +458,7 @@ function formatGPS (str) {
 
       <div id="record"></div>
       <div id="source"></div>
+      <div id="sourceDetails"></div>
       <div><span id="cparish"></span> <span id="srd"></span> <span id="rd"></span></div>
       <div id="place"></div>
       <div id="rooms"></div>
@@ -303,5 +481,9 @@ function formatGPS (str) {
     </pre>
   </div>
 </div>
+
+<script>
+document.getElementById('clearAll').href = document.location
+</script>
 </body>
 </html>

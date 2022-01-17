@@ -1,0 +1,591 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Generic record entry</title>
+<link href="../../lib/style.css" rel="stylesheet">
+<style>
+td { vertical-align: top; padding-left: 1em; }
+details { margin-left: 2em; }
+</style>
+<script src="formentrylookup.js"></script>
+<script>
+// read in project
+var project
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project) alert('Specify the project name in the URL, using ?project=...')
+var db = document.createElement('script');
+db.src = '../../'+project+'/db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
+<script>
+
+function makeNotes (content, target) {
+	segments = content.split('\n')
+	var out = ''
+	for (var i=0;i<segments.length;i++) out += '<div>&quot;'+target+': '+segments[i]+'&quot;,</div>'
+	document.getElementById(target).innerHTML = out
+	}
+
+function autoPropagate (person) {
+    // Pull up a list of ids for related people, and fill in some fields automatically
+    if (person === '') {
+        alert('No id provided.')
+        return
+        }
+    
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placeIndex) 
+        out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+    document.getElementById('gpsList').innerHTML = out
+
+
+	listRelations(person)
+
+
+    if (db[person]) {
+		//document.getElementById('nameIn').value = db[person].g+' '+db[person].f
+		//document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
+		}
+	}
+
+function addQuotesTo (content) {
+	var out = ''
+	var lines = content.split('\n')
+	for (var i=0;i<lines.length;i++) {
+		if (lines[i].match(':')) {
+			var parts = lines[i].split(':')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			out += '['+parts[0]+': '+parts[1].trim()+']'
+			out += ',\n'
+			}
+		else if (lines[i].match('\t')) {
+			var parts = lines[i].split('\t')
+			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
+			parts[1] = parts[1].replace(/[\s]+/g,' ')
+			out += '['+parts[0]+': '+parts[1].trim()+']'
+			out += ',\n'
+			}
+		}
+	return out
+	}
+
+
+function createNotes (content) {
+	var out = ''
+	var lines = content.split('\n')
+	for (var i=0;i<lines.length;i++) out += lines[i].trim()+'\n'
+	return out
+	}
+
+
+function clearAll () {
+	inputs = document.querySelectorAll('input, textarea')
+	for (var i=0;i<inputs.length;i++) inputs[i].value = ''
+	
+	divs =  document.getElementById('draft').querySelectorAll('div')
+	for (i=0;i<divs.length;i++) divs[i].textContent = ''
+	document.getElementById('discussion').textContent = 'discussion: '
+	document.getElementById('start').textContent = '"death": ['
+	document.getElementById('end').textContent = "]"
+	}
+
+function formatGPS (str) {
+	str = str.replace(/https:\/\/maps.google.com\/maps\?q=/,'')
+	str = str.trim().replace(/,/,' ').replace(/\s+/,',')
+	return str
+	}
+</script>
+<style>
+#draft p {
+	margin: 0;
+	}
+#references {
+	font-size: 80%;
+	float: right;
+    margin-block-start: 4rem;
+	}
+#references p {
+	margin: 0;
+	}
+#references h3 {
+	margin-bottom: 0;
+	}
+.redo { font-size:120%; margin-left: 1em; cursor: pointer; }
+.copy { margin-left: 2em; cursor: pointer; background-color: rgba(107,167,227,1.00); color: white; border-radius: 5px; }
+.copy:hover { background-color: rgba(11,124,236,1.00); color: white; border-radius: 5px; }
+.heading { font-weight:bold; padding-top: 1em; font-size: 110%; }
+</style>
+
+<script>
+
+
+
+function draftResult () {
+    // called each time a field is changed; updates the output
+    
+    document.getElementById('id').textContent = `id: ${ document.getElementById('idIn').value.trim() },`
+
+
+// notes
+ 
+    if (document.getElementById('indexNoteIn').value.trim()) 
+        document.getElementById('indexNote').textContent = createNotes(document.getElementById('indexNoteIn').value.trim())
+    else document.getElementById('indexNote').textContent = ''
+
+
+// index
+    if (document.getElementById('indexSourceIn').value.trim() || document.getElementById('indexSourceURLIn').value.trim())
+        document.getElementById('indexSource').textContent = `\nSOURCE: ${ document.getElementById('indexSourceIn').value.trim() }  ${ document.getElementById('indexSourceURLIn').value.trim() },` 
+    else document.getElementById('indexSource').textContent = ''
+ 
+    if (document.getElementById('indexPastedIn').value.trim()) 
+        document.getElementById('indexPasted').textContent = addQuotesTo(document.getElementById('indexPastedIn').value.trim())
+    else document.getElementById('indexPasted').textContent = ''
+ 
+    if (document.getElementById('indexTextIn').value.trim()) 
+        document.getElementById('indexText').textContent = `text: ${ document.getElementById('indexTextIn').value.trim() },`
+    else document.getElementById('indexText').textContent = ''
+ 
+
+
+
+// second source
+    if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
+        document.getElementById('secondSource').textContent = `\nSOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() },` 
+    else document.getElementById('secondSource').textContent = ''
+ 
+    if (document.getElementById('secondImageIn').value.trim()) 
+        document.getElementById('secondImage').textContent = `record: Death url:records/${ document.getElementById('secondImageIn').value.trim() }${ document.getElementById('secondImageExtIn').value.trim() },`
+    else document.getElementById('secondImage').textContent = ''
+
+    if (document.getElementById('secondPastedIn').value.trim()) 
+        document.getElementById('secondPasted').textContent = addQuotesTo(document.getElementById('secondPastedIn').value.trim())
+    else document.getElementById('secondPasted').textContent = ''
+ 
+    if (document.getElementById('secondTextIn').value.trim()) 
+        document.getElementById('secondText').textContent = `text: ${ document.getElementById('secondTextIn').value.trim() },`
+    else document.getElementById('secondText').textContent = ''
+ 
+
+
+// burial record
+    if (document.getElementById('burSourceIn').value.trim() || document.getElementById('burSourceURLIn').value.trim())
+        document.getElementById('burSource').textContent = `\nSOURCE: ${ document.getElementById('burSourceIn').value.trim() }  ${ document.getElementById('burSourceURLIn').value.trim() },` 
+    else document.getElementById('burSource').textContent = ''
+ 
+    if (document.getElementById('burImageIn').value.trim()) 
+        document.getElementById('burImage').textContent = `record: Death url:records/${ document.getElementById('burImageIn').value.trim() }${ document.getElementById('burImageExtIn').value.trim() },`
+    else document.getElementById('burImage').textContent = ''
+
+    if (document.getElementById('burPastedIn').value.trim()) 
+        document.getElementById('burPasted').textContent = addQuotesTo(document.getElementById('burPastedIn').value.trim())
+    else document.getElementById('burPasted').textContent = ''
+ 
+    if (document.getElementById('burTextIn').value.trim()) 
+        document.getElementById('burText').textContent = `text: ${ document.getElementById('burTextIn').value.trim() },`
+    else document.getElementById('burText').textContent = ''
+ 
+ 
+ 
+
+
+
+
+
+
+// page building
+ 
+    if (document.getElementById('deathPlaceIn').value.trim()) 
+        document.getElementById('deathPlace').textContent = `deathPlace: ${ document.getElementById('deathPlaceIn').value.trim() },`
+    else document.getElementById('deathPlace').textContent = ''
+ 
+    if (document.getElementById('ageIn').value.trim()) 
+        document.getElementById('age').textContent = `age: ${ document.getElementById('ageIn').value.trim() },`
+    else document.getElementById('age').textContent = ''
+ 
+    if (document.getElementById('informantIn').value.trim()) 
+        document.getElementById('informant').textContent = `informant: ${ document.getElementById('informantIn').value.trim() },`
+    else document.getElementById('informant').textContent = ''
+ 
+    if (document.getElementById('occIn').value.trim()) 
+        document.getElementById('occ').textContent = `occ: ${ document.getElementById('occIn').value.trim() },`
+    else document.getElementById('occ').textContent = ''
+
+
+
+
+    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
+        document.getElementById('gps').textContent = `gps: ${ document.getElementById('gpsPlace').value.trim() }` 
+        if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim() }` 
+        document.getElementById('gps').textContent += `,`
+        }
+    else document.getElementById('gps').textContent = ''
+
+
+
+   }
+
+
+function checkDB (fieldname, dbfield, checkID) {
+    // checks certain values against what currently in the top-level db, and raises flags if they differ
+
+    thisPerson = document.getElementById('idIn').value.trim()
+
+    if (document.getElementById(fieldname).value.trim() !== db[thisPerson][dbfield])  document.getElementById(checkID).textContent = `The database currently has ${ db[thisPerson][dbfield] }`
+    else { document.getElementById(checkID).textContent = `` }
+
+    }
+</script>
+</head>
+
+
+<body>
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Generic record entry<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div><a href="birthentry.html">Birth</a> • <a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a></div>
+  </div>
+  <div id="subsubbanner">
+    <div>
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+    </div>
+  </div>
+  <div id="main">
+    
+      <div id="references">
+      </div>
+      
+<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">This page formats information for sources used in personal summary pages. The  fields in the expanding headings allow for capture of the available source information, and on the person summary page that information can be revealed using a toggle switch. The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
+
+
+
+
+
+
+
+<details open>
+<summary class="heading">Notes, etc.</summary>
+<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">Type any notes, quotes, etc into this box.  One per line.  Begin each line with 'note: ' or 'quote: '.</p>
+<table>
+<tr>
+<td colspan="2"><textarea id="indexNoteIn" class="noteTextBox" 
+    placeholder="Copy-paste or write a note here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+<details open>
+<summary class="heading">First source</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="indexSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="indexSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="indexNoteIn" class="textBox" 
+    placeholder="Copy-paste or write a note here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Key-value<br>pairs:</td>
+<td><textarea id="indexPastedIn" class="tallPasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="indexTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Other source</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="secondSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="secondSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="secondImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="secondImageExtIn" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Key-value<br>pairs:</td>
+<td><textarea id="secondPastedIn" class="tallPasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="secondTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+<summary class="heading">Third source</summary>
+<table>
+<tr>
+<td>Source:</td>
+<td><input type="text" id="burSourceIn" class="sourceBox"
+    placeholder="Source name"
+    onInput="draftResult()">
+    <input type="text" id="burSourceURLIn" class="sourceBox"
+    placeholder="Source URL"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Image:</td>
+<td><input type="text" id="burImageIn" class="imageBox" 
+    placeholder="File name of image in 'records' folder (no ext)"
+    onInput="draftResult()">
+    <input type="text" id="burImageExtIn" class="imageExtBox" 
+    placeholder="Extension"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr>
+<td>Key-value<br>pairs:</td>
+<td><textarea id="burPastedIn" class="tallPasteBox"
+    placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+<tr>
+<td>Text:</td>
+<td><textarea id="burTextIn" class="textBox" 
+    placeholder="Copy-paste or write textual information here.)"
+    onInput="draftResult()"></textarea>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+<table style="margin: 2em;">
+<tr>
+<td colspan="2" class="heading">Data for building the page</td></tr>
+     <tr>
+        <td>Year:</td>
+        <td colspan="3"><input type="text" id="deathYearIn"
+            placeholder="YYYY"
+            onInput="checkDB('deathYearIn', 'd', 'dCheck')">
+            <span class="instructions" id="dCheck" style="color:red;"></span></td>
+      </tr>
+     <tr>
+        <td>Date:</td>
+        <td colspan="3"><input type="text" id="deathDateIn"
+            placeholder="DD MMM or MMM-MMM, etc."
+            onInput="checkDB('deathDateIn', 'ddate', 'ddateCheck')">
+            <span class="instructions" id="ddateCheck" style="color:red;"></span></td>
+      </tr>
+<tr>
+<td>Place:</td>
+<td><input type="text" id="deathPlaceIn"  
+    placeholder="Place where they died (if different)." style="width:25rem;"
+    onInput="draftResult(); checkDB('deathPlaceIn', 'dplace', 'dplaceCheck')">
+    <span class="instructions" id="dplaceCheck" style="color:red;"></span></td>
+</tr>
+<tr>
+<td>Age:</td>
+<td><input type="text" id="ageIn"  
+    placeholder="DD (actual)"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Informant:</td>
+<td><input type="text" id="informantIn"  
+    placeholder="Name, relation, present at death?" style="width:25rem;"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Occupation:</td>
+<td><input type="text" id="occIn" 
+    placeholder="Add if you can." style="width:25rem;"
+    onInput="draftResult()"></td>
+</tr>
+
+    <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            document.getElementById('gpsPlace').value=this.value.split(':')[0]
+            document.getElementById('gpsCoords').value=this.value.split(':')[1]
+            draftResult()
+            "></select></td>
+        </tr>
+
+
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input type="text" id="gpsPlace" placeholder="Name of location" onInput="draftResult()" onChange="draftResult()">
+            <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" onInput="draftResult()" onChange="draftResult()">
+            </td>
+      </tr>
+
+
+
+
+      <tr>
+        <td>Notes:</td>
+        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
+      </tr>
+      <tr>
+        <td>FNotes:</td>
+        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+      </tr>
+      <tr>
+        <td>Discussion:</td>
+        <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+      </tr>
+   </table>
+   
+   
+   
+   <p class="instructions" style="margin-inline-start:4rem;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+   
+   
+    <div id="draft" style="margin:2rem; color: teal;">
+    
+      <div id="indexNote" style="white-space: pre;"></div>
+
+      <div id="id"></div>
+      <div id="name"></div>
+      <div id="of"></div>
+      <div id="deathPlace"></div>
+      <div id="age"></div>
+      <div id="cause"></div>
+      <div id="occ"></div>
+
+      <div id="father"></div>
+      <div id="fatherId"></div>
+      <div id="focc"></div>
+      <div id="mother"></div>
+      <div id="motherId"></div>
+      <div id="informant"></div>
+      <div id="gps"></div>
+      
+      
+      <!-- index -->
+      <div id="indexSource" style="white-space: pre;"></div>
+      <div id="indexText"></div>
+      <div id="indexName"></div>
+      <div id="indexAge"></div>
+      <div id="indexPasted" style="white-space:pre-line"></div>
+      <div id="deathRecord"></div>
+      
+      <!-- 2nd source -->
+      <div id="secondSource" style="white-space: pre;"></div>
+      <div id="secondImage"></div>
+      <div id="secondPasted" style="white-space:pre-line"></div>
+      <div id="secondText"></div>
+      
+      <!-- burial -->
+      <div id="burSource" style="white-space: pre;"></div>
+      <div id="burImage"></div>
+      <div id="burText"></div>
+      <div id="burName"></div>
+      <div id="burAbode"></div>
+      <div id="burAge"></div>
+      <div id="burPasted" style="white-space:pre-line"></div>
+      
+      <div>&nbsp;</div>
+      <div id="note"></div>
+      <div id="fnote"></div>
+      <div id="discussion">discussion: </div>
+      </div>
+      
+      
+    <pre id="places">
+    </pre>
+  </div>
+</div>
+
+<script>
+document.getElementById('clearAll').href = document.location
+</script>
+</body>
+</html>

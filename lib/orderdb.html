@@ -73,9 +73,9 @@ for (i=0;i<keys.length;i++) {
 		out += ']'
 		}
 	if (db[keys[i]].cstatus) {
-		out += ', cstatus:"'+db[keys[i]].cstatus+'"'
+		out += ', cstatus:"'+db[keys[i]].cstatus+'",'
 		}
-	if (db[keys[i]].fg) out += ','
+	//if (db[keys[i]].fg) out += ','
 	out += '\n'
 	
 	if (db[keys[i]].fg) {
@@ -89,9 +89,15 @@ for (i=0;i<keys.length;i++) {
 				}
 			out += ']'
 			}
-		out += ']\n'
+		out += '],\n'
 		}
-	
+    
+    if (typeof db[keys[i]].recordData === 'undefined') {
+        out += 'recordData:\n{\n}\n'
+        }
+    else out += `recordData:\n${ JSON.stringify(db[keys[i]].recordData, null, ' ') }\n`
+    
+    
 	out += '},\n\n'
 	}
 
