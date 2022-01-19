@@ -1,5 +1,17 @@
+@font-face {
+    font-family: 'TriangleWF';
+    src: url('fonts/notosanssymbols2-regular-webfont_triangle.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+	} /* contains only one character: ⏵ */
+
+
+
+
+
 /*body { font: 19.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } */
-body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } 
+/*body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial, TriangleWF, sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } */
+body { font: 16.5px/1.45 "Helvetica Neue", Arial, TriangleWF, sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } 
 #summaryIn { display: none; }
 #main { background-color: #f8f7f3; }
 #topMenu { font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; bottom: 0; width: 100%; }
@@ -107,3 +119,51 @@ article {
 .floatedIcons {
     margin: 0;
 }
+
+
+.noteTextBox {
+    width: 40rem;
+    height: 8rem;
+    }
+.tallPasteBox {
+    height: 12rem;
+    width: 30rem;
+    }
+.wideInputBox {
+    width: 30rem;
+    }
+.halfInputBox {
+    width: 14.5rem;
+    }
+.sourceBox {
+    width: 14.5rem;
+    }
+.imageBox {
+    width: 24rem;
+    }
+.extBox {
+    width: 5rem;
+    }
+.textBox {
+    width: 30rem;
+    }
+.wideTextArea {
+    width: 30rem;
+    height: 6rem;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

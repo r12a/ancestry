@@ -511,7 +511,7 @@ onInput="draftResult()">
 </tr>
 <tr>
 <td>Paste:</td>
-<td><textarea id="indexPastedIn" class="pasteBox"
+<td><textarea id="indexPastedIn" class="tallPasteBox"
 placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
 onInput="draftResult()"></textarea>
 </td>
@@ -550,84 +550,84 @@ onInput="draftResult()"></textarea>
 <td><input type="text" id="certImageIn" class="imageBox" 
     placeholder="File name of image in 'records' folder (no ext)"
     onInput="draftResult()">
-    <input type="text" id="certImageExtIn" value=".jpg" class="imageExtBox" 
+    <input type="text" id="certImageExtIn" value=".jpg" class="extBox" 
     placeholder="Extension"
     onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>At:</td>
-  <td><input type="text" id="certAtIn" style="width:25rem;"
+  <td><input type="text" id="certAtIn" class="wideInputBox"
           placeholder="Information after 'Marriage solemnized at...'"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>When married:</td>
-  <td><input type="text" id="certWhenIn" style="width:25rem;"
+  <td><input type="text" id="certWhenIn" class="wideInputBox"
           placeholder="Information after 'Marriage solemnized at...'"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Name:</td>
-<td><input type="text" id="certNameIn" style="width:25rem;"
+<td><input type="text" id="certNameIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Age:</td>
-  <td><input type="text" id="certAgeIn" style="width:25rem;"
+  <td><input type="text" id="certAgeIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Condition:</td>
-  <td><input type="text" id="certConditionIn" style="width:25rem;"
+  <td><input type="text" id="certConditionIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Rank/profession:</td>
-  <td><input type="text" id="certProfessionIn" style="width:25rem;"
+  <td><input type="text" id="certProfessionIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Residence:</td>
-  <td><input type="text" id="certResidenceIn" style="width:25rem;"
+  <td><input type="text" id="certResidenceIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Father:</td>
-<td><input type="text" id="certFNameIn" style="width:25rem;"
+<td><input type="text" id="certFNameIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()">
 <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certFName').textContent = '&quot;[Father: '+document.getElementById('certFNameIn').value+']&quot;,'">✔</span></td>
 </tr>
 <tr>
   <td>Father occupation:</td>
-  <td><input type="text" id="certFOccIn" style="width:25rem;"
+  <td><input type="text" id="certFOccIn" class="wideInputBox"
           placeholder="Groom; Bride"
           onInput="draftResult()"/>
           <span class="copy" title="Add to metadata." onClick="document.getElementById('focc').textContent = '&quot;focc: '+document.getElementById('certOccIn').value+'&quot;,'; document.getElementById('foccIn').value = document.getElementById('certOccIn').value;">✚</span></td>
 </tr>
 <tr>
   <td>By:</td>
-  <td><input type="text" id="certByIn" style="width:25rem;"
+  <td><input type="text" id="certByIn" class="wideInputBox"
           placeholder="Banns, licence, etc."
           onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>Signatures:</td>
-  <td><input type="text" id="certSignedIn" style="width:25rem;"
+  <td><input type="text" id="certSignedIn" class="wideInputBox"
           placeholder="Groom signature/mark; Bride signature/mark"
           onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>Witnesses:</td>
-  <td><input type="text" id="certWitnessIn" style="width:25rem;"
+  <td><input type="text" id="certWitnessIn" class="wideInputBox"
           placeholder="Comma-separated names"
           onInput="draftResult()">
 </td>
@@ -675,65 +675,65 @@ onInput="draftResult()"></textarea>
 <td><input type="text" id="parishImageIn" class="imageBox" 
     placeholder="File name of image in 'records' folder (no ext)"
     onInput="draftResult()">
-<input type="text" id="parishImageExtIn" value=".jpg" class="imageExtBox" 
+<input type="text" id="parishImageExtIn" value=".jpg" class="extBox" 
     placeholder="Extension"
     onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>Parish:</td>
-  <td><input type="text" id="parishOfIn" style="width:25rem;"
+  <td><input type="text" id="parishOfIn" class="wideInputBox"
           placeholder="[In the Parish of] ..."
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Groom:</td>
-  <td><input type="text" id="parishGroomIn" style="width:25rem;"
+  <td><input type="text" id="parishGroomIn" class="wideInputBox"
           placeholder="Groom name"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Groom details:</td>
-  <td><input type="text" id="parishGDetailsIn" style="width:25rem;"
+  <td><input type="text" id="parishGDetailsIn" class="wideInputBox"
           placeholder="[of]..."
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Bride:</td>
-  <td><input type="text" id="parishBrideIn" style="width:25rem;"
+  <td><input type="text" id="parishBrideIn" class="wideInputBox"
           placeholder="Bride name"
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>Bride details:</td>
-  <td><input type="text" id="parishBDetailsIn" style="width:25rem;"
+  <td><input type="text" id="parishBDetailsIn" class="wideInputBox"
           placeholder="[of]..."
           onInput="draftResult()"></td>
 </tr>
 <tr>
   <td>By:</td>
-  <td><input type="text" id="parishByIn" style="width:25rem;"
+  <td><input type="text" id="parishByIn" class="wideInputBox"
           placeholder="Banns, licence, etc."
           onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>When:</td>
-  <td><input type="text" id="parishWhenIn" style="width:25rem;"
+  <td><input type="text" id="parishWhenIn" class="wideInputBox"
           placeholder="Date of marriage"
           onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>Signatures:</td>
-  <td><input type="text" id="parishSignedIn" style="width:25rem;"
+  <td><input type="text" id="parishSignedIn" class="wideInputBox"
           placeholder="Groom signature/mark; Bride signature/mark"
           onInput="draftResult()">
 </td>
 </tr>
 <tr>
   <td>Witnesses:</td>
-  <td><input type="text" id="parishWitnessesIn" style="width:25rem;"
+  <td><input type="text" id="parishWitnessesIn" class="wideInputBox"
           placeholder="Comma-separated names"
           onInput="draftResult()">
 </td>
@@ -770,14 +770,14 @@ onInput="draftResult()"></textarea>
 <td><input type="text" id="secondImageIn" class="imageBox" 
     placeholder="File name of image in 'records' folder (no ext)"
     onInput="draftResult()">
-    <input type="text" id="secondImageExtIn" value=".jpg" class="imageExtBox" 
+    <input type="text" id="secondImageExtIn" value=".jpg" class="extBox" 
     placeholder="Extension"
     onInput="draftResult()">
     </td>
 </tr>
 <tr>
 <td>Paste:</td>
-<td><textarea id="secondPastedIn" class="pasteBox"
+<td><textarea id="secondPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
     </td>
@@ -803,7 +803,7 @@ onInput="draftResult()"></textarea>
 
 
 
-<table style="margin-inline-start: 2rem; color: chocolate;">
+<table style="margin-inline-start: 2rem; color: teal;">
 <tr>
 <td colspan="2" class="heading">Data for building the page</td></tr>
 <tr>
@@ -822,94 +822,94 @@ onInput="draftResult()"></textarea>
     <td><input type="text" id="spouseIdIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="draftResult()"/></td>
   </tr>
         <td>Place:</td>
-        <td><input type="text" id="marrPlaceIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="marrPlaceIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom:</td>
-        <td><input type="text" id="groomIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="groomIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom id:</td>
-        <td><input type="text" id="gidIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gidIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride:</td>
-        <td><input type="text" id="brideIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="brideIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride id:</td>
-        <td><input type="text" id="bidIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bidIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom age:</td>
-        <td><input type="text" id="gageIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gageIn" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride age:</td>
-        <td><input type="text" id="bageIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bageIn" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom residence:</td>
-        <td><input type="text" id="gparishIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gparishIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride residence:</td>
-        <td><input type="text" id="bparishIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bparishIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom status:</td>
-        <td><input type="text" id="gstatusIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gstatusIn" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride status:</td>
-        <td><input type="text" id="bstatusIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bstatusIn" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom occupation:</td>
-        <td><input type="text" id="goccIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="goccIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride occupation:</td>
-        <td><input type="text" id="boccIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="boccIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
 
 
       <tr>
         <td>Groom father:</td>
-        <td><input type="text" id="gfatherIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gfatherIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom father id:</td>
-        <td><input type="text" id="gfidIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gfidIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Groom father occ:</td>
-        <td><input type="text" id="gfoccIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="gfoccIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride father:</td>
-        <td><input type="text" id="bfatherIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bfatherIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
       <tr>
         <td>Bride father id:</td>
-        <td><input type="text" id="bfidIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bfidIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
        <tr>
         <td>Bride father occ:</td>
-        <td><input type="text" id="bfoccIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="bfoccIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
        <tr>
         <td>Witnesses:</td>
-        <td><input type="text" id="witnessesIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="witnessesIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>
        <tr>
         <td>By:</td>
-        <td><input type="text" id="byIn" style="width:200px;" onInput="draftResult()"/></td>
+        <td><input type="text" id="byIn" onInput="draftResult()"/></td>
       </tr>
-       <tr>
+       <!--tr>
         <td>Length of marr:</td>
-        <td><input type="text" id="lengthIn" style="width:200px;" onInput="draftResult()"/></td>
-      </tr>
+        <td><input type="text" id="lengthIn" class="wideInputBox" onInput="draftResult()"/></td>
+      </tr-->
 
 
 
@@ -925,8 +925,8 @@ onInput="draftResult()"></textarea>
       <tr>
         <td>&nbsp;</td>
         <td>
-            <input type="text" id="gpsPlace" placeholder="Name of location" onInput="draftResult()" onChange="draftResult()">
-            <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" onInput="draftResult()" onChange="draftResult()">
+            <input type="text" id="gpsPlace" placeholder="Name of location" class="halfInputBox" onInput="draftResult()" onChange="draftResult()">
+            <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" class="halfInputBox" onInput="draftResult()" onChange="draftResult()">
             </td>
       </tr>
       <tr>
@@ -948,7 +948,7 @@ onInput="draftResult()"></textarea>
    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
    
    
-   <div id="draft" style="margin:2rem; color: teal;">
+   <div id="draft" style="margin:2rem; color: brown;">
     <div id="start">marriages: {</div>
       <div id="spouseId">: [</div>
 
