@@ -1,4 +1,4 @@
-body { font: 19.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;   background-color: #f8f7f3; }
+body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;   background-color: #f8f7f3; }
 
 /* structural stuff */
 #parents, #children, #gparents { display: flex; flex-flow: row nowrap; width: 100%; }
@@ -12,10 +12,10 @@ body { font: 19.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -m
 .gparent, .parent, .child { text-align: left; border: 1px solid #ccc; margin: .5em; padding: 0.2em; background-color: #D1CAB0; background-color: #F0eee9;border-radius: 4px; font-size: 16px; }
 
 
-#topMenu { font-size: 70%; color: #666; background-color: #eee; text-transform: uppercase; line-height: 2; padding-right: 2em; text-align: end; position: fixed; bottom: 0; width: 100%; }
+#topMenu { font-size: 70%; color: #666; background-color: #eee; text-transform: uppercase; line-height: 2; padding-right: 2em; text-align: start; position: fixed; bottom: 0; width: 100%; background: #dedcd6; }
 #topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; font-weight: normal; }
 
-#main { padding: 2em; }
+#main { padding: 0 2em; }
 
 .name { font-size: 120%; }
 .gparent .name { font-size: 110%; }
@@ -47,3 +47,74 @@ a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; font-wei
 
 #siblings { margin-top: 3em; text-align: center; cursor: pointer; }
 .noissue { color:#aaa; margin-top: 2em; }
+
+/*
+#banner {
+    height: 5em;
+    width: 100%;
+    background-color: #706B63;
+    display: flex;
+    align-items: center;
+    border-top-left-radius: .5em;
+    border-top-right-radius: .5em;
+    }
+#bannerdates {
+  font-size: 70%;
+  text-align: center;
+    }
+#xbanner::before {
+  content: '⏳';
+  font-size: 4rem;
+  padding: 1rem;
+}
+*/
+#banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; border-top-left-radius: .5em; border-top-right-radius: .5em; }
+#bannerdates { font-size: 53%; text-align: center; }
+#pagetitle {
+    font-size: 280%;
+    margin: auto;
+    color: rgb(248, 247, 243);
+    line-height: .8;
+    max-width: 80%;
+    }
+
+
+#pageicon {
+  position: absolute;
+  font-size: 4rem;
+  padding: 1rem 2rem;
+}
+
+#floatingLinks {
+    position: fixed; 
+    right: 0; 
+    bottom: 0; 
+    display:flex;
+    flex-direction: row-reverse;
+    width: 4rem; 
+    justify-content: space-around;
+    background: #dedcd6;
+    border-top-left-radius: 1rem;
+    text-align: center;
+    font-size: 1.6rem;
+    padding: .2rem;
+    padding-inline-start: 1rem;
+    height: 2rem;
+    line-height: 1.4;
+    align-content: center;
+    }
+#floatingLinks a {
+    color: gray;
+    margin:0;
+    padding: 0;
+    }
+
+
+
+
+
+
+
+
+
+

@@ -26,7 +26,7 @@ document.head.appendChild(db)
 
 <script>
 
-function draftNotes () {
+function draftNotesOLD () {
     var out = ''
     var node = document.getElementById('censusNotes')
     var headId = document.getElementById('headId').value
@@ -61,6 +61,69 @@ function draftNotes () {
             if (i>0) out += ', '
             if (i === allothers-1) out += ' and '
             out += ` {other_id:kf}, AGE, OCCUPATION`
+            }
+        out += '.'
+        }
+
+    node.value = out
+    }
+
+function draftNotes () {
+    var out = ''
+    var node = document.getElementById('censusNotes')
+    var headId = document.getElementById('headId').value
+    var wifeId = document.getElementById('wifeId').value
+    
+    if (headId) out += `{${ headId }:kx}`
+    else out +=  `${ document.getElementById('censusHeadName').value }`
+    if (document.getElementById('censusHeadAge').value) out += `, ${ document.getElementById('censusHeadAge').value }`
+    if (document.getElementById('censusHeadOcc').value) out += `, was a ${ document.getElementById('censusHeadOcc').value }`
+    out += '. '
+    
+    if (document.getElementById('censusWifeName').value) {
+        if (wifeId) out += `His wife {${ wifeId }:kx}`
+        else out +=  `His wife ${ document.getElementById('censusWifeName').value }`
+        if (document.getElementById('censusWifeAge').value) out += ` was ${ document.getElementById('censusWifeAge').value }`
+        if (document.getElementById('censusWifeOcc').value) out += `, and was a ${ document.getElementById('censusWifeOcc').value }`
+        out += '.'
+        }
+    
+    var children = document.getElementById('child').querySelectorAll('div')
+    
+    if (children && children.length>0) {
+        if (children.length === 1) out += ` The child was`
+        else out += ` The children were`
+        for (var i=0;i<children.length;i++) {
+            if (i>0) out += ','
+            if (i === children.length-1 && children.length > 1) out += ' and'
+            // use the name if there is no id
+            var personName = ''
+            if (children[i].querySelector('.inputID').value.trim()) out += ` {${ children[i].querySelector('.inputID').value }:k}`
+            else out += ` ${ children[i].querySelector('.inputName').value }`
+            if (children[i].querySelector('.inputAge').value) out += `, ${ children[i].querySelector('.inputAge').value }`
+            if (children[i].querySelector('.inputOcc').value) out += `, ${ children[i].querySelector('.inputOcc').value }`
+            }
+        out += '.'
+        }
+    
+    var others = []; var servs = []; var visitors = []
+    others = document.getElementById('other').querySelectorAll('div')
+    servs = document.getElementById('serv').querySelectorAll('div')
+    visitors = document.getElementById('visitor').querySelectorAll('div')
+    
+    var allothers = document.querySelectorAll('#other div, #serv div, #visitor div')
+
+    console.log(allothers)
+    if (allothers.length>0 ) {
+        out += `\nAlso at the house`
+        if (allothers.length === 1) out += ' was '
+        else out += ' were '
+        for (var i=0;i<allothers.length;i++) {
+            if (i === allothers.length-1  && allothers.length > 1) out += ' and '
+            if (allothers[i].querySelector('.inputID').value) out += `{${ allothers[i].querySelector('.inputID').value }:kfm}, `
+            else out += allothers[i].querySelector('.inputName').value+', '
+            if (allothers[i].querySelector('.inputAge').value) out += allothers[i].querySelector('.inputAge').value+', '
+            if (allothers[i].querySelector('.inputOcc').value) out += `, ${ allothers[i].querySelector('.inputOcc').value }`
             }
         out += '.'
         }
@@ -133,6 +196,71 @@ function addField (type) {
 	p = document.createElement('div')
 	p.id = input.id+'out'
 	document.getElementById(type+'Out').appendChild(p)
+	}
+
+function addField (type) {
+    var out = ''
+    
+	currentPeople = document.getElementById(type).querySelectorAll('div')
+	if (currentPeople) numberOfPeople = currentPeople.length+1
+	else currentPeople = 1
+    
+    var div = document.createElement('div')
+    div.id = type+numberOfPeople
+    
+    var inputID = document.createElement('input')
+    inputID.className = 'inputID'
+    inputID.placeholder = 'ID (if available)'
+	inputID.oninput = function () { updateSplitField(this.parentNode.id, type) }
+    div.appendChild(inputID)
+
+    var inputName = document.createElement('input')
+    inputName.className = 'inputName'
+    inputName.placeholder = 'Full name'
+	inputName.oninput = function () { updateSplitField(this.parentNode.id, type) }
+    div.appendChild(inputName)
+
+    var inputAge = document.createElement('input')
+    inputAge.className = 'inputAge'
+    inputAge.placeholder = 'Age'
+    inputAge.style.width = '2rem'
+	inputAge.oninput = function () { updateSplitField(this.parentNode.id, type) }
+    div.appendChild(inputAge)
+
+    var inputOcc = document.createElement('input')
+    inputOcc.className = 'inputOcc'
+    inputOcc.placeholder = 'Occupation'
+	inputOcc.oninput = function () { updateSplitField(this.parentNode.id, type) }
+    div.appendChild(inputOcc)
+
+    var inputOther = document.createElement('input')
+    inputOther.className = 'inputOther'
+    inputOther.placeholder = 'Other'
+	inputOther.oninput = function () { updateSplitField(this.parentNode.id, type) }
+    div.appendChild(inputOther)
+
+    var inputBorn = document.createElement('input')
+    inputBorn.className = 'inputBorn'
+    inputBorn.placeholder = 'Born at'
+	inputBorn.oninput = function () { updateSplitField(this.parentNode.id, type) }
+    div.appendChild(inputBorn)
+
+    document.getElementById(type).appendChild(div)
+
+
+	
+	p = document.createElement('div')
+	p.id = div.id+'out'
+	document.getElementById(type+'Out').appendChild(p)
+	}
+
+
+function updateSplitField (id, type) {
+    var out = ''
+    var content = ''
+    inputs = document.getElementById(id).querySelectorAll('input')
+    for (var i=0;i<inputs.length;i++) content += inputs[i].value+', '
+	document.getElementById(id+'out').innerHTML = type+": "+content
 	}
 
 function updateField (id, content) { 
@@ -218,13 +346,37 @@ function draftResult () {
     
     
     
-    if (document.getElementById('headId').value.trim() || document.getElementById('censusHead').value.trim())
-        document.getElementById('head').textContent = `head: ${ document.getElementById('headId').value.trim() }, ${ document.getElementById('censusHead').value.trim() }` 
+    if (document.getElementById('headId').value.trim() || document.getElementById('censusHeadName').value.trim() || document.getElementById('censusHeadAge').value.trim() || document.getElementById('censusHeadOcc').value.trim() || document.getElementById('censusHeadBorn').value.trim() || document.getElementById('censusHeadOther').value.trim()) {
+        var headSummary = []
+        if (document.getElementById('headId').value.trim()) headSummary.push(document.getElementById('headId').value.trim())
+        else headSummary.push(document.getElementById('censusHeadName').value.trim())
+        if (document.getElementById('censusHeadName').value.trim()) headSummary.push(document.getElementById('censusHeadName').value.trim())
+        else headSummary.push('unknown')
+        if (document.getElementById('censusHeadAge').value.trim()) headSummary.push(document.getElementById('censusHeadAge').value.trim())
+        if (document.getElementById('censusHeadOcc').value.trim()) headSummary.push(document.getElementById('censusHeadOcc').value.trim())
+        if (document.getElementById('censusHeadBorn').value.trim()) headSummary.push(document.getElementById('censusHeadBorn').value.trim())
+        if (document.getElementById('censusHeadOther').value.trim()) headSummary.push(document.getElementById('censusHeadOther').value.trim())
+        document.getElementById('head').textContent = `head: ${ headSummary.join(', ') }` 
+        }
     else document.getElementById('head').textContent = ''
     
-    if (document.getElementById('wifeId').value.trim() || document.getElementById('censusWife').value.trim())
-        document.getElementById('wife').textContent = `wife: ${ document.getElementById('wifeId').value.trim() }, ${ document.getElementById('censusWife').value.trim() }` 
+    if (document.getElementById('wifeId').value.trim() || document.getElementById('censusWifeName').value.trim() || document.getElementById('censusWifeAge').value.trim() || document.getElementById('censusWifeOcc').value.trim() || document.getElementById('censusWifeBorn').value.trim() || document.getElementById('censusWifeOther').value.trim()) {
+        var wifeSummary = []
+        if (document.getElementById('wifeId').value.trim()) wifeSummary.push(document.getElementById('wifeId').value.trim())
+        else wifeSummary.push(document.getElementById('censusWifeName').value.trim())
+        if (document.getElementById('censusWifeName').value.trim()) wifeSummary.push(document.getElementById('censusWifeName').value.trim())
+        else wifeSummary.push('unknown')
+        if (document.getElementById('censusWifeAge').value.trim()) wifeSummary.push(document.getElementById('censusWifeAge').value.trim())
+        if (document.getElementById('censusWifeOcc').value.trim()) wifeSummary.push(document.getElementById('censusWifeOcc').value.trim())
+        if (document.getElementById('censusWifeBorn').value.trim()) wifeSummary.push(document.getElementById('censusWifeBorn').value.trim())
+        if (document.getElementById('censusWifeOther').value.trim()) wifeSummary.push(document.getElementById('censusWifeOther').value.trim())
+        document.getElementById('wife').textContent = `wife: ${ wifeSummary.join(', ') }` 
+        }
     else document.getElementById('wife').textContent = ''
+    
+    /*if (document.getElementById('wifeId').value.trim() || document.getElementById('censusWife').value.trim())
+        document.getElementById('wife').textContent = `wife: ${ document.getElementById('wifeId').value.trim() }, ${ document.getElementById('censusWife').value.trim() }` 
+    else document.getElementById('wife').textContent = ''*/
     
   
     if (document.getElementById('marriedIn').value.trim()) document.getElementById('married').textContent = `married: ${ document.getElementById('marriedIn').value.trim() }` 
@@ -377,15 +529,26 @@ function draftResult () {
         <td><input type="text" id="censusPlace" style="width:400px;" onInput="draftResult()"/> &nbsp; <input type="text" id="roomsIn" style="width:40px;" onInput="draftResult()"/> rooms</td>
       </tr>
      <tr>
-        <td>Head:</td>
+        <td style="vertical-align: top;">Head:</td>
         <td><input type="text" id="headId" placeholder="Id of head of household" onInput="draftResult()"/>,
-          <input type="text" id="censusHead" placeholder="Details provided for the head" style="width: 400px;" onInput="draftResult()"/></td>
+          <input type="text" id="censusHeadName" placeholder="Name" onInput="draftResult()"/>
+          <input type="text" id="censusHeadAge" placeholder="Age" onInput="draftResult()" style="width:3rem;">
+          <input type="text" id="censusHeadOcc" placeholder="Occupation" onInput="draftResult()"/>
+          <input type="text" id="censusHeadBorn" placeholder="Born at..." onInput="draftResult()"/>
+          <input type="text" id="censusHeadOther" placeholder="Other" onInput="draftResult()"/>
+          </td>
       </tr>
       <tr>
-        <td>Wife:</td>
+        <td style="vertical-align: top;">Wife:</td>
         <td>
           <input type="text" id="wifeId" placeholder="Id of wife of household" oninput="draftResult()"/>,
-        <input type="text" id="censusWife" placeholder="Details provided for the wife" style="width: 400px;" onInput="draftResult()"/></td>
+        <!--input type="text" id="censusWife" placeholder="Details provided for the wife" style="width: 400px;" onInput="draftResult()"/-->
+           <input type="text" id="censusWifeName" placeholder="Name" onInput="draftResult()"/>
+          <input type="text" id="censusWifeAge" placeholder="Age" onInput="draftResult()" style="width:3rem;">
+          <input type="text" id="censusWifeOcc" placeholder="Occupation" onInput="draftResult()"/>
+          <input type="text" id="censusWifeBorn" placeholder="Born at..." onInput="draftResult()"/>
+          <input type="text" id="censusWifeOther" placeholder="Other" onInput="draftResult()"/>
+       </td>
       </tr>
        <tr>
         <td>Married:</td>

@@ -53,11 +53,12 @@ summary { font-size: 90%; text-align: start; cursor: pointer; }
 details pre { font-size: 80%; white-space: pre-wrap; }
 textarea { width: 90%; height: 100px; }
 .marriage { border-color: red; border-width: 2px; border-left: 2px solid red; }
-.death { border-color: black; border-width: 2px; }
-.familydeath { border-color: black; border-width: 1px; background-color: #F0eee9; }
+.death { border-color: black; border-width: 2px; border-left: 2px solid black; }
+.familydeath { border-color: black; border-width: 1px; background-color: #F0eee9; border-left: 2px solid black; }
 .footnotes { font-size: 80%; margin-top: 1em; }
 .footnotes p { margin-top: 1em; }
 .footnotes ol { margin-top: 0; margin-bottom: 0; }
+.commentaryIcon { margin-top: 0; float: right; }
 a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; }
 #places { background-color: #dedcd6; color: rgb(83, 77, 70); font-size: 80%; padding: 0.5em 3em;  margin-top: 3em; margin-bottom: 2em; }
 #places p { margin: .3em 0; }
@@ -152,11 +153,51 @@ article {
     height: 6rem;
     }
 
+#floatingLinksX {
+    position: fixed; 
+    right: -1rem; 
+    bottom: 3rem; 
+    display:flex;
+    flex-direction: row-reverse;
+    width: 14rem; 
+    justify-content: space-around;
+    background: silver;
+    border-radius: 1rem;
+    text-align: center;
+    font-size: 2rem;
+    padding: .2rem;
+    height: 2.8rem;
+    line-height: 1.4;
+    align-content: center;
+    }
+#floatingLinks {
+    position: fixed; 
+    right: 0; 
+    bottom: 0; 
+    display:flex;
+    flex-direction: row;
+    width: 14rem; 
+    justify-content: space-around;
+    background: #dedcd6;
+    border-top-left-radius: 1rem;
+    text-align: center;
+    font-size: 1.6rem;
+    padding: .2rem;
+    padding-inline-start: 1rem;
+    height: 2rem;
+    line-height: 1.4;
+    align-content: center;
+    }
+#floatingLinks a {
+    color: gray;
+    margin:0;
+    padding: 0;
+    }
 
 
-
-
-
+.place {
+    color: chocolate;
+    }
 
 
 

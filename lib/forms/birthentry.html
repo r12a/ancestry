@@ -77,14 +77,22 @@ function autoPropagate (person) {
 			for (i=0;i<parent.fg.length;i++) {
 				for (j=2;j<parent.fg[i].length;j++) {
 					if ((s = parent.fg[i][j]) !== person && db[s]) {
-						if (j>2) siblings += ', '
-						siblings += s
+                        // check whether sibling already died
+                        if (db[s].d && db[person].b && db[s].d < db[person].b) {
+                            console.log('Skipping sibling',  db[s].g)
+                            continue
+                            }
+                        // otherwise, add sibling to the list
+						//if (j>2) siblings += ', '
+						siblings += s + ', '
+                        console.log(s, j, i)
 						}
 					else { break }
 					}
 				}
 			}
-		document.getElementById('siblings').innerHTML = '&quot;siblings: '+siblings.trim()+'&quot;,'
+        siblings = siblings.slice(0,siblings.length-2)
+		document.getElementById('siblings').innerHTML = '&quot;siblings: '+siblings.trim(',')+'&quot;,'
 		}
 	}
 
