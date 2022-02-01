@@ -29,9 +29,43 @@ summary:hover { background-color: #eee; }
 .spouse { margin-top: 0; margin-bottom: 0; margin-inline-start: 3rem; /*background-color: #eee;*/ font-style: italic; color: gray; }
 details { margin-left: 3em; border-left: 1px solid #ccc; color: #333; /*border-bottom: 1px solid #ccc;*/  }
 details[open] { width: auto; }
-.dates, .bplace, .occ { font-size: 70%; margin-left: 1em; color: gray; }
-details a { float:right; }
+.dates, .bplace, .occ { font-size: 70%; margin-left: 1em; color: chocolate; }
+details a { 
+    float:right;
+    font-size: 1rem;
+    /*border-radius: .2rem;
+    background: gainsboro;*/
+    }
 .bplace, .occ { display: none; }
+#pageicon {
+  position: absolute;
+  font-size: 4rem;
+  padding: 1rem 2rem;
+  color: white;
+}
+#floatingLinks {
+    position: fixed; 
+    right: 0; 
+    top: 0; 
+    display:flex;
+    flex-direction: column-reverse;
+    width: 1.6rem; 
+    justify-content: space-around;
+    background: transparent;
+    border-bottom-left-radius: 1rem;
+    text-align: center;
+    font-size: 1.6rem;
+    padding-block: .2rem;
+    padding-inline: .4rem;
+    height: 6rem;
+    line-height: 1.4;
+    align-content: center;
+    }
+#floatingLinks a {
+    color: gray;
+    margin:0;
+    padding: 0;
+    }
 
 /* styles for summary marker - a bit kludgey until fully supported */
 
@@ -73,9 +107,17 @@ function findFamily (id) {
         out += '<details>'
 
         // show the fg head
-		out += `<summary class="lineHead"><span class="n"><input type="checkbox" checked title="${ id }" onclick="if (this.checked===false) clearChecks(this.parentNode.parentNode.parentNode)"> ${ person.g } ${ person.f }<\span>`
+		out += `<summary class="lineHead"`
+        if (id === window.thisPerson) out += ` style="color:chocolate; font-size: 1.4rem;"`
+        out += `><span class="n"><input type="checkbox" checked title="${ id }" onclick="if (this.checked===false) clearChecks(this.parentNode.parentNode.parentNode)"> ${ person.g } ${ person.f }<\span>`
         if (person.cstatus) out += ' <strong>&bull;</strong>'
-        out += ' <a href="tree.html?project='+window.project+'&person='+id+'">🌳</a>'
+        //out += ' <a href="tree.html?project='+window.project+'&person='+id+'" title="Go to Relationships page.">⏳</a>'
+        out += ' <span class="spacer">&nbsp;</span>'
+        out += ` <a href="precedents.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏫</a>`
+        out += ` <a href="descendants.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏬</a>`
+        out += ` <a href="ancestors.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
+        out += ` <a href="tree.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏳</a>`
+        out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">📄</a>`
         out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
         out += ' <span class="bplace">'+person.bplace+'</span>'
         out += ' <span class="occ">'+person.occ+'</span>'
@@ -86,7 +128,15 @@ function findFamily (id) {
 			
 			// spouse name
 			if (db[person.fg[g][1]]) {
-				out += `<p class="spouse"><span class="spousen"><input type="checkbox" checked title="${ person.fg[g][1] }"> ${ db[person.fg[g][1]].g } ${ db[person.fg[g][1]].f } <a href="tree.html?project=${ window.project }&person=${ person.fg[g][1] }">🌳</a></span>`
+				out += `<p class="spouse"><span class="spousen"><input type="checkbox" checked title="${ person.fg[g][1] }"> ${ db[person.fg[g][1]].g } ${ db[person.fg[g][1]].f }`
+                //out += `<a href="tree.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Go to Relationships page.">⏳</a></span>`
+                out += ' <span class="spacer">&nbsp;</span>'
+                out += ` <a href="precedents.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show ancestors" style="margin-inline:.1rem; opacity:80%;">⏫</a>`
+                out += ` <a href="descendants.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show descendants" style="margin-inline:.1rem; opacity:80%;">⏬</a>`
+                out += ` <a href="ancestors.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show family tree" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
+                out += ` <a href="tree.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏳</a>`
+                out += ` <a href="person.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show details" style="margin-inline:.1rem; opacity:80%;">📄</a>`
+
                 out += ' <span class="dates">'+db[person.fg[g][1]].b+'–'+db[person.fg[g][1]].d+', &nbsp; marr '+person.fg[g][0]+'</span>'
                 out += ' <span class="bplace">'+db[person.fg[g][1]].bplace+'</span>'
                 out += ' <span class="occ">'+db[person.fg[g][1]].occ+'</span>'
@@ -110,7 +160,14 @@ function findFamily (id) {
 //		out += '<summary><span class="n">'+person.g+' '+person.f+'<\span> '
 //        if (person.cstatus) out += '<strong>&bull;</strong>'
 //        else out += '...'
-        out += ' <a href="tree.html?project='+window.project+'&person='+id+'">🌳</a>'
+        //out += ' <a href="tree.html?project='+window.project+'&person='+id+'" title="Go to Relationships page.">⏳</a>'
+        out += ' <span class="spacer">&nbsp;</span>'
+        out += ` <a href="precedents.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏫</a>`
+        out += ` <a href="descendants.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏬</a>`
+        out += ` <a href="ancestors.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
+        out += ` <a href="tree.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏳</a>`
+        out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">📄</a>`
+
         out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
         out += ' <span class="occ">'+person.occ+'</span>'
         out += ' <span class="bplace">'+person.bplace+'</span>'
@@ -163,7 +220,7 @@ function listChecked () {
     }
 </script>
 <style>
-#topMenu { bottom: 0; top:auto; text-align: right; padding-right: 2em; }
+#topMenu { bottom: 0; top:auto; text-align: center; color: chocolate; padding-right: 2em; }
 table { margin: auto; font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; font-size: 14px; padding-bottom: 800px; }
 .fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,0.50); border: 1px solid #ccc; }
 .fg a { font-size: 115%; line-height: 1.1; }
@@ -182,15 +239,22 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
 	<a href="#top">Top</a>
-	<a id="treeLink" href="#" onClick="openAll(); return false">Open all</a>
-	<a id="treeLink" href="#" onClick="closeAll(); return false">Close all</a>
+	<a id="openAll" href="#" onClick="openAll(); return false">Open all</a>
+	<a id="closeAll" href="#" onClick="closeAll(); return false">Close all</a>
 	<a id="removeChecks" href="#" onClick="uncheckAll(); return false">Remove checks</a>
 	<a id="captureNames" href="#" onClick="listChecked(); return false">List checked</a>
-	<a href="index.html" style="margin-right: 2em;">Index</a>
+	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
-	<div id="top"></div>
+    
+<div id="floatingLinks">
+<a id="indexLink" title="Go to the Index." href="">📇</a>
+<script>document.getElementById('indexLink').href = 'index.html?project='+project</script>
+</div>
+
+<div id="top"></div>
 <div id="out">
   <div id="banner">
+    <div id="pageicon">⏬</div>
     <div id="pagetitle">Descendants<br>
     </div>
   </div>
@@ -217,6 +281,7 @@ function start () {
         var first = document.querySelector('details')
         first.open = true
         first.style.marginLeft = '0'
+        openAll()
         
         /*
 		families.sort()

@@ -4,8 +4,21 @@
 <meta charset="UTF-8">
 <title>Index</title>
 <link href="lib/style.css" rel="stylesheet">
+<style>
+#xbanner::before {
+  content: '📇';
+  font-size: 4rem;
+  padding: 1rem;
+}
+#pageicon {
+  position: absolute;
+  font-size: 4rem;
+  padding: 1rem 2rem;
+}
+</style>
 <script>
 // read in project
+var project = ''
 parameters = location.search.split('&');
 parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
@@ -14,7 +27,9 @@ for (var p=0;p<parameters.length;p++) {
 	}
 
 // load the appropriate db file	
-if (! project || project.match(/\.\./)) project = 'data'
+if (! project || project.match(/\.\./)) {
+    while (project === '' || project.match(/\.\./)) project = prompt('What project do you want to work with?')
+    }
 var db = document.createElement('script')
 db.src = project+'/db.js'
 db.async = false
@@ -51,6 +66,7 @@ function secondFilter (str) {
 <body onLoad="init()">
 <div id="out">
   <div id="banner">
+    <div id="pageicon">📇</div>
     <div id="pagetitle">Index<br>
     </div>
   </div>
@@ -81,7 +97,18 @@ function init () {
 	for (var person in db) {
 		//if (db[person].p) out += '<p><a href="data/'+person+'.html">'+db[person].f
 		//else 
-		out += '<p><a href="tree.html?project='+project+'&person='+person+'">'+db[person].f
+		out += '<p class="personRow">'
+
+        out += '<span style="margin-inline: 2em; float:right;">'
+        if (db[person].p) out += `<a href="person.html?project=${ window.project }&person=${ person }" style="" title="Show details">📄</a> `
+		out += `<a href="tree.html?project=${ window.project }&person=${ person }" style="opacity:90%;" title="Show relationships">⏳</a> `
+		out += `<a href="ancestors.html?project=${ window.project }&person=${ person }" style="opacity:60%;" title="Show family tree">🌳</a> `
+		out += `<a href="precedents.html?project=${ window.project }&person=${ person }" style="opacity:80%" title="Show ancestors">⏫</a> `
+		if (! db[person].cstatus) out += `<a href="descendants.html?project=${ window.project }&person=${ person }" style="opacity:80%" title="Show descendants">⏬</a>`
+        else out += `<span style="visibility:hidden;">⏬</span>`
+		out += '</span>'
+        
+        out += '<a href="tree.html?project='+project+'&person='+person+'">'+db[person].f
 		if (db[person].m) {
 			for (var i=0;i<db[person].m.length;i++) {
 				out += ' ('+db[person].m[i]+')'
@@ -96,8 +123,10 @@ function init () {
 			var temp = person.split('_')
 			out += ', ~'+temp[temp.length-1]
 			}
-		if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
+		//if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
 		out += '</a></p>'
+ 		out += '</div>'
+       
 		total++
 		}
 	document.getElementById('total').textContent = total
