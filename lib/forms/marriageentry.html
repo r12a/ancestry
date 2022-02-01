@@ -38,6 +38,9 @@ function makeNotes (content, target) {
 	document.getElementById(target).innerHTML = out
 	}
 
+
+
+
 function autoPropagate (person) {
     // Pull up a list of ids for related people, and fill in some fields automatically
     if (person === '') {
@@ -48,101 +51,136 @@ function autoPropagate (person) {
     // populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placeIndex) {
-	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
-	}
+        out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+        }
     document.getElementById('gpsList').innerHTML = out
 
     
-    
-    
-    
+    // create a list of relatives to the right
 	listRelations(person)
+
     
+    
+    // fill in the page building data
+
+    // first find the marriage data
+    var spouse = document.getElementById('spouseIdIn').value
+    if (spouse === '') return
+    
+    var dataItems
+    if (db[person] && db[person].recordData.marriages && db[person].recordData.marriages[spouse]) dataItems = db[person].recordData.marriages[spouse]
+    else if (db[spouse] && db[spouse].recordData.marriages && db[spouse].recordData.marriages[person]) dataItems = db[spouse].recordData.marriages[person]
+    
+    if (dataItems === null) {
+        alert("Marriage data not found for this couple.")
+        return
+        }
+   
+    
+
+
+    // fill in name fields from the db
 	if (db[person]) {
-		// add the spouse id
-		if (db[person].fg && db[person].fg.length === 1) {
-			document.getElementById('spouseIdIn').value = db[person].fg[0][1]
-			document.getElementById('spouseId').textContent = '"'+db[person].fg[0][1]+'": ['
-			}
 		// get this person's name and id
 		if (db[person].male) {
 			document.getElementById('groomIn').value = db[person].g+' '+db[person].f
-			document.getElementById('groom').innerHTML = '&quot;groom: '+db[person].g+' '+db[person].f+'&quot;,'
 			document.getElementById('gidIn').value= person
-			document.getElementById('gid').innerHTML = '&quot;gid: '+person+'&quot;,'
 			}
 		else {
 			document.getElementById('brideIn').value = db[person].g+' '+db[person].f
-			document.getElementById('bride').innerHTML = '&quot;bride: '+db[person].g+' '+db[person].f+'&quot;,'
 			document.getElementById('bidIn').value= person
-			document.getElementById('bid').innerHTML = '&quot;bid: '+person+'&quot;,'
 			}
-		// if there's only one spouse listed in the db
-		if (db[person].fg && db[person].fg.length === 1) {
-			// fill in the spouse's name and id
-			if (db[person].fg[0][1] && (groom = db[db[person].fg[0][1]]) && ! db[person].male) {
-				document.getElementById('groomIn').value = groom.g+' '+groom.f
-				document.getElementById('groom').innerHTML = '&quot;groom: '+groom.g+' '+groom.f+'&quot;,'
-				document.getElementById('gidIn').value= db[person].fg[0][1]
-				document.getElementById('gid').innerHTML = '&quot;gid: '+db[person].fg[0][1]+'&quot;,'
-				}
-			else if (db[person].fg[0][1] && (bride = db[db[person].fg[0][1]])) {
-				document.getElementById('brideIn').value = bride.g+' '+bride.f
-				document.getElementById('bride').innerHTML = '&quot;bride: '+bride.g+' '+bride.f+'&quot;,'
-				document.getElementById('bidIn').value= db[person].fg[0][1]
-				document.getElementById('bid').innerHTML = '&quot;bid: '+db[person].fg[0][1]+'&quot;,'
-				}
-			// fill in the status for this person
-			if (db[person].male) {
-				document.getElementById('gstatusIn').value = 'bachelor'
-				document.getElementById('gstatus').innerHTML = '&quot;gstatus: bachelor'+'&quot;,'
-				}
-			else {
-				document.getElementById('bstatusIn').value = 'spinster'
-				document.getElementById('bstatus').innerHTML = '&quot;bstatus: spinster'+'&quot;,'
-				}
-			}
+
 		if ((fid = db[person].father) && db[person].male) {
-			document.getElementById('gfidIn').value = fid;
-			document.getElementById('gfid').innerHTML = '&quot;gfid: '+fid+'&quot;,'
-			if (db[fid]) { 
-				document.getElementById('gfatherIn').value = db[fid].g+' '+db[fid].f
-				document.getElementById('gfather').innerHTML = '&quot;gfather: '+db[fid].g+' '+db[fid].f+'&quot;,'
-				}
+			if (db[fid]) {
+                document.getElementById('gfidIn').value = fid
+			    document.getElementById('gfatherIn').value = db[fid].g+' '+db[fid].f
+                }
+            else document.getElementById('gfatherIn').value = db[person].father
 			}
 		if ((fid = db[person].father) && ! db[person].male) {
-			document.getElementById('bfidIn').value = fid;
-			document.getElementById('bfid').innerHTML = '&quot;bfid: '+fid+'&quot;,'
-			if (db[fid]) { 
-				document.getElementById('bfatherIn').value = db[fid].g+' '+db[fid].f
-				document.getElementById('bfather').innerHTML = '&quot;bfather: '+db[fid].g+' '+db[fid].f+'&quot;,'
-				}
+			if (db[fid]) {
+                document.getElementById('bfidIn').value = fid;
+                document.getElementById('bfatherIn').value = db[fid].g+' '+db[fid].f
+                }
+            else document.getElementById('bfatherIn').value = db[person].father
 			}
-		// repeat the above from the perpective of the spouse
-		// since we change person, this must come last
-		if (db[person].fg && db[person].fg.length === 1) {
-			if (db[person].fg[0][1] && (bride = db[db[person].fg[0][1]])) {
-				person = db[person].fg[0][1]
-				if ((fid = db[person].father) && db[person].male) {
-					document.getElementById('gfidIn').value = fid;
-					document.getElementById('gfid').innerHTML = '&quot;gfid: '+fid+'&quot;,'
-					if (db[fid]) { 
-						document.getElementById('gfatherIn').value = db[fid].g+' '+db[fid].f
-						document.getElementById('gfather').innerHTML = '&quot;gfather: '+db[fid].g+' '+db[fid].f+'&quot;,'
-						}
-					}
-				if ((fid = db[person].father) && ! db[person].male) {
-					document.getElementById('bfidIn').value = fid;
-					document.getElementById('bfid').innerHTML = '&quot;bfid: '+fid+'&quot;,'
-					if (db[fid]) { 
-						document.getElementById('bfatherIn').value = db[fid].g+' '+db[fid].f
-						document.getElementById('bfather').innerHTML = '&quot;bfather: '+db[fid].g+' '+db[fid].f+'&quot;,'
-						}
-					}
-				}
+        }
+
+
+
+	if (db[spouse]) {
+		// get this person's name and id
+		if (db[spouse].male) {
+			document.getElementById('groomIn').value = db[spouse].g+' '+db[spouse].f
+			document.getElementById('gidIn').value= spouse
 			}
-		}
+		else {
+			document.getElementById('brideIn').value = db[spouse].g+' '+db[spouse].f
+			document.getElementById('bidIn').value= spouse
+			}
+        // get their father's name & id
+		if ((fid = db[spouse].father) && db[spouse].male) {
+			if (db[fid]) {
+                document.getElementById('gfidIn').value = fid
+                document.getElementById('gfatherIn').value = db[fid].g+' '+db[fid].f
+			    }
+            else document.getElementById('gfatherIn').value = db[spouse].father
+            }
+		if ((fid = db[spouse].father) && ! db[spouse].male) {
+			if (db[fid]) {
+                document.getElementById('bfidIn').value = fid
+			    document.getElementById('bfatherIn').value = db[fid].g+' '+db[fid].f
+                }
+            else document.getElementById('bfatherIn').value = db[spouse].father
+			}
+        }
+
+
+    // insert existing data from db
+    if (dataItems) {
+        var notes = ''
+        var fnotes = ''
+        var discussion = ''
+        for (var i=0;i<dataItems.length;i++) {
+            var fields = dataItems[i].split(':')
+            switch (fields[0]) {
+                case 'date': document.getElementById('dateIn').value = fields[1].trim(); break
+                case 'place': document.getElementById('marrPlaceIn').value = fields[1].trim(); break
+                case 'deathPlace': document.getElementById('deathPlaceIn').value = fields[1].trim(); break
+                case 'gage': document.getElementById('gageIn').value = fields[1].trim(); break
+                case 'bage': document.getElementById('bageIn').value = fields[1].trim(); break
+                case 'cause': document.getElementById('causeIn').value = fields[1].trim(); break
+                case 'informant': document.getElementById('informantIn').value = fields[1].trim(); break
+                case 'gparish': document.getElementById('gparishIn').value = fields[1].trim(); break
+                case 'bparish': document.getElementById('bparishIn').value = fields[1].trim(); break
+                case 'gstatus': document.getElementById('gstatusIn').value = fields[1].trim(); break
+                case 'bstatus': document.getElementById('bstatusIn').value = fields[1].trim(); break
+                case 'gocc': document.getElementById('goccIn').value = fields[1].trim(); break
+                case 'bocc': document.getElementById('boccIn').value = fields[1].trim(); break
+                case 'gfocc': document.getElementById('gfoccIn').value = fields[1].trim(); break
+                case 'bfocc': document.getElementById('bfoccIn').value = fields[1].trim(); break
+                case 'witnesses': document.getElementById('witnessesIn').value = fields[1].trim(); break
+                case 'by': document.getElementById('byIn').value = fields[1].trim(); break
+                case 'denomination': document.getElementById('denominationIn').value = fields[1].trim(); break
+                case 'gps':
+                    document.getElementById('gpsPlace').value = fields[1].trim().replace(/https/,'').trim()
+                    document.getElementById('gpsCoords').value =fields[2].replace('//maps.google.com/maps?q=','').trim()
+                    break
+                case 'note': notes += fields[1].trim()+'\n'
+                case 'fnote': fnotes += fields[1].trim()+'\n'
+                case 'discussion': discussion += fields[1].trim()+'\n'
+                }
+            document.getElementById('censusNotes').value = notes
+            document.getElementById('censusFNotes').value = fnotes
+            document.getElementById('censusDisc').value = discussion
+            }
+        draftResult()
+        }
+
 	}
+
+
 
 function addQuotesTo (content) {
 	var out = ''
@@ -419,9 +457,10 @@ function draftResult () {
     if (document.getElementById('byIn').value.trim()) document.getElementById('by').textContent = `"by: ${ document.getElementById('byIn').value.trim() }",` 
     else document.getElementById('by').textContent = ''
 
+    /*
     if (document.getElementById('lengthIn').value.trim()) document.getElementById('length').textContent = `"length: ${ document.getElementById('lengthIn').value.trim() }",` 
     else document.getElementById('length').textContent = ''
-
+    */
     
 
     if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
@@ -472,6 +511,8 @@ function draftResult () {
   <div id="subsubbanner">
     <div>
       <input type="text" id="idIn" placeholder="Add ID, then click on 🔁."
+        	onInput="draftResult()">
+      <input type="text" id="spouseIdIn" placeholder="Add ID of spouse."
         	onInput="draftResult()">
             <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value)" title="Find IDs of relatives.">🔁</span>  <span class="redo"><a id="clearAll" href="">❌</a></span>
     </div>
@@ -817,10 +858,6 @@ onInput="draftResult()"></textarea>
     <td><input type="text" id="dateIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="draftResult()"/></td>
   </tr>
   
-  <tr>
-    <td>Spouse id:</td>
-    <td><input type="text" id="spouseIdIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="draftResult()"/></td>
-  </tr>
         <td>Place:</td>
         <td><input type="text" id="marrPlaceIn" class="wideInputBox" onInput="draftResult()"/></td>
       </tr>

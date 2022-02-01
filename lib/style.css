@@ -14,11 +14,21 @@
 body { font: 16.5px/1.45 "Helvetica Neue", Arial, TriangleWF, sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } 
 #summaryIn { display: none; }
 #main { background-color: #f8f7f3; }
-#topMenu { font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; bottom: 0; width: 100%; }
-#topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; }
-#banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; border-top-left-radius: .5em; border-top-right-radius: .5em; }
+#topMenu { 
+    font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; bottom: 0; width: 100%;
+    text-align: center;
+    }
+#topMenu span, #topMenu a { 
+    margin: 0 1em; color: #666; cursor: pointer;
+    color: chocolate;
+    font-family: raleway, arial, sans-serif;
+    }
+#banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; /*border-top-left-radius: .5em;*/ border-top-right-radius: .5em; }
 #top { font-size: 80%; line-height: 2; }
-#pagetitle { font-size: 280%; margin: auto; color: rgb(248, 247, 243); line-height: .8; max-width: 80%; }
+#pagetitle { 
+    font-size: 280%; margin: auto; color: rgb(248, 247, 243); line-height: .8; max-width: 80%;
+    margin-inline-start: 10rem;
+    }
 #bannerdates { font-size: 53%; text-align: center; }
 #subbanner { background-color: #D1CAB0; min-height: 2.5em; text-align: center; text-transform: uppercase; color: rgb(83, 77, 70); font-size: 90%; display: flex; align-items: center; }
 #subbanner div { margin: auto; max-width: 80%; }
@@ -170,7 +180,7 @@ article {
     line-height: 1.4;
     align-content: center;
     }
-#floatingLinks {
+#floatingLinksY {
     position: fixed; 
     right: 0; 
     bottom: 0; 
@@ -188,18 +198,50 @@ article {
     line-height: 1.4;
     align-content: center;
     }
+#out {
+    margin-inline-end: 3rem;
+    }
+#floatingLinks {
+    position: fixed; 
+    right: 0; 
+    top: 0;
+    height: 10rem;
+    width: 3rem;
+    margin-block-start: 6rem;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+    font-size: 1.8rem;
+    align-items: center;
+    line-height: 4rem;
+    }
 #floatingLinks a {
-    color: gray;
+    color: forestgreen;
     margin:0;
     padding: 0;
+    background: #dedcd6;
+    border-radius: 1rem;
     }
-
-
+/*#floatingLinks a:hover {
+    font-size: 5rem;
+    display: flex;
+    align-items: flex-end;
+    width: 6rem;
+    text-align: center;
+    }
+*/
 .place {
     color: chocolate;
     }
 
-
+.personRow {
+    line-height: 1.6;
+    clear: both;
+    }
+.personRow:hover {
+    background-color: #eee;
+    }
 
 
 

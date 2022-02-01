@@ -2,11 +2,16 @@
 body { font: 17.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;  } 
 #summaryIn { display: none; }
 #main { background-color: #f8f7f3; }
-#topMenu { font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: start; position: fixed; top: 0; width: 100%; }
-#topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; }
-#banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; border-top-left-radius: .5em; border-top-right-radius: .5em; }
+#topMenu {
+    font-size: 80%; color: #666; background-color: #dedcd6; text-transform: uppercase; line-height: 2; padding-left: 1em; text-align: center; color: chocolate;  position: fixed; top: 0; width: 100%;
+    }
+#topMenu span, #topMenu a {
+    margin: 0 1em; color: #666; cursor: pointer;
+    color: chocolate;
+    }
+#banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; border-top-right-radius: .5em; }
 #top { font-size: 80%; line-height: 2; }
-#pagetitle { font-size: 280%; margin: auto; color: rgb(248, 247, 243); line-height: .8; max-width: 80%; }
+#pagetitle { font-size: 280%; margin-inline: 10rem; color: rgb(248, 247, 243); line-height: .8; max-width: 80%; }
 #bannerdates { font-size: 53%; text-align: center; }
 #subbanner { background-color: #D1CAB0; min-height: 2.5em; text-align: center; text-transform: uppercase; color: rgb(83, 77, 70); font-size: 90%; display: flex; align-items: center; }
 #subbanner div { margin: auto; max-width: 80%; }

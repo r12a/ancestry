@@ -35,7 +35,7 @@ function makeNotes (content, target) {
 	document.getElementById(target).innerHTML = out
 	}
 
-function autoPropagate (person) {
+function autoPropagateOLD (person) {
     // Pull up a list of ids for related people, and fill in some fields automatically
     if (person === '') {
         alert('No id provided.')
@@ -57,6 +57,62 @@ function autoPropagate (person) {
 		//document.getElementById('name').innerHTML = '&quot;name: '+db[person].g+' '+db[person].f+'&quot;,'
 		}
 	}
+
+function autoPropagate (person) {
+    // Pull up a list of ids for related people, and fill in some fields automatically
+    if (person === '') {
+        alert('No id provided.')
+        return
+        }
+    
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placeIndex) {
+	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+	}
+    document.getElementById('gpsList').innerHTML = out
+
+    // make a list of relatives to the right
+	listRelations(person)
+    
+    // fill in the page building data
+    if (db[person] && db[person].recordData.death) {
+        var dataItems = db[person].recordData.death
+        var notes = ''
+        var fnotes = ''
+        var discussion = ''
+        for (var i=0;i<dataItems.length;i++) {
+            var fields = dataItems[i].split(':')
+            switch (fields[0]) {
+                case 'date': document.getElementById('deathDateIn').value = fields[1]; break
+                case 'of': document.getElementById('ofIn').value = fields[1]; break
+                case 'deathPlace': document.getElementById('deathPlaceIn').value = fields[1]; break
+                case 'age': document.getElementById('ageIn').value = fields[1]; break
+                case 'cause': document.getElementById('causeIn').value = fields[1]; break
+                case 'informant': document.getElementById('informantIn').value = fields[1]; break
+                case 'focc': document.getElementById('foccIn').value = fields[1]; break
+                case 'informant': document.getElementById('informantIn').value = fields[1]; break
+                case 'burplace': document.getElementById('burPlaceIn').value = fields[1]; break
+                case 'buryear': document.getElementById('burYearIn').value = fields[1]; break
+                case 'burdate': document.getElementById('burDateIn').value = fields[1]; break
+                case 'denomination': document.getElementById('denominationIn').value = fields[1]; break
+                case 'gps':
+                    document.getElementById('gpsPlace').value = fields[1].replace(/https/,'').trim()
+                    document.getElementById('gpsCoords').value =fields[2].replace('//maps.google.com/maps?q=','').trim()
+                    break
+                case 'note': notes += fields[1]+'\n'
+                case 'fnote': fnotes += fields[1]+'\n'
+                case 'discussion': discussion += fields[1]+'\n'
+                }
+            document.getElementById('censusNotes').value = notes
+            document.getElementById('censusFNotes').value = fnotes
+            document.getElementById('censusDisc').value = discussion
+            }
+        draftResult()
+        }
+	}
+
+
 
 function addQuotesTo (content) {
 	var out = ''
@@ -131,7 +187,7 @@ function draftResult () {
 
 // index
     if (document.getElementById('indexSourceIn').value.trim() || document.getElementById('indexSourceURLIn').value.trim())
-        document.getElementById('indexSource').textContent = `"<br>SOURCE: ${ document.getElementById('indexSourceIn').value.trim() }  ${ document.getElementById('indexSourceURLIn').value.trim() }",` 
+        document.getElementById('indexSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('indexSourceIn').value.trim() }  ${ document.getElementById('indexSourceURLIn').value.trim() }",` 
     else document.getElementById('indexSource').textContent = ''
  
     if (document.getElementById('indexPastedIn').value.trim()) 
@@ -153,7 +209,7 @@ function draftResult () {
     else document.getElementById('certImage').textContent = ''
 
     if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceURLIn').value.trim())
-        document.getElementById('certSource').textContent = `"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceURLIn').value.trim() }",` 
+        document.getElementById('certSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceURLIn').value.trim() }",` 
     else document.getElementById('certSource').textContent = ''
  
     if (document.getElementById('certWhenIn').value.trim()) 
@@ -195,7 +251,7 @@ function draftResult () {
 
 // second source
     if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
-        document.getElementById('secondSource').textContent = `"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
+        document.getElementById('secondSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
     else document.getElementById('secondSource').textContent = ''
  
     if (document.getElementById('secondImageIn').value.trim()) 
@@ -226,7 +282,7 @@ function draftResult () {
 
 // burial record
     if (document.getElementById('burSourceIn').value.trim() || document.getElementById('burSourceURLIn').value.trim())
-        document.getElementById('burSource').textContent = `"<br>SOURCE: ${ document.getElementById('burSourceIn').value.trim() }  ${ document.getElementById('burSourceURLIn').value.trim() }",` 
+        document.getElementById('burSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('burSourceIn').value.trim() }  ${ document.getElementById('burSourceURLIn').value.trim() }",` 
     else document.getElementById('burSource').textContent = ''
  
     if (document.getElementById('burImageIn').value.trim()) 
@@ -264,7 +320,7 @@ function draftResult () {
 
 // grave inscription
     if (document.getElementById('graveSourceIn').value.trim() || document.getElementById('graveSourceURLIn').value.trim())
-        document.getElementById('graveSource').textContent = `"<br>SOURCE: ${ document.getElementById('graveSourceIn').value.trim() }  ${ document.getElementById('graveSourceURLIn').value.trim() }",` 
+        document.getElementById('graveSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('graveSourceIn').value.trim() }  ${ document.getElementById('graveSourceURLIn').value.trim() }",` 
     else document.getElementById('graveSource').textContent = ''
  
     if (document.getElementById('graveImageIn').value.trim()) 
@@ -272,7 +328,7 @@ function draftResult () {
     else document.getElementById('graveImage').textContent = ''
 
     if (document.getElementById('graveTextIn').value.trim()) 
-        document.getElementById('graveText').textContent = `"text: ${ document.getElementById('graveTextIn').value.trim() }",`
+        document.getElementById('graveText').textContent = `"gravestone: ${ document.getElementById('graveTextIn').value.trim() }",`
     else document.getElementById('graveText').textContent = ''
 
 
@@ -280,7 +336,7 @@ function draftResult () {
 
 // probate
     if (document.getElementById('probateSourceIn').value.trim() || document.getElementById('probateSourceURLIn').value.trim())
-        document.getElementById('probateSource').textContent = `"<br>SOURCE: ${ document.getElementById('probateSourceIn').value.trim() }  ${ document.getElementById('probateSourceURLIn').value.trim() }",` 
+        document.getElementById('probateSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('probateSourceIn').value.trim() }  ${ document.getElementById('probateSourceURLIn').value.trim() }",` 
     else document.getElementById('probateSource').textContent = ''
  
     if (document.getElementById('probateImageIn').value.trim()) 
@@ -295,6 +351,9 @@ function draftResult () {
         document.getElementById('probateText').textContent = `"probate: ${ document.getElementById('probateTextIn').value.trim() }",`
     else document.getElementById('probateText').textContent = ''
 
+    if (document.getElementById('probateNamesIn').value.trim()) 
+        document.getElementById('probateNames').textContent = `"namedInProbate: ${ document.getElementById('probateNamesIn').value.trim() }",`
+    else document.getElementById('probateNames').textContent = ''
 
 
 
@@ -668,6 +727,13 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
     onInput="draftResult()"></textarea>
     </td>
 </tr>
+<!--tr>
+<td>Named in probate:</td>
+<td><textarea id="probateNamesIn" class="textBox"  
+    placeholder="Add a comma-separated list of people named, using ids for those that have them."
+    onInput="draftResult()"></textarea>
+    </td>
+</tr-->
 </table>
 </details>
 
@@ -763,6 +829,13 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
             onInput="draftResult()">
             </td>
       </tr>
+      <tr>
+        <td>Named in probate:</td>
+        <td><input type="text" id="probateNamesIn"  
+            placeholder="Comma-separated list of people named in probate or wills. Use ids where available." class="wideInputBox"
+            onInput="draftResult()">
+            </td>
+      </tr>
 
 
 
@@ -828,11 +901,12 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
       <div id="mother"></div>
       <div id="motherId"></div>
       <div id="informant"></div>
+      <div id="probateNames"></div>
       <div id="gps"></div>
       
       
       <!-- index -->
-      <div id="indexSource" style="margin-block-start: 2rem;"></div>
+      <div id="indexSource" style="white-space: pre;"></div>
       <div id="indexText"></div>
       <div id="indexName"></div>
       <div id="indexAge"></div>
@@ -840,7 +914,7 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
       <div id="deathRecord"></div>
       
       <!-- certificate -->
-      <div id="certSource" style="margin-block-start: 2rem;"></div>
+      <div id="certSource" style="white-space: pre;"></div>
       <div id="certImage"></div>
       <div id="certWhen"></div>
       <!--div id="certWhere"></div-->
@@ -853,13 +927,13 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
       <div id="certOther" style="white-space:pre-line"></div>
       
       <!-- 2nd source -->
-      <div id="secondSource" style="margin-block-start: 2rem;"></div>
+      <div id="secondSource" style="white-space: pre;"></div>
       <div id="secondImage"></div>
       <div id="secondPasted" style="white-space:pre-line"></div>
       <div id="secondText"></div>
       
       <!-- burial -->
-      <div id="burSource" style="margin-block-start: 2rem;"></div>
+      <div id="burSource" style="white-space: pre;"></div>
       <div id="burImage"></div>
       <div id="burText"></div>
       <div id="burName"></div>
@@ -868,12 +942,12 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
       <div id="burPasted" style="white-space:pre-line"></div>
       
       <!-- gravestone -->
-      <div id="graveSource" style="margin-block-start: 2rem;"></div>
+      <div id="graveSource" style="white-space: pre;"></div>
       <div id="graveImage"></div>
       <div id="graveText"></div>
 
       <!-- probate -->
-      <div id="probateSource" style="margin-block-start: 2rem;"></div>
+      <div id="probateSource" style="white-space: pre;"></div>
       <div id="probateImage"></div>
       <div id="probatePasted"></div>
       <div id="probateText"></div>

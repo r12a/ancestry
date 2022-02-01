@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'TriangleWF';
+    src: url('fonts/notosanssymbols2-regular-webfont_triangle.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+	} /* contains only one character: ⏵ */
+
+
 body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -moz-osx-font-smoothing: grayscale;  margin: 0; background-color: #dedcd6;   background-color: #f8f7f3; }
 
 /* structural stuff */
@@ -12,8 +20,10 @@ body { font: 16.5px/1.45 "Source Sans Pro","Helvetica Neue",Arial,sans-serif; -m
 .gparent, .parent, .child { text-align: left; border: 1px solid #ccc; margin: .5em; padding: 0.2em; background-color: #D1CAB0; background-color: #F0eee9;border-radius: 4px; font-size: 16px; }
 
 
-#topMenu { font-size: 70%; color: #666; background-color: #eee; text-transform: uppercase; line-height: 2; padding-right: 2em; text-align: start; position: fixed; bottom: 0; width: 100%; background: #dedcd6; }
-#topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; font-weight: normal; }
+#topMenu {
+    font-size: 70%; color: #666; background-color: #eee; text-transform: uppercase; line-height: 2; padding-right: 2em; text-align: center; position: fixed; bottom: 0; width: 100%; background: #dedcd6;
+    }
+#topMenu span, #topMenu a { margin: 0 1em; color: #666; cursor: pointer; font-weight: normal; color: chocolate; }
 
 #main { padding: 0 2em; }
 
@@ -85,7 +95,7 @@ a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; font-wei
   padding: 1rem 2rem;
 }
 
-#floatingLinks {
+#floatingLinksX {
     position: fixed; 
     right: 0; 
     bottom: 0; 
@@ -103,13 +113,33 @@ a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; font-wei
     line-height: 1.4;
     align-content: center;
     }
+#floatingLinks {
+    position: fixed; 
+    right: 0; 
+    top: 0; 
+    display:flex;
+    flex-direction: column;
+    width: 1.6rem; 
+    justify-content: space-around;
+    background: transparent;
+    border-bottom-left-radius: 1rem;
+    text-align: center;
+    font-size: 1.6rem;
+    padding-block: .2rem;
+    padding-inline: .4rem;
+    height: 6rem;
+    line-height: 1.4;
+    align-content: center;
+    }
 #floatingLinks a {
     color: gray;
     margin:0;
     padding: 0;
     }
 
-
+#setRoot {
+    cursor: pointer;
+    }
 
 
 

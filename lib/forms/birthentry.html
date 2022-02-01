@@ -21,7 +21,8 @@ for (var p=0;p<parameters.length;p++) {
 
 // load the appropriate db file	
 if (! project) alert('Specify the project name in the URL, using ?project=...')
-var db = document.createElement('script');
+var db = document.createElement('script')
+db.id = 'database'
 db.src = '../../'+project+'/db.js'
 db.async = false
 document.head.appendChild(db);
@@ -35,6 +36,26 @@ function makeNotes (content, target) {
 	var out = ''
 	for (var i=0;i<segments.length;i++) out += '<div>&quot;'+target+': '+segments[i]+'&quot;,</div>'
 	document.getElementById(target).innerHTML = out
+	}
+
+
+
+function autoPropagateOLD (person) {
+    // Pull up a list of ids for related people, and fill in some fields automatically
+    if (person === '') {
+        alert('No id provided.')
+        return
+        }
+    
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placeIndex) {
+	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+	}
+    document.getElementById('gpsList').innerHTML = out
+
+    
+	listRelations(person)
 	}
 
 
@@ -53,48 +74,44 @@ function autoPropagate (person) {
 	}
     document.getElementById('gpsList').innerHTML = out
 
-    
+    // make a list of relatives to the right
 	listRelations(person)
-
-    if (db[person]) {
-		if (fid = db[person].father) {
-			if (db[fid]) { 
-				document.getElementById('bapFatherIn').value = db[fid].g+' '+db[fid].f
-				document.getElementById('certFNameIn').value = db[fid].g+' '+db[fid].f
-				}
-			}
-		if (mid = db[person].mother) {
-			if (db[mid]) {
-				document.getElementById('bapMotherIn').value = db[mid].g+' '
-				document.getElementById('certMNameIn').value = db[fid].g+' '
-				//document.getElementById('mother').innerHTML = '&quot;mother: '+db[mid].g+'&quot;,'
-				}
-			}
-		siblings = ''
-		if (db[person].father && db[db[person].father]) parent = db[db[person].father]
-		else if (db[person].mother && db[db[person].mother]) parent =db[db[person].mother]
-		if (parent && parent.fg) { 
-			for (i=0;i<parent.fg.length;i++) {
-				for (j=2;j<parent.fg[i].length;j++) {
-					if ((s = parent.fg[i][j]) !== person && db[s]) {
-                        // check whether sibling already died
-                        if (db[s].d && db[person].b && db[s].d < db[person].b) {
-                            console.log('Skipping sibling',  db[s].g)
-                            continue
-                            }
-                        // otherwise, add sibling to the list
-						//if (j>2) siblings += ', '
-						siblings += s + ', '
-                        console.log(s, j, i)
-						}
-					else { break }
-					}
-				}
-			}
-        siblings = siblings.slice(0,siblings.length-2)
-		document.getElementById('siblings').innerHTML = '&quot;siblings: '+siblings.trim(',')+'&quot;,'
-		}
+    
+    // fill in the page building data
+    if (db[person] && db[person].recordData.birth) {
+        var dataItems = db[person].recordData.birth
+        var notes = ''
+        var fnotes = ''
+        var discussion = ''
+        for (var i=0;i<dataItems.length;i++) {
+            var fields = dataItems[i].split(':')
+            switch (fields[0]) {
+                case 'date': document.getElementById('birthDateIn').value = fields[1].trim(); break
+                case 'place': document.getElementById('birthPlaceIn').value = fields[1].trim(); break
+                case 'focc': document.getElementById('foccIn').value = fields[1].trim(); break
+                case 'informant': document.getElementById('informantIn').value = fields[1].trim(); break
+                case 'bapplace': document.getElementById('bapPlaceIn').value = fields[1].trim(); break
+                case 'bapyear': document.getElementById('bapYearIn').value = fields[1].trim(); break
+                case 'bapdate': document.getElementById('bapDateIn').value = fields[1].trim(); break
+                case 'denomination': document.getElementById('denominationIn').value = fields[1].trim(); break
+                case 'gps':
+                    document.getElementById('gpsPlace').value = fields[1].replace(/https/,'').trim()
+                    document.getElementById('gpsCoords').value =fields[2].replace('//maps.google.com/maps?q=','').trim()
+                    break
+                case 'note': notes += fields[1]+'\n'
+                case 'fnote': fnotes += fields[1]+'\n'
+                case 'discussion': discussion += fields[1]+'\n'
+                }
+            document.getElementById('censusNotes').value = notes.trim()
+            document.getElementById('censusFNotes').value = fnotes.trim()
+            document.getElementById('censusDisc').value = discussion.trim()
+            }
+        draftResult()
+        }
 	}
+
+
+
 
 function addQuotesTo (content) {
 	var out = ''
@@ -185,7 +202,7 @@ function draftResult () {
 
 
     if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceInURL').value.trim())
-        document.getElementById('certSource').textContent = `"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceInURL').value.trim() }",` 
+        document.getElementById('certSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceInURL').value.trim() }",` 
     else document.getElementById('certSource').textContent = ''
  
     if (document.getElementById('certWhenIn').value.trim()) 
@@ -229,7 +246,7 @@ function draftResult () {
 
 // second source
     if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
-        document.getElementById('secondSource').textContent = `"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
+        document.getElementById('secondSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
     else document.getElementById('secondSource').textContent = ''
  
     if (document.getElementById('secondImageIn').value.trim()) 
@@ -249,7 +266,7 @@ function draftResult () {
 
 // third source
     if (document.getElementById('thirdSourceIn').value.trim() || document.getElementById('thirdSourceURLIn').value.trim())
-        document.getElementById('thirdSource').textContent = `"<br>SOURCE: ${ document.getElementById('thirdSourceIn').value.trim() }  ${ document.getElementById('thirdSourceURLIn').value.trim() }",` 
+        document.getElementById('thirdSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('thirdSourceIn').value.trim() }  ${ document.getElementById('thirdSourceURLIn').value.trim() }",` 
     else document.getElementById('thirdSource').textContent = ''
  
     if (document.getElementById('thirdImageIn').value.trim()) 
@@ -270,7 +287,7 @@ function draftResult () {
 
 // baptism record
     if (document.getElementById('bapSourceIn').value.trim() || document.getElementById('bapSourceURLIn').value.trim())
-        document.getElementById('bapSource').textContent = `"<br>SOURCE: ${ document.getElementById('bapSourceIn').value.trim() }  ${ document.getElementById('bapSourceURLIn').value.trim() }",` 
+        document.getElementById('bapSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('bapSourceIn').value.trim() }  ${ document.getElementById('bapSourceURLIn').value.trim() }",` 
     else document.getElementById('bapSource').textContent = ''
  
     if (document.getElementById('bapImageIn').value.trim()) 
@@ -389,7 +406,8 @@ function checkDB (fieldname, dbfield, checkID) {
     <strong>Id:</strong> 
 <input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
 onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+onChange="autoPropagate(this.value);"/> <span class="redo" onClick=" 
+autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
 
     
 </div>
@@ -860,7 +878,7 @@ Need to fix this properly at some point. -->
       <div id="certOther" style="white-space:pre-line"></div>
       
       <!-- index -->
-      <div id="indexSource"></div>
+      <div id="indexSource" style="white-space: pre;"></div>
       <div id="birthText"></div>
       <div id="indexName"></div>
       <div id="indexPasted" style="white-space:pre-line"></div>
@@ -868,7 +886,7 @@ Need to fix this properly at some point. -->
 
 
       <!-- baptism -->
-      <div id="bapSource"></div>
+      <div id="bapSource" style="white-space: pre;"></div>
       <div id="bapImage"></div>
       <div id="bapParish"></div>
       <div id="bapBorn"></div>
@@ -899,13 +917,13 @@ Need to fix this properly at some point. -->
       <div id="record"></div-->
       
       <!-- 2nd source -->
-      <div id="secondSource"></div>
+      <div id="secondSource" style="white-space: pre;"></div>
       <div id="secondImage"></div>
       <div id="secondPasted" style="white-space:pre-line"></div>
       <div id="secondText"></div>
       
       <!-- 3rd source -->
-      <div id="thirdSource"></div>
+      <div id="thirdSource" style="white-space: pre;"></div>
       <div id="thirdImage"></div>
       <div id="thirdPasted" style="white-space:pre-line"></div>
       <div id="thirdText"></div>
