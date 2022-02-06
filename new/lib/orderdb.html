@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Reorder DB</title>
+<link href="../lib/style.css" rel="stylesheet">
+<script src="../data/db.js" type="application/javascript"></script>
+</head>
+<body>
+<div id="outx">
+  <div id="banner">
+    <div id="pagetitle">Reorder db<br>
+      <span id="bannerdates">&nbsp;</span></div>
+  </div>
+  <div id="subbanner">
+    <div><a href="#n1">Foundation</a> • <a href="#n2">MORE PHOTOS</a> • <a href="#n3">Graveyard plan</a></div>
+  </div>
+  <div id="subsubbanner">
+    <div>
+      <button onClick="dump()">Go</button>
+    </div>
+  </div>
+  <div id="main">
+    <div class="dateAndRecord" id="list">
+      <div class="record">
+      
+      
+      <textarea id="out" style="width: 100%; height: 900px;"></textarea>
+      
+      </div>
+    </div>
+    <pre id="places">
+    </pre>
+  </div>
+</div>
+
+<script>
+
+var keys = []
+var k, i, len
+
+for (k in db) if (db.hasOwnProperty(k)) keys.push(k)
+
+keys.sort()
+
+len = keys.length
+
+console.log(len, keys)
+
+
+out = 'db = {\n\n'
+
+for (i=0;i<keys.length;i++) {
+	out += keys[i]+':{\n'
+	out += 'g:"'+db[keys[i]].g+'", k:"'+db[keys[i]].k+'", f:"'+db[keys[i]].f+'", bdate:"'+db[keys[i]].bdate+'", b:"'+db[keys[i]].b+'", ddate:"'+db[keys[i]].ddate+'", d:"'+db[keys[i]].d+'",'
+	if (db[keys[i]].upto) out += ' upto:'+db[keys[i]].upto+','
+	out += '\n'
+	
+	out += 'bplace:"'+db[keys[i]].bplace+'", dplace:"'+db[keys[i]].dplace+'", thumb:'+db[keys[i]].thumb+','
+	if (db[keys[i]].male) out += ' male:'+db[keys[i]].male+','
+	out += ' p:'+db[keys[i]].p+','
+	out += '\n'
+
+	out += 'father:"'+db[keys[i]].father+'", mother:"'+db[keys[i]].mother+'"'
+	if (db[keys[i]].occ) out += ', occ:"'+db[keys[i]].occ+'"'
+	else out += ', occ:""'
+	if (! db[keys[i]].male && db[keys[i]].m) {
+		out += ', m:['
+		for (j=0;j<db[keys[i]].m.length;j++) {
+			if (j>0) out += ', '
+			out += "'"+db[keys[i]].m[j]+'\''
+			}
+		out += ']'
+		}
+	if (db[keys[i]].cstatus) {
+		out += ', cstatus:"'+db[keys[i]].cstatus+'",'
+		}
+	//if (db[keys[i]].fg) out += ','
+	out += '\n'
+	
+	if (db[keys[i]].fg) {
+		out += 'fg:['
+		for (k=0;k<db[keys[i]].fg.length;k++) {
+			if (k>0) out += ',\n    '
+			out += '['
+			for (n=0;n<db[keys[i]].fg[k].length;n++) {
+				out += '"'+db[keys[i]].fg[k][n]+'"'
+				if (n<db[keys[i]].fg[k].length-1) out += ', '
+				}
+			out += ']'
+			}
+		out += '],\n'
+		}
+    
+    if (typeof db[keys[i]].recordData === 'undefined') {
+        out += 'recordData:\n{\n}\n'
+        }
+    else out += `recordData:\n${ JSON.stringify(db[keys[i]].recordData, null, ' ') }\n`
+    
+    
+	out += '},\n\n'
+	}
+
+out += '}'
+
+document.getElementById('out').value = out
+
+document.getElementById('out').select()
+
+</script>
+
+</body>
+</html>
