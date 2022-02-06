@@ -1,0 +1,391 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Relationships page</title>
+
+<link href="lib/tree.css" rel="stylesheet" />
+<style>
+details[open] summary {
+    background-color: cadetblue;
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    }
+</style>
+
+<script>
+// read in thisPerson
+thisPerson = ''
+mark = ''
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	if (pairs[0] == 'mark') { if (pairs[1]) { var mark = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db);
+
+function makeMarkList () {
+    // make a list of ancestors for the person indicaed to be the 'mark'
+    // this is then used to highlight relatives    
+    getParent(window.mark)
+    }
+
+function getParent (id) {
+    if (db[id].father && db[db[id].father]) {
+        markList.add(db[id].father)
+        getParent(db[id].father)
+        }
+    if (db[id].mother && db[db[id].mother]) {
+        markList.add(db[id].mother)
+        getParent(db[id].mother)
+        }
+    }
+</script>
+</head>
+
+
+
+
+<body onLoad="start()">
+
+<div id="banner"><div id="pageicon">⏳</div><div id="pagetitle"><div id="bannerdates">Relationships</div></div></div>
+
+<div id="topMenu">
+	<a href="#top" onClick="this.href=`tree.html?project=${ window.project }&person=${ mark }`">Go to root</a>
+	<a id="detailSwitch" href="#top" onClick="if (localStorage.treeDetailed == 'yes') {localStorage.treeDetailed='no'; this.textContent='More detail';} else {localStorage.treeDetailed='yes'; this.textContent='Less detail';} console.log(localStorage.treeDetailed); location.reload(); return false;">More detail</a>
+	<!--a id="indexLink" href="index.html">Index</a-->
+	</div>
+    
+<div id="floatingLinks">
+<a id="indexLink" title="Go to the Index." href="">📇</a>
+<span id="setRoot" title="Set this person as the root." 
+    onclick="
+        projectRoot= project+'root'
+        localStorage[projectRoot] = thisPerson
+        location.reload()
+        ">🔸</span>
+</div>
+
+<div id="top"></div>
+<div id="main">
+<div id="gparents"><div id="pgfather" class="gparent"><img src="lib/i/man_pic.png" alt=""/>?</div><div id="pgmother" class="gparent"><img src="lib/i/woman_pic.png" alt=""/>?</div><div id="mgfather" class="gparent"><img src="lib/i/man_pic.png" alt=""/>?</div><div id="mgmother" class="gparent"><img src="lib/i/woman_pic.png" alt=""/>?</div></div>
+<div id="parents"><div id="father" class="parent"><img src="lib/i/man_pic.png" alt=""/>?</div><div id="mother" class="parent"><img src="lib/i/woman_pic.png" alt=""/>?</div></div>
+<div id="person"></div>
+<div id="children"></div>
+<div id="siblings"></div>
+</div>
+
+<script>
+//localStorage.treeDetailed = 'yes'
+//console.log(localStorage); 
+
+
+if (localStorage.treeDetailed != 'no') localStorage.treeDetailed = 'yes'
+if (localStorage.treeDetailed == 'yes') document.getElementById('detailSwitch').textContent = 'Less detail'
+
+function displayPerson (individual, project) {
+	person = db[individual]
+	var out
+
+	// display the person themselves
+	document.getElementById('person').innerHTML = getPersonDetails(individual, 'person', '')
+	
+	// get parents
+	//if (db[person.father]) 
+	document.getElementById('father').outerHTML =  getPersonDetails(person.father, 'parent', 'father')
+	//if (db[person.mother]) 
+	document.getElementById('mother').outerHTML =  getPersonDetails(person.mother, 'parent', 'mother')
+	
+	
+	// get family groups
+	out = ''
+	if (person.fg && person.fg.length > 0) {
+		for (var spouse=0;spouse<person.fg.length;spouse++) {
+			out += getFamilyGroup(person.fg[spouse], person)
+			}
+		}
+	document.getElementById('children').innerHTML = out
+	
+	// get grandparents
+	out = ''
+	if (db[person.father]) {
+		if (db[person.father].father) document.getElementById('pgfather').outerHTML = getPersonDetails(db[person.father].father, 'gparent', 'pgfather')
+		if (db[person.father].mother) document.getElementById('pgmother').outerHTML = getPersonDetails(db[person.father].mother, 'gparent', 'pgmother')
+		}
+	if (db[person.mother]) {
+		if (db[person.mother].father) document.getElementById('mgfather').outerHTML = getPersonDetails(db[person.mother].father, 'gparent', 'mgfather')
+		if (db[person.mother].mother) document.getElementById('mgmother').outerHTML = getPersonDetails(db[person.mother].mother, 'gparent', 'mgmother')
+		}	
+	
+	// get siblings
+	if (db[person.father] && db[person.father].fg) {
+		out = '<details'
+        if (localStorage.treeSiblings == 'yes') out += ' open'
+        out += '><summary class="fgroup" onclick="if (this.parentNode.open){ localStorage.treeSiblings = \'no\';} else { localStorage.treeSiblings = \'yes\';}">Siblings</summary>'
+		for (var ffg=0;ffg<db[person.father].fg.length;ffg++) {
+			out += getSiblings(db[person.father].fg[ffg], individual)
+			//console.log(db[person.father].fg)
+			}
+		out += '</details>'
+		}
+	document.getElementById('siblings').innerHTML = out
+
+	}
+
+
+function getAge (eDate, eYear, bDate, bYear) {
+	if (eYear.trim() === '' || bYear.trim() === '?' || bYear.trim() === '') return ''
+	
+	if (! bDate || bDate === '?' || bDate === '') bDate = '1 Jul'
+	if (!eDate || eDate === '?' || eDate === '') eDate = '1 Jul'
+
+	if (! eDate.match(/[0-9]/)) eDate = '1 '+eDate
+	if (! bDate.match(/[0-9]/)) bDate = '1 '+bDate
+	
+	eDate = eDate.replace(/by|bef|aft|abt|onob|\*|\<|\>|,/, '')
+	bDate = bDate.replace(/by|bef|aft|abt|onob|\*|\<|\>|,/, '')
+	eYear = eYear.replace(/by|bef|aft|abt|onob|~|\*|\<|\>|,/, '')
+	bYear = bYear.replace(/by|bef|aft|abt|onob|~|\*|\<|\>|,/, '')
+	
+	eDate = eDate.replace(/\-.../, '')
+	bDate = bDate.replace(/\-.../, '')
+	
+	var age = parseInt(eYear) - parseInt(bYear)
+	if (age < 0) return age
+	var eTime = new Date( eDate + ' 2000' )
+	var bTime = new Date(bDate + ' 2000' )
+	if (eTime < bTime) age--
+	if (age < 0) age = 0
+	
+	return age
+	}
+
+
+
+function getPersonDetails (id, type, loc) {
+	if (db[id]) {
+		var out = '<div class="'+type+'"'
+		if (loc) out += ' id="'+loc+'"'
+		out += '>'
+		
+		if (db[id].thumb) out += '<img src="'+window.project+'/thumbs/'+id+'.jpg" alt=""/>'
+		else  { out += '<img src="lib/i/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
+
+		out += '<div class="data">'
+		//out += '<div class="name"><a href="tree.html?project='+window.project+'&person='+id+'">'
+		out += `<div class="name"><a href="tree.html?project=${ window.project }&person=${ id }"`
+        if (markList.has(id)) out += ` style="color: chocolate;"`
+        out += `>`
+		//out += db[id].g+' '
+		if (db[id].k) out += db[id].k+' ('+db[id].g+') '
+		else out += db[id].g+' '
+		out += db[id].f
+		out += '</a>'
+		out += '</div>'
+		out += '<div class="dates">'+db[id].b+'–'+db[id].d
+		if (localStorage.treeDetailed == 'yes' && db[id].b && db[id].d) out += '<span class="detaileddates" style="margin-left:2em;">'+ getAge(db[id].ddate,db[id].d,db[id].bdate,db[id].b) + '</span>'
+		out += '</div>'
+		if (localStorage.treeDetailed == 'yes') {
+			out += '<div class="detaileddates">b. '
+			if (db[id].bplace) out += db[id].bplace+', '
+			out += db[id].bdate
+			out += '</div>'
+			out += '<div class="detaileddates">d. '
+			if (db[id].dplace) out += db[id].dplace+', '
+			out += db[id].ddate+'</div>'
+			}
+		if (db[id].adopted && loc == '') { 
+			var  adopter = '<a href="tree.html?project='+window.project+'&person='+db[id].adopted+'">'+db[db[id].adopted].g +' '+ db[db[id].adopted].f+'</a>'
+			out += '<div class="adopted">Adopted by '+adopter+'</div>'
+			}
+		else if (db[id].adopted && type == 'child') { 
+			out += '<div class="adopted">Adopted</div>'
+			}
+		if (db[id].occ) out += '<div class="occ">'+db[id].occ+'</div>'
+		if (db[id].fg && type==='child') {
+			var temp = 'sp: '
+			for (var i=0;i<db[id].fg.length;i++) {
+				var spouse = db[id].fg[i][1]
+				if (db[spouse]) temp += db[spouse].g+' '+db[spouse].f
+				else temp += db[id].fg[i][1]
+				if (i<db[id].fg.length-1) temp += ', '
+				}
+			out += '<div class="sp">'+temp+'</div>'
+			}
+		out += '<div class="showme">'
+		if (db[id].p) { out += '<a href="person.html?project='+window.project+'&person='+id+'" style="font-size:120%;" title="Show details">📄</a> ' }
+		out += '<a href="ancestors.html?project='+window.project+'&person='+id+'" style="font-size:120%; opacity:60%;" title="Show family tree">🌳</a> '
+		out += '<a href="precedents.html?project='+window.project+'&person='+id+'" style="font-size:120%; opacity:80%;" title="Show ancestors">⏫</a> '
+		if (! db[id].cstatus) out += '<a href="descendants.html?project='+window.project+'&person='+id+'" style="font-size:120%; opacity: 80%;" title="Show descendants">⏬</a> '
+		out += '</div>'
+		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
+			out += '<div class="stop">'+db[id].cstatus+'</div>'
+			}
+		if (type === 'person' && db[id].cstatus) out += '<p class="noissue">– '+db[id].cstatus+' –</p>'
+		out += '</div>'
+		out += '</div>'
+		}
+	else { 
+		out = '<div class="'+type+'"'
+		if (loc) out += ' id="'+loc+'"'
+		out += '>'
+		out += '<img src="lib/i/'; if (loc && loc.match('mother')) out += 'wo'; out +='man_pic.png" alt=""/>'
+		out += id + '</div>'
+		out += '</div>'
+		}
+	return out
+	}
+
+
+
+function getFamilyGroup (group, person) {
+	
+	out = '<div class="fgroup">'
+	out += '<div style="float:right; margin:1em;">'+group[0]+'</div>'
+	if (db[group[1]]) out += getPersonDetails(group[1], 'spouse')
+	else out += '<div class="spouse">'+group[1]+'</div>'
+	out += '<div class="children">'
+	if (group[2] === 'noissue') out += '<p class="noissue">– No children –</p>'
+	//if (person.cstatus) out += '<p class="noissue">'+person.cstatus+'</p>'
+	else {
+			for (var c=2;c<group.length;c++) {
+			if (db[group[c]]) {
+				out += getPersonDetails(group[c], 'child')
+				}
+			else out += '<div class="child">'+group[c]+'</div>'
+			}
+		}
+	out += '</div></div>'
+	
+	return out
+	}
+
+
+
+function getName (phrase, id, part, uselink) {
+	// part identifies the format of the name: g, given; k, knownas; f,family, mX,married where X indicates which married name
+	if (! db[id]) return id
+	if (part.match('x')) { part=part.replace('x',''); uselink = false }  // shortcut for in page names
+	var person = db[id]
+	if (part === 'given') part = 'g'; if (part === 'both') part = 'gf'; // legacy code
+	var startTag, endTag, givenname, g, k, f, m
+	g = k = f = m = ''
+	startTag = endTag = ''
+	if (uselink && person) { 
+		if (person.p) startTag = '<a href="person.html?project='+project+'&person='+id+'"'
+		else startTag = '<a href="tree.html?project='+project+'&person='+id+'" class="treeLink" '
+		startTag += '>'; endTag = '</a>' 
+		}
+
+	if (person.k) k = person.k
+	else k = person.g
+	g = person.g
+	f = person.f
+	m = person.m
+
+	if (part === 'g') return startTag+g+endTag
+	if (part === 'gf') return startTag+g+' '+f+endTag
+	if (part === 'k') return startTag+k+endTag
+	if (part === 'kf') return startTag+k+' '+f+endTag
+	if (part === 'kg') {
+		if (g === k) return startTag+g+endTag
+		else return startTag+k+' ('+g+') '+endTag
+		}
+	if (part === 'gkf') {
+		if (g === k) return startTag+g+' '+f+endTag
+		else return startTag+g+' ('+k+') '+f+endTag
+		}
+    var allSurnames = ''
+	if (part === 'gfm' || part === 'kfm') {
+        if (person.f) allSurnames = person.f
+        else allSurnames = '(?)'
+		if (person.m) {
+			for (var i=0;i<person.m.length;i++) allSurnames += '&#x23F5;&#x2009;'+person.m[i]
+			//for (var i=0;i<person.m.length;i++) allSurnames += '&#x25B6;&#x23F5;&#x2009;'+person.m[i]
+			}
+        if (part === 'gfm') return startTag+g+' '+allSurnames+endTag
+        if (part === 'kfm') return startTag+k+' '+allSurnames+endTag
+		}
+	if (part === 'gf+' || part === 'kf+') {
+		if (person.m && person.m.length > 0) {
+            allSurnames = person.m[0]
+			}
+        else allSurnames = ''
+        if (part === 'gf+') return startTag+g+' '+allSurnames+endTag
+        if (part === 'kf+') return startTag+k+' '+allSurnames+endTag
+		}
+	if (part === 'gf++') {
+		if (person.m && person.m.length > 1) {
+            allSurnames = person.m[1]
+			}
+        else allSurnames = ''
+        if (part === 'gf++') return startTag+g+' '+allSurnames+endTag
+        if (part === 'kf++') return startTag+k+' '+allSurnames+endTag
+		}
+	if (part === 'gf+++') {
+		if (person.m && person.m.length > 2) {
+            allSurnames = person.m[2]
+			}
+        else allSurnames = ''
+        if (part === 'gf+++') return startTag+g+' '+allSurnames+endTag
+        if (part === 'kf+++') return startTag+k+' '+allSurnames+endTag
+		}
+	else return ' '+id+' '
+	}
+
+
+
+function getSiblings (group, individual) { 
+	var out = '<div class="children">'
+	for (var c=2;c<group.length;c++) {
+		if (db[group[c]] && group[c] !== individual) {
+			out += getPersonDetails(group[c], 'child')
+			}
+		else if (group[c] !== individual) out += '<div class="child">'+group[c]+'</div>'
+		}
+	out += '</div>'
+	
+	return out
+	}
+
+
+function start () {
+    //window.mark = 'brant_charles_noel_1902'
+   // window.markList = new Set([mark])
+    //if (window.mark) makeMarkList()
+    
+    projectRoot= project+'root'
+    window.markList = new Set([])
+    if (localStorage[projectRoot] && localStorage[projectRoot] !== '') {
+        mark = localStorage[projectRoot]
+        window.markList.add(mark)
+        makeMarkList()
+        }
+    //console.log("mark",mark,"marklist",markList)
+
+	
+	if (window.thisPerson) displayPerson(thisPerson, project)
+	document.getElementById('indexLink').href = 'index.html?project='+project
+
+	// draw top banner
+    var person = db[thisPerson]
+	out = `<div id="pageicon">⏳</div>`
+    out += '<div id="pagetitle">'+getName('', thisPerson, 'gfm', false)+'<br><span id="bannerdates">'+person.b+'\u2013'+person.d
+	if (person.occ) out += ' \u2022 '+person.occ
+	out += '</span></div>'
+    document.getElementById('banner').innerHTML = out
+
+    }
+</script>
+</body></html>

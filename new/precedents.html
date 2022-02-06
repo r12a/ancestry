@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ancestors</title>
+<script>
+// read in thisPerson
+thisPerson = ''
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) project = 'data'
+var db = document.createElement('script');
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db);
+</script>
+<link href="lib/article.css" rel="stylesheet">
+<style>
+summary { font-size: 100%; }
+summary:hover { background-color: #eee; }
+.spouse { margin-top: 0; margin-bottom: 0; margin-inline-start: 3rem; /*background-color: #eee;*/ font-style: italic; color: gray; }
+details { margin-left: 3em; border-left: 1px solid #ccc; color: #333; /*border-bottom: 1px solid #ccc;*/  }
+details[open] { width: auto; }
+.dates, .bplace, .occ { font-size: 70%; margin-left: 1em; color: gray; }
+details a { 
+    float:right;
+    /*border-radius: .2rem;
+    background: gainsboro;*/
+    font-size: 1rem;
+    }
+.spacer {
+    margin-inline: 2rem;
+    }
+.bplace, .occ { display: none; }
+#pageicon {
+  position: absolute;
+  font-size: 4rem;
+  padding: 1rem 2rem;
+  color: white;
+}
+#floatingLinks {
+    position: fixed; 
+    right: 0; 
+    top: 0; 
+    display:flex;
+    flex-direction: column-reverse;
+    width: 1.6rem; 
+    justify-content: space-around;
+    background: transparent;
+    border-bottom-left-radius: 1rem;
+    text-align: center;
+    font-size: 1.6rem;
+    padding-block: .2rem;
+    padding-inline: .4rem;
+    height: 6rem;
+    line-height: 1.4;
+    align-content: center;
+    }
+#floatingLinks a {
+    color: gray;
+    margin:0;
+    padding: 0;
+    }
+
+
+/* styles for summary marker - a bit kludgey until fully supported */
+
+summary.lineHead, summary.lineEnd, summary.lineTBD { display: block;}
+summary.lineHead::-webkit-details-marker { display: none; }
+summary.lineHead::before { content: '\25B6'; /*padding-right: 0.5em;*/ }
+summary.lineEnd::-webkit-details-marker { display: none; }
+summary.lineEnd::before { content: '\25CF'; padding-right: 0.5em; }
+summary.lineTBD::-webkit-details-marker { display: none; }
+summary.lineTBD::before { content: '\25CB'; padding-right: 0.5em; }
+details[open] > summary.lineHead::before { content: '\25BC'; }
+details[open] > summary.lineEnd::before { content: '\25CF'; }
+details[open] > summary.lineTBD::before { content: '\25CB'; }
+
+</style>
+
+<script>
+var families = []
+var count = 0
+
+function openAll () {
+    ds = document.querySelectorAll('details')
+    for (let i=0;i<ds.length;i++) ds[i].open = true
+    }
+
+function closeAll () {
+    ds = document.querySelectorAll('details')
+    for (let i=0;i<ds.length;i++) ds[i].open = false
+    var first = document.querySelector('details')
+    first.open = true
+    first.style.marginLeft = '0'
+    }
+    
+
+
+function returnName (personID) {
+    // get markup for a given id (person), will be called recursively
+    console.log('returnName (person:',personID,')')
+    if (typeof db[personID] === 'undefined' || personID === '') return ''
+    
+    var out = ''
+    var personRec = db[personID]
+    console.log(personID, personRec.father, personRec.mother)
+    out += '<details>'
+        
+    out += `<summary><span class="n"><input type="checkbox" checked title="${ personID }"> ${ personRec.g } <strong>${ personRec.f }</strong></span>`
+    out += ' <span class="dates">'+personRec.b+'–'+personRec.d+'</span>'
+    out += ' <span class="bplace">'+personRec.bplace+'</span>'
+    out += ' <span class="occ">'+personRec.occ+'</span>'
+    out += ' <span class="spacer">&nbsp;</span>'
+    out += ` <a href="precedents.html?project=${ window.project }&person=${ personID }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">⏫</a>`
+    out += ` <a href="descendants.html?project=${ window.project }&person=${ personID }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">⏬</a>`
+    out += ` <a href="ancestors.html?project=${ window.project }&person=${ personID }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">🌳</a>`
+    out += ` <a href="tree.html?project=${ window.project }&person=${ personID }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">⏳</a>`
+    out += ` <a href="person.html?project=${ window.project }&person=${ personID }" title="Show details" style="margin-inline:.1rem;">📄</a>`
+    out += `</summary>`
+
+        if (personRec.father) out += returnName(personRec.father)
+        console.log('BETWEEN',personRec.father, 'and', personRec.mother)
+        if (personRec.mother) out += returnName(personRec.mother)
+
+    out += '</details>'
+    return out
+    }
+
+
+function findFamily (id) {
+	out = ''
+	if (db[id]) {
+		var person = db[id]
+        out += '<details>'
+
+        // show the root person
+		out += `<summary class="lineHead"><span class="n" style="color:chocolate; font-size: 1.4rem;"><input type="checkbox" checked title="${ id }"> ${ person.g } ${ person.f }<\span>`
+        if (person.cstatus) out += ' <strong>&bull;</strong>'
+        
+        out += ' <span class="spacer">&nbsp;</span>'
+        out += ` <a href="precedents.html?project=${ window.project }&person=${ person }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">⏫</a>`
+        out += ` <a href="descendants.html?project=${ window.project }&person=${ person }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">⏬</a>`
+        out += ` <a href="ancestors.html?project=${ window.project }&person=${ person }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">🌳</a>`
+        out += ` <a href="tree.html?project=${ window.project }&person=${ person }" title="Show relationships" style="opacity:80%; margin-inline:.1rem;">⏳</a>`
+        out += ` <a href="person.html?project=${ window.project }&person=${ person }" title="Show details">📄</a>`
+      
+        out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
+        out += ' <span class="bplace">'+person.bplace+'</span>'
+        out += ' <span class="occ">'+person.occ+'</span>'
+        out += '</summary>'
+
+		// show the parents
+        out += returnName(person.father)
+        out += returnName(person.mother)
+        out += "</details>"
+		}
+
+   return out
+	}
+
+function show (type) {
+    var dates = document.querySelectorAll('.dates')
+    var bplace = document.querySelectorAll('.bplace')
+    var occ = document.querySelectorAll('.occ')
+    
+    console.log(dates.length, bplace.length, occ.length)
+    
+    for (let i=0;i<dates.length;i++) dates[i].style.display = 'none'
+    for (let i=0;i<bplace.length;i++) bplace[i].style.display = 'none'
+    for (let i=0;i<occ.length;i++) occ[i].style.display = 'none'
+    
+    if (type === 'dates') for (let i=0;i<dates.length;i++) dates[i].style.display = 'inline'
+    else if (type === 'bplace') for (let i=0;i<bplace.length;i++) bplace[i].style.display = 'inline'
+    else if (type === 'occ')for (let i=0;i<occ.length;i++) occ[i].style.display = 'inline'
+    }
+
+
+function uncheckAll () {
+    // removes check marks from all names
+    persons = document.querySelectorAll('input[type=checkbox]')
+    for (var i=0;i<persons.length;i++) persons[i].checked = false
+    }
+
+
+function clearChecks (node) {
+    // removes check marks from names below a family head
+    persons = node.querySelectorAll('input[type=checkbox]')
+    for (var i=0;i<persons.length;i++) persons[i].checked = false
+    }
+
+
+function listChecked () {
+    // creates an array of ids for all checked names
+    window.checkedNames = []
+    persons = document.querySelectorAll('input[type=checkbox]')
+    for (var i=0;i<persons.length;i++) if (persons[i].checked) window.checkedNames.push(persons[i].title)
+    window.checkedNames.sort()
+    
+    document.getElementById('listOfCheckedNames').value = window.checkedNames.join('\n') 
+    document.getElementById('listOfCheckedNames').style.display = 'block'
+    }
+</script>
+<style>
+#topMenu { bottom: 0; top:auto; text-align: center; padding-right: 2em; }
+table { margin: auto; font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; font-size: 14px; padding-bottom: 800px; }
+.fg td { padding: 1em; font-weight: 400; background-color: rgba(243,210,147,0.50); border: 1px solid #ccc; }
+.fg a { font-size: 115%; line-height: 1.1; }
+td { padding: 0 1em; }
+.notes, .parents { color: #aaa; }
+.goto { font-size: 75%; color: brown; }
+table a { font-size: 100%; color: #648200; }
+tr td:first-of-type+td { border-bottom-left-radius: 5px; border-top-left-radius: 5px; }
+tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5px; }
+.sort { display:none; }
+.links { font-size: 90%; text-align: center; line-height: 1; }
+</style>
+</head>
+<body onLoad="start()">
+<div id="topMenu">
+	<a id="detailLink" href="#"></a>
+	<a id="fatherLink" href="#"></a>
+	<a href="#top">Top</a>
+	<a id="openAll" href="#" onClick="openAll(); return false">Open all</a>
+	<a id="closeAll" href="#" onClick="closeAll(); return false">Close all</a>
+	<a id="removeChecks" href="#" onClick="uncheckAll(); return false">Remove checks</a>
+	<a id="captureNames" href="#" onClick="listChecked(); return false">List checked</a>
+	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
+	</div>
+    
+<div id="floatingLinks">
+	<a id="treeLink" title="Show family tree" href="">🌳</a>
+    
+    <a id="indexLink" title="Go to the Index." href="">📇</a>
+    <script>
+    document.getElementById('indexLink').href = 'index.html?project='+project
+    document.getElementById('treeLink').href = 'ancestors.html?project='+project+'&person='+thisPerson
+    </script>
+</div>
+
+	<div id="top"></div>
+<div id="out">
+  <div id="banner">
+    <div id="pageicon">⏫</div>
+    <div id="pagetitle">Ancestors<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div><!--button onClick="openAll()">Open all</button> <button onClick="closeAll()">Close all</button-->
+    Show: <button onClick="show('dates')">Dates</button> <button onClick="show('bplace')">Birth place</button> <button onClick="show('occ')">Occupation</button>
+    </div>
+  </div>
+  <div id="subsubbanner">
+  <div><a href="#explanations">Total <span id="total"></span></a></div>
+  <textarea id="listOfCheckedNames" style="display:none;"></textarea>
+  </div>
+  <article>
+      <div id="outTable"></div>
+  </article>
+</div>
+
+<script>
+function start () {
+	if (thisPerson && db[thisPerson]) { 
+		document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Ancestors</span>'
+		document.getElementById('outTable').innerHTML = findFamily(thisPerson)
+        var first = document.querySelector('details')
+        first.open = true
+        first.style.marginLeft = '0'
+		openAll()
+        }
+	}
+</script>
+</body>
+</html>

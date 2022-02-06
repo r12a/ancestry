@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head id="head">
+<meta charset="utf-8">
+<title>Person page</title>
+
+<link href="lib/style.css" rel="stylesheet" />
+<style>
+#pageicon {
+  position: absolute;
+  font-size: 6rem;
+  padding: 1rem 2rem;
+}
+</style>
+
+<script src="lib/script.js"></script>
+<!--script src="events.js"></script-->
+<script src="history.js"></script>
+
+<script>
+// read in thisPerson
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'person') { if (pairs[1]) { var thisPerson = pairs[1] } }
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+if (! project || project.match(/\.\./)) project = 'data'
+
+// load the appropriate db file	
+var db = document.createElement('script')
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db)
+
+// load the appropriate census file	
+var db = document.createElement('script')
+db.src = project+'/census.js'
+db.async = false
+document.head.appendChild(db)
+
+// load the appropriate timeline file	
+var tl = document.createElement('script')
+tl.src = project+'/'+thisPerson+'.txt'
+tl.async = false
+document.head.appendChild(tl)
+</script>
+</head>
+
+
+<body onLoad="init()">
+<div id="summaryIn"><p></p></div>
+<div id="links"></div>
+<div id="in"></div>
+
+
+<div id="out">
+<div id="banner">
+  <div id="pagetitle"></div>
+</div>
+<div id="subbanner">
+  <div>&nbsp;</div>
+</div>
+<div id="subsubbanner">
+  <div>&nbsp;</div>
+</div>
+<div id="subsubsubbanner">
+  <div>&nbsp;</div>
+</div>
+<div id="main">
+<div class="dateAndRecord">
+  <div>
+    <div class="recordDate"><span style="font-size: 100%; margin-top:.8em;">-</span><span>&nbsp;</span></div>
+  </div>
+  <div id="summary" class="record">
+    <div>
+      <p>&nbsp;</p>
+    </div>
+  </div>
+  <div class="keypoints">&nbsp;</div>
+</div>
+</div>
+</div>
+<script>
+
+</script>
+</body></html>

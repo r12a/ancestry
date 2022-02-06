@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<title>Index</title>
+<link href="lib/style.css" rel="stylesheet">
+<style>
+#xbanner::before {
+  content: '📇';
+  font-size: 4rem;
+  padding: 1rem;
+}
+#pageicon {
+  position: absolute;
+  font-size: 4rem;
+  padding: 1rem 2rem;
+}
+</style>
+<script>
+// read in project
+var project = ''
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) {
+    while (project === '' || project.match(/\.\./)) project = prompt('What project do you want to work with?')
+    }
+var db = document.createElement('script')
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db)
+</script>
+<script>
+function filter (str) {
+	str = str.toLowerCase()
+	str = str.replace(/ /,'.*')
+	var total = 0
+	var names = document.querySelectorAll('#listrecord p')
+	for (var i=0;i<names.length;i++) {
+		if (! names[i].textContent.toLowerCase().match(str)) names[i].style.display = 'none'
+		else { names[i].style.display = 'block'; total++ }
+		}
+	document.getElementById('total').textContent = total
+	}
+	
+function secondFilter (str) {
+	str = str.toLowerCase()
+	total = 0
+	var match1 = document.getElementById('filter').value
+	var names = document.querySelectorAll('#listrecord a')
+	for (var i=0;i<names.length;i++) {
+		if (names[i].textContent.toLowerCase().match(match1) && names[i].textContent.toLowerCase().match(str)) {
+			names[i].style.display = 'inline'; total++
+			}
+		else { names[i].style.display = 'none'; }
+		}
+	document.getElementById('total').textContent = total
+	}
+</script>
+</head>
+<body onLoad="init()">
+<div id="out">
+  <div id="banner">
+    <div id="pageicon">📇</div>
+    <div id="pagetitle">Index<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div><a href="#explanations">Total <span id="total"></span></a></div>
+  </div>
+  <div id="subsubsubbanner" style="text-transform: none;">
+    <div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>
+  </div>
+  <article>
+    <section id="listrecord">
+      </section>
+    <!--div id="places">
+      <p class="recordTitle" id="explanations">Explanations regarding dates</p>
+      <p>Where the date  Note that the dates following each name are only token dates, associated with the name as part of its ID. In some cases these dates are pure guesswork, such as in the case where a father is known from a marriage record but no other information. In some cases the date may accurately reflect the birth date of the person. In others, that birth date may be ajusted in the light of new evidence in the actual records, but the date here will remain the same.<a target="_blank" href="https://maps.google.com/maps?q=53.8352112,-2.832418"></a></p>
+    </div-->
+  </article>
+</div>
+
+<script>
+function init () {
+	var out = ''
+	var total = 0
+	for (var person in db) {
+		//if (db[person].p) out += '<p><a href="data/'+person+'.html">'+db[person].f
+		//else 
+		out += '<p class="personRow">'
+
+        out += '<span style="margin-inline: 2em; float:right;">'
+        if (db[person].p) out += `<a href="person.html?project=${ window.project }&person=${ person }" style="" title="Show details">📄</a> `
+		out += `<a href="tree.html?project=${ window.project }&person=${ person }" style="opacity:90%;" title="Show relationships">⏳</a> `
+		out += `<a href="ancestors.html?project=${ window.project }&person=${ person }" style="opacity:60%;" title="Show family tree">🌳</a> `
+		out += `<a href="precedents.html?project=${ window.project }&person=${ person }" style="opacity:80%" title="Show ancestors">⏫</a> `
+		if (! db[person].cstatus) out += `<a href="descendants.html?project=${ window.project }&person=${ person }" style="opacity:80%" title="Show descendants">⏬</a>`
+        else out += `<span style="visibility:hidden;">⏬</span>`
+		out += '</span>'
+        
+        out += '<a href="tree.html?project='+project+'&person='+person+'">'+db[person].f
+		if (db[person].m) {
+			for (var i=0;i<db[person].m.length;i++) {
+				out += ' ('+db[person].m[i]+')'
+				}
+			}
+		out += ', '+db[person].g
+		if (db[person].b) {
+			out += ', '+db[person].b
+			if (db[person].d) out += '-'+db[person].d
+			}
+		else {
+			var temp = person.split('_')
+			out += ', ~'+temp[temp.length-1]
+			}
+		//if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
+		out += '</a></p>'
+ 		out += '</div>'
+       
+		total++
+		}
+	document.getElementById('total').textContent = total
+	
+	document.getElementById('listrecord').innerHTML = '<div>'+out+'</div>'
+	
+	document.getElementById('filter').focus()
+	}
+/*
+var sortkeys = []
+var names = document.querySelectorAll('#list p')
+for (var i=0;i<names.length;i++) {
+	var id = names[i].textContent
+	id = id.replace(/ \([^\)]+\)/g,'')
+	id = id.toLowerCase().trim()
+	sortkeys.push(id)
+	id = id.replace(/ /g,'_')
+	id = id.replace(/,/g,'')
+	
+	var anchor = '<a href="data/'+id+'.html">'+names[i].textContent+'</a>'
+	names[i].innerHTML = anchor
+	}
+*/
+</script>
+</body>
+</html>
