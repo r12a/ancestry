@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Make lists</title>
+<link href="../../lib/style.css" rel="stylesheet">
+<script src="../script.js" type="application/javascript"></script>
+<script src="../../data/events.js" type="application/javascript"></script>
+<script>
+// read in project
+project = 'data'
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project) project = 'data'
+var db = document.createElement('script');
+db.src = '../../'+project+'/db.js'
+db.async = false
+db.id = 'dbInclude'
+document.head.appendChild(db);
+</script>
+<script>
+function dump (individual) {
+	var person = db[individual]
+	var out = ''
+	
+
+	
+	// initialise list of records
+	records = []
+	var parent, sibling, siblingType, year, spouse, marriageList, child, childType, byear, dyear
+	
+	
+	// end head, start body
+	/*out += '</head>\n\n<body><div id="summaryIn"><p>'+getName('', individual, 'gkf', false)+'.</p></div>\n<div id="links">\n</div>\n<div id="in">\n\n' */
+
+	// get birth
+	if (person.b) records.push(cleanYear(person.b)+' § '+person.b+' Birth\nbirth: '+individual+'\n\n\n')
+	
+	// get birth & death years
+	var birth = person.b.replace('~','')
+	if (birth === '') {
+		var temp = individual.split('_')
+		birth = temp[temp.length-1]
+		}
+	var death = person.d.replace('~','')
+	if (death === '') {
+		if (person.upto) death = person.upto
+		else {
+			death = parseInt(birth) + 80
+			death = death.toString()
+			}
+		}
+		
+	// get siblings
+	if (db[person.father]) parent = db[person.father]
+	else if (db[person.mother]) parent = db[person.mother]
+	if (parent && parent.fg) { 
+		for (var i=0;i<parent.fg.length;i++) {
+			for (var j=2;j<parent.fg[i].length;j++) {
+				if (db[parent.fg[i][j]]) {
+					sibling = parent.fg[i][j]
+					if (db[sibling].male) siblingType = 'brother'
+					else siblingType = 'sister'
+		console.log(sibling, birth, death, db[sibling].b, db[sibling].d)
+					//if (data[sibling] && data[sibling].birth.year) byear = data[sibling].birth.year
+					//else byear = db[sibling].b
+					if (db[sibling].b && db[sibling].b !== '') byear = db[sibling].b.replace('~','')
+					else byear = ''
+					//if (data[sibling] && data[sibling].death.year) dyear = data[sibling].death.year
+					//else dyear = db[sibling].d
+					if (db[sibling].d && db[sibling].d !== '') dyear = db[sibling].d.replace('~','')
+					else dyear = ''
+					}
+				if (byear >= birth && byear <= death && sibling !== individual) records.push(cleanYear(byear)+' § '+db[sibling].b+' '+siblingType+' born '+sibling+'\n\n')
+				if (dyear >= birth && dyear <= death && sibling !== individual) records.push(cleanYear(dyear)+' § '+db[sibling].d+' '+siblingType+' dies '+sibling+'\n\n')
+				}
+			}
+		}
+
+	// get marriage
+	if (person.fg) {
+		for (i=0;i<person.fg.length;i++) {
+			records.push(cleanYear(person.fg[i][0])+' § '+person.fg[i][0]+' Marriage\nmarriage: '+person.fg[i][1]+'\n\n')
+			}
+		}
+
+	// get spouse death
+	if (person.fg) {
+		for (i=0;i<person.fg.length;i++) {
+			var spouse = person.fg[i][1]
+			var str = ''
+			if (db[spouse] && db[spouse].d) {
+				year = cleanYear(db[spouse].d)
+				str += year+' § '+db[spouse].d
+				if (db[spouse].male) str += ' husband'
+				else str += ' wife'
+				str += ' dies '+spouse+'\n\n'
+				if (year <= death) records.push(str)
+				}
+			}
+		}
+
+	// get children
+	if (person.fg) { 
+		for (var i=0;i<person.fg.length;i++) {
+			for (var j=2;j<person.fg[i].length;j++) {
+				if (db[person.fg[i][j]]) {
+					child = person.fg[i][j]
+					if (db[child].male) childType = 'son'
+					else childType = 'daughter'
+					records.push(cleanYear(db[child].b)+' § '+db[child].b+' '+childType+' born '+child+'\n\n')
+					}
+				if (db[child] && db[child].d) {
+					console.log(cleanYear(db[child].d), death)
+					if (cleanYear(db[child].d) <= death) records.push(cleanYear(db[child].d)+' § '+db[child].d+' '+childType+' dies '+child+'\n\n')
+					}
+				}
+			}
+		}
+
+	// get parents death
+	if (db[person.father]) { 
+		if (db[person.father].d) {
+			year = cleanYear(db[person.father].d)
+			if (year >= birth && year <= death) records.push(year+' § '+year+' father dies '+person.father+'\n\n')
+			}
+		}
+	if (db[person.mother]) { 
+		if (db[person.mother].d) {
+			year = cleanYear(db[person.mother].d)
+			if (year >= birth && year <= death) records.push(year+' § '+year+' mother dies '+person.mother+'\n\n')
+			}
+		}
+
+
+	// get grandparents death
+	var gparent
+	if (db[person.father]) { 
+		if (db[person.father].father && db[db[person.father].father] && db[db[person.father].father].d) {
+			year = cleanYear(db[db[person.father].father].d)
+			if (year >= birth && year <= death) records.push(year+' § '+year+' grandfather dies '+db[person.father].father+'\n\n')
+			}
+		if (db[person.father].mother && db[db[person.father].mother] && db[db[person.father].mother].d) {
+			year = cleanYear(db[db[person.father].mother].d)
+			if (year >= birth && year <= death) records.push(year+' § '+year+' grandmother dies '+db[person.father].mother+'\n\n')
+			}
+		}
+	if (db[person.mother]) { 
+		if (db[person.mother].father && db[db[person.mother].father] && db[db[person.mother].father].d) {
+			year = cleanYear(db[db[person.mother].father].d)
+			if (year >= birth && year <= death) records.push(year+' § '+year+' grandfather dies '+db[person.mother].father+'\n\n')
+			}
+		if (db[person.mother].mother && db[db[person.mother].mother] && db[db[person.mother].mother].d) {
+			year = cleanYear(db[db[person.mother].mother].d)
+			if (year >= birth && year <= death) records.push(year+' § '+year+' grandmother dies '+db[person.mother].mother+'\n\n')
+			}
+		}
+
+
+	// get child marriages
+	if (person.fg) { 
+		for (i=0;i<person.fg.length;i++) {
+			for (j=2;j<person.fg[i].length;j++) {
+				if (db[person.fg[i][j]]) {
+					child = person.fg[i][j]
+					if (db[child].male) childType = 'son'
+					else childType = 'daughter'
+					if (db[child].fg) {
+						for (var k=0;k<db[child].fg.length;k++) {
+							 if (cleanYear(db[child].fg[k][0]) < death) records.push(cleanYear(db[child].fg[k][0])+' § '+db[child].fg[k][0]+' '+childType+' marries '+child+'+'+db[child].fg[k][1]+'\n\n')
+							}
+						}
+					}
+				}
+			}
+		}
+
+	
+	// get death
+	if (person.d) records.push(cleanYear(person.d)+' § '+person.d+' Death\ndeath: '+individual+'\n\n\n')
+
+
+	// get events
+	if (document.getElementById('addEvents').checked) {
+		for (topic in events) {
+			temp = events[topic][1].split(':')
+			year = cleanYear(temp[1].trim())
+			if (year >= birth && year <= death) records.push(year+' § '+year+' event '+topic+'\n\n')
+			}
+		}
+	
+	records.sort()
+	for (i=0;i<records.length;i++) {
+		out += records[i].substr(5)
+		}
+	
+
+	return out
+	}
+
+
+function cleanYear (year) {
+	if (year.trim() === '' || year.trim() === '?') return ''
+	year = year.replace(/by|bef|aft|abt|~|\*|,/g, '')
+	return year.trim()
+	}
+
+</script>
+</head>
+<body onLoad="document.getElementById('bannerdates').textContent = window.project">
+<div id="out">
+  <div id="banner">
+    <div id="pagetitle">Make lists<br>
+      <span id="bannerdates">Lancashire</span></div>
+  </div>
+  <div id="subbanner">
+    <div><input type="checkbox" id="addEvents"/> <a onclick="return:false;" href="#n3"> Add events</a></div>
+  </div>
+  <div id="subsubbanner">
+    <div>
+    	Id: <input type="text" id="source"  style="width: 200px;"/>
+      <button onClick="document.getElementById('output').value = dump(document.getElementById('source').value); document.getElementById('output').select()">Go</button>
+    </div>
+  </div>
+  <div id="main">
+    <div class="dateAndRecord" id="list">
+      <div class="record">
+      
+      
+      <!--input type="text" id="source" style="width: 100%;"/-->
+	  <textarea id="output" style="width: 100%; height: 600px"></textarea>
+      </div>
+    </div>
+    <pre id="places">
+    </pre>
+  </div>
+</div>
+
+</body>
+</html>
