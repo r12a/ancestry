@@ -3,7 +3,8 @@ function listRelations (individual) {
 	var out = ''
 	var lines = []
 	var i, j, k, parent
-	
+	console.log(person)
+    
 	// get spouse(s)
 	lines.push('<h3>Spouse(s)</h3>')
 	if (db[individual] && db[individual].fg) { 

@@ -33,10 +33,13 @@ document.head.appendChild(db);
 
 function makeNotes (content, target) {
 	segments = content.split('\n')
-	var out = ''
-	for (var i=0;i<segments.length;i++) out += '<div>&quot;'+target+': '+segments[i]+'&quot;,</div>'
-	document.getElementById(target).innerHTML = out
+	var out = 'fnotes: ['
+	for (var i=0;i<segments.length;i++) out += '"'+segments[i]+'", '
+    out += '],'
+	document.getElementById(target).textContent = out
 	}
+
+
 
 
 
@@ -59,58 +62,56 @@ function autoPropagate (person) {
 	listRelations(person)
     
     // fill in the page building data
-    if (db[person] && db[person].recordData.birth) {
-        var dataItems = db[person].recordData.birth
+    if (db[person] && db[person].birth) {
+        document.getElementById('birthYearIn').value = db[person].b.trim()
+        document.getElementById('birthDateIn').value = db[person].bdate.trim()
+    
+        var dataItems = db[person].birth
         var notes = ''
         var fnotes = ''
         var discussion = ''
-        for (var i=0;i<dataItems.length;i++) {
-            var fields = dataItems[i].split(':')
-            switch (fields[0]) {
-                case 'date': document.getElementById('birthDateIn').value = fields[1].trim(); break
-                case 'place': document.getElementById('birthPlaceIn').value = fields[1].trim(); break
-                case 'focc': document.getElementById('foccIn').value = fields[1].trim(); break
-                case 'informant': document.getElementById('informantIn').value = fields[1].trim(); break
-                case 'bapplace': document.getElementById('bapPlaceIn').value = fields[1].trim(); break
-                case 'bapyear': document.getElementById('bapYearIn').value = fields[1].trim(); break
-                case 'bapdate': document.getElementById('bapDateIn').value = fields[1].trim(); break
-                case 'denomination': document.getElementById('denominationIn').value = fields[1].trim(); break
-                case 'gps':
-                    document.getElementById('gpsPlace').value = fields[1].replace(/https/,'').trim()
-                    document.getElementById('gpsCoords').value =fields[2].replace('//maps.google.com/maps?q=','').trim()
-                    break
-                case 'note': notes += fields[1]+'\n'
-                case 'fnote': fnotes += fields[1]+'\n'
-                case 'discussion': discussion += fields[1]+'\n'
-                }
-            document.getElementById('censusNotes').value = notes.trim()
-            document.getElementById('censusFNotes').value = fnotes.trim()
-            document.getElementById('censusDisc').value = discussion.trim()
+        
+        if (dataItems.timestamp) document.getElementById('timestampIn').value = dataItems.timestamp.trim()
+        if (dataItems.place) document.getElementById('birthPlaceIn').value = dataItems.place.trim()
+        if (dataItems.focc) document.getElementById('foccIn').value = dataItems.focc.trim()
+        if (dataItems.informant) document.getElementById('informantIn').value = dataItems.informant.trim()
+        if (dataItems.bapplace) document.getElementById('bapPlaceIn').value = dataItems.bapplace.trim()
+        if (dataItems.bapyear) document.getElementById('bapYearIn').value = dataItems.bapyear.trim()
+        if (dataItems.bapdate) document.getElementById('bapDateIn').value = dataItems.bapdate.trim()
+        if (dataItems.denomination) document.getElementById('denominationIn').value = dataItems.denomination.trim()
+
+        if (dataItems.gps) {
+            var fields = dataItems.gps[0].split('https:') 
+            document.getElementById('gpsPlace').value += fields[0].trim()
+            document.getElementById('gpsCoords').value = fields[1].replace('//maps.google.com/maps?q=','').trim()
             }
+        
+        
+        if (dataItems.discussion) document.getElementById('censusDisc').value = dataItems.discussion.trim()
+       
+        
         draftResult()
         }
 	}
 
 
-console.log('here')
+
 
 function addQuotesTo (content) {
+    // quotes no longer needed. Just normalisation of lines.
 	var out = ''
 	var lines = content.split('\n')
 	for (var i=0;i<lines.length;i++) {
 		if (lines[i].match(':')) {
-			var parts = lines[i].split(':')
-			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
-			parts[1] = parts[1].replace(/[\s]+/g,' ')
-			out += '"['+parts[0]+': '+parts[1].trim()+']"'
-			out += ',\n'
+			lines[i] = lines[i].replace(/\s+/g,' ')
+			out += lines[i]+'\n'
 			}
 		else if (lines[i].match('\t')) {
 			var parts = lines[i].split('\t')
 			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
 			parts[1] = parts[1].replace(/[\s]+/g,' ')
 			out += '"['+parts[0]+': '+parts[1].trim()+']"'
-			out += ',\n'
+			out += '\n'
 			}
 		}
 	return out
@@ -177,48 +178,48 @@ function draftResult () {
     //else document.getElementById('certImage').textContent = ''
 
     if (document.getElementById('certImageIn').value.trim()) 
-        document.getElementById('certImage').textContent = `"record: Birth certificate url:records/${ document.getElementById('certImageIn').value.trim() }${ document.getElementById('certImageExtIn').value.trim() }",`
+        document.getElementById('certImage').textContent = `"record: Birth certificate url:records/${ document.getElementById('certImageIn').value.trim() }${ document.getElementById('certImageExtIn').value.trim() }"`
     else document.getElementById('certImage').textContent = ''
 
 
     if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceInURL').value.trim())
-        document.getElementById('certSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceInURL').value.trim() }",` 
+        document.getElementById('certSource').textContent = `\nSOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceInURL').value.trim() }` 
     else document.getElementById('certSource').textContent = ''
  
     if (document.getElementById('certWhenIn').value.trim()) 
-        document.getElementById('certWhen').textContent = `"[When: ${ document.getElementById('certWhenIn').value.trim() }]",`
+        document.getElementById('certWhen').textContent = `When: ${ document.getElementById('certWhenIn').value.trim() }`
     else document.getElementById('certWhen').textContent = ''
  
     //if (document.getElementById('certWhereIn').value.trim()) 
-    //    document.getElementById('certWhere').textContent = `"[Where: ${ document.getElementById('certWhereIn').value.trim() }]",`
+    //    document.getElementById('certWhere').textContent = `Where: ${ document.getElementById('certWhereIn').value.trim() }`
     //else document.getElementById('certWhere').textContent = ''
  
     if (document.getElementById('certNameIn').value.trim()) 
-        document.getElementById('certName').textContent = `"[Name: ${ document.getElementById('certNameIn').value.trim() }]",`
+        document.getElementById('certName').textContent = `Name: ${ document.getElementById('certNameIn').value.trim() }`
     else document.getElementById('certName').textContent = ''
  
     if (document.getElementById('certFNameIn').value.trim()) 
-        document.getElementById('certFName').textContent = `"[FatherName: ${ document.getElementById('certFNameIn').value.trim() }]",`
+        document.getElementById('certFName').textContent = `FatherName: ${ document.getElementById('certFNameIn').value.trim() }`
     else document.getElementById('certFName').textContent = ''
  
     if (document.getElementById('certMNameIn').value.trim()) 
-        document.getElementById('certMName').textContent = `"[MotherName: ${ document.getElementById('certMNameIn').value.trim() }]",`
+        document.getElementById('certMName').textContent = `MotherName: ${ document.getElementById('certMNameIn').value.trim() }`
     else document.getElementById('certMName').textContent = ''
  
     if (document.getElementById('certOccIn').value.trim()) 
-        document.getElementById('certOcc').textContent = `"[FatherOccupation: ${ document.getElementById('certOccIn').value.trim() }]",`
+        document.getElementById('certOcc').textContent = `FatherOccupation: ${ document.getElementById('certOccIn').value.trim() }`
     else document.getElementById('certOcc').textContent = ''
  
     if (document.getElementById('certInformantIn').value.trim()) 
-        document.getElementById('certInformant').textContent = `"[Informant: ${ document.getElementById('certInformantIn').value.trim() }]",`
+        document.getElementById('certInformant').textContent = `Informant: ${ document.getElementById('certInformantIn').value.trim() }`
     else document.getElementById('certInformant').textContent = ''
  
     if (document.getElementById('certRegdIn').value.trim()) 
-        document.getElementById('certRegd').textContent = `"[Regd: ${ document.getElementById('certRegdIn').value.trim() }]",`
+        document.getElementById('certRegd').textContent = `Regd: ${ document.getElementById('certRegdIn').value.trim() }`
     else document.getElementById('certRegd').textContent = ''
  
     if (document.getElementById('certOtherIn').value.trim()) 
-        document.getElementById('certOther').textContent = `"[Other: ${ document.getElementById('certOtherIn').value.trim() }]",`
+        document.getElementById('certOther').textContent = `Other: ${ document.getElementById('certOtherIn').value.trim() }`
     else document.getElementById('certOther').textContent = ''
 
 
@@ -226,7 +227,7 @@ function draftResult () {
 
 // second source
     if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
-        document.getElementById('secondSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
+        document.getElementById('secondSource').textContent = `\nSOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }` 
     else document.getElementById('secondSource').textContent = ''
  
     if (document.getElementById('secondImageIn').value.trim()) 
@@ -246,7 +247,7 @@ function draftResult () {
 
 // third source
     if (document.getElementById('thirdSourceIn').value.trim() || document.getElementById('thirdSourceURLIn').value.trim())
-        document.getElementById('thirdSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('thirdSourceIn').value.trim() }  ${ document.getElementById('thirdSourceURLIn').value.trim() }",` 
+        document.getElementById('thirdSource').textContent = `\nSOURCE: ${ document.getElementById('thirdSourceIn').value.trim() }  ${ document.getElementById('thirdSourceURLIn').value.trim() }` 
     else document.getElementById('thirdSource').textContent = ''
  
     if (document.getElementById('thirdImageIn').value.trim()) 
@@ -267,7 +268,7 @@ function draftResult () {
 
 // baptism record
     if (document.getElementById('bapSourceIn').value.trim() || document.getElementById('bapSourceURLIn').value.trim())
-        document.getElementById('bapSource').textContent = `\n"<br>SOURCE: ${ document.getElementById('bapSourceIn').value.trim() }  ${ document.getElementById('bapSourceURLIn').value.trim() }",` 
+        document.getElementById('bapSource').textContent = `\nSOURCE: ${ document.getElementById('bapSourceIn').value.trim() }  ${ document.getElementById('bapSourceURLIn').value.trim() }` 
     else document.getElementById('bapSource').textContent = ''
  
     if (document.getElementById('bapImageIn').value.trim()) 
@@ -284,44 +285,46 @@ function draftResult () {
  
  
     if (document.getElementById('bapParishIn').value.trim()) 
-        document.getElementById('bapParish').textContent = `"[Parish: ${ document.getElementById('bapParishIn').value.trim() }]",`
+        document.getElementById('bapParish').textContent = `Parish: ${ document.getElementById('bapParishIn').value.trim() }`
     else document.getElementById('bapParish').textContent = ''
  
     if (document.getElementById('bapBornIn').value.trim()) 
-        document.getElementById('bapBorn').textContent = `"[WhenBaptised: ${ document.getElementById('bapBornIn').value.trim() }]",`
+        document.getElementById('bapBorn').textContent = `WhenBaptised: ${ document.getElementById('bapBornIn').value.trim() }`
     else document.getElementById('bapBorn').textContent = ''
  
     if (document.getElementById('bapNameIn').value.trim()) 
-        document.getElementById('bapName').textContent = `"[Name: ${ document.getElementById('bapNameIn').value.trim() }]",`
+        document.getElementById('bapName').textContent = `Name: ${ document.getElementById('bapNameIn').value.trim() }`
     else document.getElementById('bapName').textContent = ''
  
     if (document.getElementById('bapFatherIn').value.trim()) 
-        document.getElementById('bapFather').textContent = `"[Father: ${ document.getElementById('bapFatherIn').value.trim() }]",`
+        document.getElementById('bapFather').textContent = `Father: ${ document.getElementById('bapFatherIn').value.trim() }`
     else document.getElementById('bapFather').textContent = ''
  
     if (document.getElementById('bapMotherIn').value.trim()) 
-        document.getElementById('bapMother').textContent = `"[Mother: ${ document.getElementById('bapMotherIn').value.trim() }]",`
+        document.getElementById('bapMother').textContent = `Mother: ${ document.getElementById('bapMotherIn').value.trim() }`
     else document.getElementById('bapMother').textContent = ''
  
     if (document.getElementById('bapAbodeIn').value.trim()) 
-        document.getElementById('bapAbode').textContent = `"[Abode: ${ document.getElementById('bapAbodeIn').value.trim() }]",`
+        document.getElementById('bapAbode').textContent = `Abode: ${ document.getElementById('bapAbodeIn').value.trim() }`
     else document.getElementById('bapAbode').textContent = ''
 
     if (document.getElementById('bapOccIn').value.trim()) 
-        document.getElementById('bapOcc').textContent = `"[Occupation: ${ document.getElementById('bapOccIn').value.trim() }]",`
+        document.getElementById('bapOcc').textContent = `Occupation: ${ document.getElementById('bapOccIn').value.trim() }`
     else document.getElementById('bapOcc').textContent = ''
 
 
 
 // harvested data
-    if (document.getElementById('birthYearIn').value.trim())
-        document.getElementById('birthYear').textContent = `timestamp: "${ document.getElementById('birthYearIn').value.trim() }",`
-    else document.getElementById('birthYear').textContent = ''
 
-    if (document.getElementById('birthDateIn').value.trim())
+    if (document.getElementById('timestampIn').value.trim()) {
+        document.getElementById('timestamp').textContent = `timestamp: "${ document.getElementById('timestampIn').value.trim() }",`
+        }
+    else document.getElementById('timestamp').textContent = ''
+
+    /*if (document.getElementById('birthDateIn').value.trim())
         document.getElementById('birthDate').textContent = `date: "${ document.getElementById('birthDateIn').value.trim() }",`
     else document.getElementById('birthDate').textContent = ''
-
+    */
     if (document.getElementById('birthPlaceIn').value.trim()) 
         document.getElementById('birthPlace').textContent = `place: "${ document.getElementById('birthPlaceIn').value.trim() }",`
     else document.getElementById('birthPlace').textContent = ''
@@ -329,6 +332,10 @@ function draftResult () {
     if (document.getElementById('foccIn').value.trim()) 
         document.getElementById('focc').textContent = `focc: "${ document.getElementById('foccIn').value.trim() }",`
     else document.getElementById('focc').textContent = ''
+
+    if (document.getElementById('mmnIn').value.trim()) 
+        document.getElementById('mmn').textContent = `mmn: "${ document.getElementById('mmnIn').value.trim() }",`
+    else document.getElementById('mmn').textContent = ''
 
     if (document.getElementById('informantIn').value.trim()) 
         document.getElementById('informant').textContent = `informant: "${ document.getElementById('informantIn').value.trim() }",`
@@ -347,7 +354,117 @@ function draftResult () {
     else document.getElementById('bapDate').textContent = ''
  
     if (document.getElementById('denominationIn').value.trim()) 
-        document.getElementById('denomination').textContent = `denomination: ${ document.getElementById('denominationIn').value.trim() }",`
+        document.getElementById('denomination').textContent = `denomination: "${ document.getElementById('denominationIn').value.trim() }",`
+    else document.getElementById('denomination').textContent = ''
+
+
+    if (document.getElementById('censusNotes').value) {
+        document.getElementById('note').textContent = "notes: \u0060"+document.getElementById('censusNotes').value+"\u0060,"
+        }
+
+    if (document.getElementById('censusDisc').value) {
+        document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value+"\u0060,"
+        }
+
+
+
+    if (document.getElementById('gpsIn').value.trim()) {
+        lines = document.getElementById('gpsIn').value.split('\n')
+        output = ''
+        for (o=0;o<lines.length;o++) {
+            temp = lines[o].split(':')
+            output += '"'+temp[0]+' https://maps.google.com/maps?q='+temp[1].replace(/ /g,'')+'"'
+            if (o<lines.length-1) output += ', '
+            }
+        document.getElementById('gps').textContent = `gps: [${ output }],`
+        }
+    else document.getElementById('gps').textContent = ''
+    
+    
+    var imagesArray = []
+    if (document.getElementById('certImageIn').value.trim()) imagesArray.push(document.getElementById('certImageIn').value + document.getElementById('certImageExtIn').value)
+    if (document.getElementById('bapImageIn').value.trim()) imagesArray.push(document.getElementById('bapImageIn').value + document.getElementById('bapImageExtIn').value)
+    if (document.getElementById('secondImageIn').value.trim()) imagesArray.push(document.getElementById('secondImageIn').value + document.getElementById('secondImageExtIn').value)
+    if (document.getElementById('thirdImageIn').value.trim()) imagesArray.push(document.getElementById('thirdImageIn').value + document.getElementById('thirdImageExtIn').value)
+    var imagesOut = ''
+    for (i=0;i<imagesArray.length;i++) {
+        imagesOut += '"'+imagesArray[i].trim()+'"'
+        if (i<imagesArray.length-1) imagesOut += ', '
+        }
+    document.getElementById('images').textContent = 'images: ['+imagesOut+']'
+    
+/*
+
+    if (document.getElementById('imagesIn').value.trim()) {
+        lines =document.getElementById('imagesIn').value.split('\n')
+        output = ''
+        for (o=0;o<lines.length;o++) {
+            output += '"'+lines[o]+'"'
+            if (o<lines.length-1) output += ', '
+            }
+        document.getElementById('images').textContent = `images: [${ output }],`
+        }
+    else document.getElementById('images').textContent = ''
+
+
+
+    if (document.getElementById('censusDisc').value) {
+        //document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value.replace(/</g,'&lt;')+"\n\u0060,\n"
+        document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value+"\n\u0060,\n"
+        }
+
+    if (document.getElementById('censusFNotes').value) {
+        document.getElementById('fnote').textContent = "fnote: \u0060"+document.getElementById('censusFNotes').value+"\n\u0060,\n"
+        }
+
+
+    document.getElementById('sources').textContent = "\nsources:\u0060\n"+document.getElementById('sourcesIn').value+"\n\u0060\n"
+*/
+
+
+    // check for timestamp
+    if (document.getElementById('timestamp').textContent === '') {
+        document.getElementById('timestamp').textContent = 'Add timestamp'
+        document.getElementById('timestamp').style.background = 'red'
+        document.getElementById('timestamp').style.color = 'white'
+        }
+    else {
+        document.getElementById('timestamp').style.background = 'white'
+        document.getElementById('timestamp').style.color = 'brown'
+        }
+
+
+/*
+    if (document.getElementById('birthDateIn').value.trim())
+        document.getElementById('birthDate').textContent = `"date: ${ document.getElementById('birthDateIn').value.trim() }",`
+    else document.getElementById('birthDate').textContent = ''
+
+    if (document.getElementById('birthPlaceIn').value.trim()) 
+        document.getElementById('birthPlace').textContent = `"place: ${ document.getElementById('birthPlaceIn').value.trim() }",`
+    else document.getElementById('birthPlace').textContent = ''
+
+    if (document.getElementById('foccIn').value.trim()) 
+        document.getElementById('focc').textContent = `"focc: ${ document.getElementById('foccIn').value.trim() }",`
+    else document.getElementById('focc').textContent = ''
+
+    if (document.getElementById('informantIn').value.trim()) 
+        document.getElementById('informant').textContent = `"informant: ${ document.getElementById('informantIn').value.trim() }",`
+    else document.getElementById('informant').textContent = ''
+
+    if (document.getElementById('bapPlaceIn').value.trim()) 
+        document.getElementById('bapPlace').textContent = `"bapplace: ${ document.getElementById('bapPlaceIn').value.trim() }",`
+    else document.getElementById('bapPlace').textContent = ''
+ 
+    if (document.getElementById('bapYearIn').value.trim()) 
+        document.getElementById('bapYear').textContent = `"bapyear: ${ document.getElementById('bapYearIn').value.trim() }",`
+    else document.getElementById('bapYear').textContent = ''
+ 
+    if (document.getElementById('bapDateIn').value.trim()) 
+        document.getElementById('bapDate').textContent = `"bapdate: ${ document.getElementById('bapDateIn').value.trim() }",`
+    else document.getElementById('bapDate').textContent = ''
+ 
+    if (document.getElementById('denominationIn').value.trim()) 
+        document.getElementById('denomination').textContent = `"denomination: ${ document.getElementById('denominationIn').value.trim() }",`
     else document.getElementById('denomination').textContent = ''
 
 
@@ -358,7 +475,7 @@ function draftResult () {
         document.getElementById('gps').textContent += `",`
         }
     else document.getElementById('gps').textContent = ''
-
+*/
 
     }
 
@@ -388,7 +505,9 @@ function checkDB (fieldname, dbfield, checkID) {
     <div>
       <!--button onClick="dump()">Go</button-->&nbsp;
     <strong>Id:</strong> 
-<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."> <span class="redo" onClick=" 
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+onChange="autoPropagate(this.value);"/> <span class="redo" onClick=" 
 autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
 
     
@@ -726,10 +845,17 @@ Need to fix this properly at some point. -->
         <td colspan="4" class="heading">Data for building the page:</td></tr>
  
      <tr>
-        <td>Time stamp:</td>
-        <td colspan="3"><input type="text" id="birthYearIn"
+        <td>Timestamp:</td>
+        <td colspan="3"><input type="text" id="timestampIn"
             placeholder="YYYY-MM-DD"
-            onInput="draftResult(); checkDB('birthYearIn', 'b', 'bCheck')">
+            onInput="draftResult()">
+            </td>
+      </tr>
+     <tr>
+        <td>Year:</td>
+        <td colspan="3"><input type="text" id="birthYearIn"
+            placeholder="YYYY"
+            onInput="checkDB('birthYearIn', 'b', 'bCheck')">
             <span class="instructions" id="bCheck" style="color:red;"></span></td>
       </tr>
      <tr>
@@ -753,9 +879,15 @@ Need to fix this properly at some point. -->
             onInput="draftResult()"></td>
       </tr>
       <tr>
+        <td>Mother née:</td>
+        <td colspan="3"><input type="text" id="mmnIn"
+            placeholder="Name" class="wideInputBox"
+            onInput="draftResult()"></td>
+      </tr>
+      <tr>
         <td>Informant:</td>
         <td colspan="3"><input type="text" id="informantIn"  
-            placeholder="Name, relationship." class="wideInputBox"
+            placeholder="ID/name, relationship." class="wideInputBox"
             onInput="draftResult()"></td>
       </tr>
 
@@ -788,28 +920,42 @@ Need to fix this properly at some point. -->
 
 
 
-      <tr>
+      <!--tr>
         <td>GPS:</td>
         <td><select id="gpsList" onChange="
             document.getElementById('gpsPlace').value=this.value.split(':')[0]
             document.getElementById('gpsCoords').value=this.value.split(':')[1]
             draftResult()
             "></select></td>
+      </tr-->
+      <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select></td>
       </tr>
 
 
-      <tr>
+      <!--tr>
         <td>&nbsp;</td>
         <td>
             <input type="text" id="gpsPlace" placeholder="Name of location"   class="halfInputBox" onInput="draftResult()" onChange="draftResult()">
             <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates"  class="halfInputBox" onInput="draftResult()" onChange="draftResult()">
       </td>
-      </tr>
+      </tr-->
 
+    <tr>
+        <td>GPS:</td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+      </tr>
 
     <tr>
         <td>Notes:</td>
-        <td colspan="3"><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
+        <td colspan="3"><textarea id="censusNotes" onInput="draftResult()"></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
@@ -817,14 +963,17 @@ Need to fix this properly at some point. -->
       </tr>
       <tr>
         <td>Discussion:</td>
-        <td colspan="3"><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+        <td colspan="3"><textarea id="censusDisc" onInput="draftResult()"></textarea></td>
       </tr>
+   </table>
    
-   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+   
+   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>
    
    
     <div id="draft" style="margin:2rem; color: brown;">
       <div id="start">birth: {</div>
+      <div id="timestamp"></div>
       <div id="birthYear"></div>
       <div id="name"></div>
       <div id="birthDate"></div>
@@ -834,7 +983,7 @@ Need to fix this properly at some point. -->
       <div id="focc"></div>
       <div id="mother" style="display:none;"></div>
       <div id="motherId" style="display:none;"></div>
-      <div id="mmn" style="display:none;"></div>
+      <div id="mmn"></div>
       <div id="siblings"></div>
       <div id="informant"></div>
       <div id="bapPlace"></div>
@@ -843,9 +992,9 @@ Need to fix this properly at some point. -->
       <div id="denomination"></div>
       <div id="images"></div>
       <div id="gps"></div>
-      <div id="discussion">"discussion: "</div>
-     
-      
+      <div id="discussion"></div>
+    
+      <div style="white-space:pre-line"><br>sources: `</div>
       <!-- certificate -->
       <div id="certSource"></div>
       <div id="certImage"></div>
@@ -884,9 +1033,19 @@ Need to fix this properly at some point. -->
       <div id="place"></div>
       <div id="relation"></div>
       <div id="occ"></div>
-      <div id="note"></div>
+      <div id="note" style="white-space: pre;"></div>
       <div id="fnote"></div>
       
+      <!-- census >
+      <div id="source"></div>
+      <div><span id="cparish"></span> <span id="srd"></span> <span id="rd"></span></div>
+      <div id="head"></div>
+      <div id="wife"></div>
+      <div id="childOut"></div>
+      <div id="otherOut"></div>
+      <div id="servOut"></div>
+      <div id="visitorOut"></div>
+      <div id="record"></div-->
       
       <!-- 2nd source -->
       <div id="secondSource" style="white-space: pre;"></div>
@@ -900,7 +1059,7 @@ Need to fix this properly at some point. -->
       <div id="thirdPasted" style="white-space:pre-line"></div>
       <div id="thirdText"></div>
 
-      <div id="end">}</div>
+      <div id="end">`},</div>
       </div>
       
       

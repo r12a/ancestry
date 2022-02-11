@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Census form</title>
+<title>Census converter</title>
 <link href="../../lib/style.css" rel="stylesheet">
 <script src="formentrylookup.js"></script>
 <script>
@@ -32,7 +32,12 @@ function autoPropagate () {
     images = []
     gps = []
     children = []
+    others = []
+    visitors = []
+    serv = []
     notes = ''
+    discussion = ''
+    fnotes = []
     
     for (i=0;i<lines.length;i++) {
         
@@ -49,7 +54,7 @@ function autoPropagate () {
             document.getElementById('timestamp').textContent = '"'+year+'-'+month+'-'+date+'": {'
             }
         if (lines[i].match('relation:')) {
-            document.getElementById('relation').textContent = lines[i].replace('relation: ','relation: "')+'",'
+            document.getElementById('relation').textContent = lines[i].replace('relation: ','role: "')+'",'
             }
         if (lines[i].match('occ:')) {
             document.getElementById('occ').textContent = lines[i].replace('occ: ','occ: "')+'",'
@@ -59,7 +64,7 @@ function autoPropagate () {
             images.push(parts)
             }
         if (lines[i].match('gps:')) {
-            parts = lines[i].split(' ')
+            parts = lines[i].split('s: ')
             gps.push(parts[1])
             }
          if (lines[i].match('source:')) {
@@ -75,19 +80,37 @@ function autoPropagate () {
             document.getElementById('place').textContent = lines[i].replace('place: ','place: "')+'",'
             }
         if (lines[i].match('head:')) {
-            document.getElementById('head').textContent = lines[i].replace('head: ','head: "')+'",'
+            document.getElementById('head').textContent = lines[i].replace('head: ','head: "').replace(/, /g,';').replace(/,/g,';').replace(' b ',';')+'",'
             }
         if (lines[i].match('wife:')) {
-            document.getElementById('wife').textContent = lines[i].replace('wife: ','wife: "')+'",'
+            document.getElementById('wife').textContent = lines[i].replace('wife: ','wife: "').replace(/, /g,';').replace(/,/g,';').replace(' b ',';')+'",'
             }
         if (lines[i].match('child:')) {
-            parts = lines[i].replace('child: ','')
+            parts = lines[i].replace('child: ',';').replace(/, /g,';').replace(/,/g,';').replace(' b ',';')
             children.push(parts)
             }
-        if (lines[i].match('note:')) {
+        if (lines[i].match('other:')) {
+            parts = lines[i].replace('other: ',';').replace(/, /g,';').replace(/,/g,';').replace(' b ',';')
+            others.push(parts)
+            }
+        if (lines[i].match('serv:')) {
+            parts = lines[i].replace('serv: ',';').replace(/, /g,';').replace(/,/g,';').replace(' b ',';')
+            serv.push(parts)
+            }
+        if (lines[i].match('visitor:')) {
+            parts = lines[i].replace('visitor: ',';').replace(/, /g,';').replace(/,/g,';').replace(' b ',';')
+            visitors.push(parts)
+            }
+        if (lines[i].match('fnote:')) {
+            parts = lines[i].replace('fnote: ',';')
+            fnotes.push(parts)
+            }
+       else if (lines[i].match('note:')) {
             notes += lines[i].replace('note: ','')+'\n'
             }
-        }
+       else if (lines[i].match('discussion:')) {
+            discussion += lines[i].replace('discussion: ','')+'\n'
+            }
     
     imagestr = 'images: ['
     for (j=0;j<images.length;j++) {
@@ -97,65 +120,72 @@ function autoPropagate () {
     imagestr += '],'
     document.getElementById('record').textContent = imagestr
 
-    childstr = 'children: ['
-    for (j=0;j<children.length;j++) {
-        childstr += '\n"'+children[j]+'"'
-        if (j<children.length-1) childstr += ','
+    if (gps.length > 0) {
+        gpsstr = 'gps: ['
+        for (j=0;j<gps.length;j++) {
+            gpsstr += '"'+gps[j]+'"'
+            if (j<gps.length-1) gpsstr += ', '
+            }
+        gpsstr += '],'
+        document.getElementById('gps').textContent = gpsstr
         }
-    childstr += '\n],'
-    document.getElementById('childOut').textContent = childstr
 
-    document.getElementById('note').textContent = 'notes: \u0060'+notes+'\u0060,'
+    if (children.length > 0) {
+        childstr = 'children: ['
+        for (j=0;j<children.length;j++) {
+            childstr += '\n"'+children[j]+'"'
+            if (j<children.length-1) childstr += ','
+            }
+        childstr += '\n],'
+        document.getElementById('childOut').textContent = childstr
+        }
+
+    if (others.length > 0) {
+        otherstr = 'others: ['
+        for (j=0;j<others.length;j++) {
+            otherstr += '\n"'+others[j]+'"'
+            if (j<others.length-1) otherstr += ','
+            }
+        otherstr += '\n],'
+        document.getElementById('othersOut').textContent = otherstr
+        }
+
+    if (visitors.length > 0) {
+        visitorstr = 'visitors: ['
+        for (j=0;j<visitors.length;j++) {
+            visitorstr += '\n"'+visitors[j]+'"'
+            if (j<visitors.length-1) visitorstr += ','
+            }
+        visitorstr += '\n],'
+        document.getElementById('visitorsOut').textContent = visitorstr
+        }
+
+    if (serv.length > 0) {
+        servstr = 'serv: ['
+        for (j=0;j<serv.length;j++) {
+            servstr += '\n"'+serv[j]+'"'
+            if (j<serv.length-1) servstr += ','
+            }
+        servstr += '\n],'
+        document.getElementById('servOut').textContent = servstr
     }
 
-/*    // make a list of relatives to the right
-	listRelations(person)
-    
-    // fill in the page building data
-    if (db[person] && db[person].birth) {
-        var dataItems = db[person].birth
-        var images = ''
-        var gps = ''
-        var notes = ''
-        var fnotes = ''
-        var discussion = ''
-        var sources = ''
-        for (var i=0;i<dataItems.length;i++) {
-            var fields = dataItems[i].split(':')
-            switch (fields[0]) {
-                case 'id': break
-                case 'siblings': break
-                case 'timestamp': document.getElementById('birthYearIn').value = fields[1].trim(); break
-                case 'date': document.getElementById('birthDateIn').value = fields[1].trim(); break
-                case 'place': document.getElementById('birthPlaceIn').value = fields[1].trim(); break
-                case 'focc': document.getElementById('foccIn').value = fields[1].trim(); break
-                case 'informant': document.getElementById('informantIn').value = fields[1].trim(); break
-                case 'bapplace': document.getElementById('bapPlaceIn').value = fields[1].trim(); break
-                case 'bapyear': document.getElementById('bapYearIn').value = fields[1].trim(); break
-                case 'bapdate': document.getElementById('bapDateIn').value = fields[1].trim(); break
-                case 'denomination': document.getElementById('denominationIn').value = fields[1].trim(); break
+    document.getElementById('note').textContent = 'notes: \u0060'+notes.replace(/, \d\d,/g,', ')+'\u0060,'
 
-                case 'gps': gps += fields[1]+':'+fields[2]+'\n'; break
-                case 'record': images += fields[1]+':'+fields[2]+'\n'; break
+    document.getElementById('discussion').textContent = 'discussion: \u0060'+discussion+'\u0060,'
 
-                case 'note': notes += fields[1]+'\n'; break
-                case 'fnote': fnotes += fields[1]+'\n'; break
-                case 'discussion': discussion += dataItems[i].replace(/discussion:/,'')+'\n'; break
-                default:
-                    reconstruction =  fields.join(':')
-
-                    sources += reconstruction.replace(/<br>/,'')+'\n'
-                    break
-                }
-            document.getElementById('imagesIn').value = images.trim()
-            document.getElementById('gpsIn').value = gps.trim()
-            document.getElementById('censusNotes').value = notes.trim()
-            document.getElementById('censusFNotes').value = fnotes.trim()
-            document.getElementById('censusDisc').value = discussion.trim()
-            document.getElementById('sourcesIn').value = sources.trim()
+    if (fnotes.length > 0) {
+        fnotesstr = 'fnotes: ['
+        for (j=0;j<fnotes.length;j++) {
+            fnotesstr += '\n"'+fnotes[j]+'"'
+            if (j<fnotes.length-1) fnotesstr += ','
             }
-        draftResult()
-        }*/
+        fnotesstr += '\n],'
+        document.getElementById('fnotes').textContent = fnotesstr
+        }
+
+    }
+    }
 
 function getMonth (M) {
     switch (M) {
@@ -176,47 +206,6 @@ function getMonth (M) {
 }
 
 
-function draftNotesOLD () {
-    var out = ''
-    var node = document.getElementById('censusNotes')
-    var headId = document.getElementById('headId').value
-    var wifeId = document.getElementById('wifeId').value
-    out += `{${ headId }:kx}, AGE, was a OCCUPATION.`
-    if (wifeId) out += ` His wife was AGE.`
-    
-    var children = document.getElementById('child').querySelectorAll('input')
-    
-    if (children && children.length>0) {
-        out += ` The children were`
-        for (var i=0;i<children.length;i++) {
-            if (i>1) out += ', '
-            if (i === children.length-1) out += 'and '
-            out += ` {child_id:k}, AGE`
-            }
-        out += '.'
-        }
-    
-    var others = []; var servs = []; var visitors = []
-    others = document.getElementById('other').querySelectorAll('input')
-    servs = document.getElementById('serv').querySelectorAll('input')
-    visitors = document.getElementById('visitor').querySelectorAll('input')
-   
-    var allothers = others.length + servs.length + visitors.length
-    
-    if (allothers>0 ) {
-        out += `\nAlso at the house`
-        if (allothers.length === 1) out += ' was '
-        else out += ' were '
-        for (var i=0;i<allothers;i++) {
-            if (i>0) out += ', '
-            if (i === allothers-1) out += ' and '
-            out += ` {other_id:kf}, AGE, OCCUPATION`
-            }
-        out += '.'
-        }
-
-    node.value = out
-    }
 
 function draftNotes () {
     var out = ''
@@ -580,7 +569,7 @@ function draftResult () {
 <body>
 <div id="out">
   <div id="banner">
-    <div id="pagetitle">Census record entry<br>
+    <div id="pagetitle">Census record converter<br>
     </div>
   </div>
   <div id="subbanner">
@@ -590,7 +579,7 @@ function draftResult () {
     <div>
       <!--textarea placeholder="Drop existing code here to partially complete the page."></textarea> <button onClick="dump()">Go</button-->
     <strong>Id:</strong> 
-<input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+<input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick=" alert(document.getElementById('censusId').value); listRelations(document.getElementById('censusId').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
     </div>
   </div>
   <div id="main">
@@ -605,8 +594,9 @@ function draftResult () {
         <td><input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span></td>
       </tr-->
        <tr>
-        <td style="vertical-align: top;">In:<br>
-        <button onClick="autoPropagate()">Draft</button></td>
+        <td style="vertical-align: top;">
+        <button onClick="autoPropagate()">Draft</button><br>
+        <button onClick="document.getElementById('into').value=''">Clear</button></td>
         <td><textarea id="into" onInput="autoPropagate()" style="padding: 1rem; font-size: 100%; height: 25rem; width: 100%;"></textarea></td>
       </tr>
     <!--tr>
@@ -758,7 +748,7 @@ function draftResult () {
 
 
 
-   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">Order for individual lines: ID, name, age, occ, other, born</p>
 
 
     <div id="draft" style="margin:2em; color: brown;">
@@ -769,26 +759,27 @@ function draftResult () {
       <div id="source"></div>
       <div id="sourceDetails"></div>
       <div><span id="cparish"></span> <span id="srd"></span> <span id="rd"></span></div>
+      <pre></pre>
       <div id="head"></div>
       <div id="wife"></div>
       <div id="married"></div>
       <div id="rooms"></div>
       <div id="childOut" style="white-space: pre"></div>
-      <div id="otherOut"></div>
-      <div id="servOut"></div>
-      <div id="visitorOut"></div>
+      <div id="othersOut" style="white-space: pre"></div>
+      <div id="servOut" style="white-space: pre"></div>
+      <div id="visitorsOut" style="white-space: pre"></div>
       <div id="endRecord">},</div>
 
-    <div>&nbsp;</div>
+        <div>&nbsp;</div>
 
         <div id="timestamp"></div>
         <div>type: 'census',</div>
         <div>census: '<span id="censusRef"></span>',</div>
         <div id="relation"></div>
         <div id="occ"></div>
-      <div id="note"></div>
-      <div id="fnote"></div>
-      <div id="discussion"></div>
+      <div id="note" style="white-space: pre"></div>
+      <div id="fnotes" style="white-space: pre"></div>
+      <div id="discussion" style="white-space: pre"></div>
         <div>},</div>
 
       
