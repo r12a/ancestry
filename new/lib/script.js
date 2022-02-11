@@ -4,9 +4,11 @@ var exit = '\u23F4\u23F4\u23F4'
 
 var data = {}
 var events = {}
-var debug = false
+var debug = true
 var trace = false
 var counter
+var thisPage = {} // contains useful data relating to the person this page is associated with
+// in the main function, event collects information about relatives of this person, or events
 
 function replaceNames (note, event) {
 	var out = note
@@ -213,7 +215,7 @@ function getTimestamp (date, year) {
 
 
 
-function getBirthTS (bDate, bYear) {
+function getBirthTS (bDate, bYear) {  //    DON'T USE THIS - USE GETTIMESTAMP INSTEAD
     if (trace) console.log('getBirthTS(', bDate, bYear,')')
 
     if (bYear.trim() === '?' || bYear.trim() === '') return ''
@@ -329,7 +331,7 @@ function getName (phrase, id, part, uselink, addage) {
 		}
     
     // add age automatically
-    if (addage) endTag += '<sup class="ageTag">'+getAgeTS('', addage, getBirthTS(db[id].bdate, db[id].b), '')+'</sup>'
+    if (addage) endTag += '<sup class="ageTag">'+getAgeTS('', addage, getTimestamp(db[id].bdate, db[id].b), '')+'</sup>'
     
 	if (person.k) k = person.k
 	else k = person.g
@@ -532,6 +534,11 @@ function formatSource (sources, discussion) {
             parts[0] = parts[0].replace(/SOURCE: /,'')
             lines[i] = `<img src="lib/i/source.png" alt="Source link" title="Source link"><a target="_blank" href="http${ parts[1] }">${ parts[0] }</a>`
             }
+        else if (lines[i].match('SOURCE') && lines[i].match('url:')) {
+            parts = lines[i].split('url:')
+            parts[0] = parts[0].replace(/SOURCE: /,'')
+            lines[i] = `<img src="lib/i/source.png" alt="Source link" title="Source link"><a target="_blank" href="${ window.project }/${ parts[1] }">${ parts[0] }</a>`
+            }
         else if (lines[i].match('SOURCE')) {
             lines[i] = lines[i].replace('<br>','')
             lines[i] = '<img src="lib/i/source.png" alt="Source link" title="Source link">'+lines[i].replace(/SOURCE: /,'')
@@ -546,12 +553,17 @@ function formatSource (sources, discussion) {
     return sources
     }
 
+/*
+			if (text.match(/url:/)) {
+				parts = text.split('url:')
+				out = '<a target="_blank" href="'+window.project+'/'+parts[1]+'"><img src="lib/i/info.png" alt="'+parts[0]+'" title="'+parts[0]+'"/></a>'
+				}
+*/
 
-
-
-function getSiblings (person) {
+function getSiblings (person, event) {
     // returns a string containing previously born siblings of person
     if (trace) console.log('getSiblings(',person,')')
+    
     siblings = ''
     // get the id of the parent
     if (db[person].father && db[db[person].father]) parent = db[db[person].father]
@@ -570,7 +582,8 @@ function getSiblings (person) {
                     
                    // check whether sibling already died
                     if (db[s].d && db[person].b && db[s].d < db[person].b) {
-                        siblings += getName('', s, 'given', true) + ' (died), '
+                        siblings += getName('', s, 'given', true) + '<sup class="ageTag">(dec)</sup>, '
+                        //siblings += getName('', s, 'given', true) + ' (dec), '
                         // console.log('Skipping sibling',  db[s].g)
                         continue
                         }
@@ -582,7 +595,8 @@ function getSiblings (person) {
                     // otherwise, add sibling to the list
                     //siblings += s + ','
                     // get the age of the sibling
-                    siblings += getName('', s, 'given', true) + ', ' + getAge('',db[person].bdate,db[person].b,db[s].bdate,db[s].b,'')+ ', '
+                    siblings += getName('', s, 'given', true, event)+ ', '
+                    // siblings += getName('', s, 'given', true) + ', ' + getAge('',db[person].bdate,db[person].b,db[s].bdate,db[s].b,'')+ ', '
                     //console.log(s, j, i)
                     }
                 else { break }
@@ -593,29 +607,29 @@ function getSiblings (person) {
     return siblings.substring(0,siblings.length-2)
     }
 
-/*	
-	var age = parseInt(eYear) - parseInt(bYear)
-	if (age < 0) return phrase1+age+phrase2
-	var eTime = new Date( eDate + ' 2000' )
-	var bTime = new Date( bDate + ' 2000' )
-	if (eTime < bTime) age--
-	if (age < 0) age = 0
 
 
-    for (n=0;n<siblingList.length;n++) {
-								record += getName('', siblingList[n].trim(), 'given', true)
-								if (n === siblingList.length-2) record += ' and '
-								else if (n<siblingList.length-1) record += ', '
-								}
-*/
+
+
+
+
 
 // ===================================================
 // ================== MAIN FUNCTION ================
 // ======================================================
 // redisplay(document.getElementById('in').textContent,thisPerson,document.getElementById('summaryIn'))
 
-function redisplay (everything, id, summary ) { 
-    if (trace) console.log(enter, 'redisplay(everything='+everything+' id='+id+' summary='+summary+'['+summary.textContent+']'+')')
+function redisplay (researchNotes, id, summary ) { 
+    if (trace) console.log(enter, 'redisplay(researchNotes='+researchNotes+' id='+id+' summary='+summary+'['+summary.textContent+']'+')')
+    //researchNotes: text read in from individual's txt file 
+    //id: same as the global variable thisPerson (should eliminate it)
+    //summary: ?
+    //global.thisPerson: the id of the person this page is about
+
+    var person = db[thisPerson]  // points to the node in the db for thisPerson, will have other properties bound to it
+    var p = db[thisPerson]  // obsolete this in favour of person
+    var o = {} // contains data for a relative described by an event
+    
     personID = id // this is to test the buttons at the bottom
     
 	var out = ''
@@ -623,24 +637,19 @@ function redisplay (everything, id, summary ) {
 	var thumbLegend = ''
 	var gps = []
 
-	// get the general information
-	var person = db[id]
-    var birthDate = getBirthTS(db[thisPerson].bdate, db[thisPerson].b)
 
-	var fid = person.father
-	var mid = person.mother
-	var sid = []
-	var cid = []
-	if (person.fg) {
-		for (i=0;i<person.fg.length;i++) {
-			sid.push(person.fg[i][1])
-			}
-		for (i=0;i<person.fg.length;i++) {
-			for (j=2;j<person.fg[i].length;j++) {
-				cid.push(person.fg[i][j])
-				}
-			}
-		}
+	// establish some basic information about the person the page is about
+	person.given = getName('', id, 'k', false)
+	person.fullname = getName('', id, 'gkf', false)
+	if (person.male) { person.pron = 'He'; person.refpron = 'himself'; person.posspron = 'His'; }
+	else  { person.pron = 'She'; person.refpron = 'herself'; person.posspron = "Her"; }
+	temp = thumb.split(',')
+	if (temp.length>1) { thumb = temp[0]; thumbLegend = temp[1]; }
+	else thumbLegend = person.fullname
+
+
+
+
 
 
 	// CREATE THE TOP BOILERPLATE +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -676,37 +685,41 @@ function redisplay (everything, id, summary ) {
 	
 	// popup window for summary
 	out += '<div style="position:absolute; background-color:white; margin:auto;padding: 2em;border:1px solid #ccc;border-radius:1em;display:none; max-width: 70%;top: 18em;box-shadow: 10px 5px 5px gray;left: 15%;" id="summaryWin"></div>'
+	
 
 
-	// establish some basic information about the person the page is about
-	given = getName('', id, 'k', false)
-	fullname = getName('', id, 'gkf', false)
-	male = person.male
-	born = person.b
-	if (data[id] && data[id].birth && data[id].birth.date) bdate = data[id].birth.bdate
-	else if (person.bdate) bdate = person.bdate
-	else bdate = '' 
-	if (male) { pron = 'He'; refpron = 'himself'; posspron = 'His'; }
-	else  { pron = 'She'; refpron = 'herself'; posspron = "Her"; }
-	temp = thumb.split(',')
-	if (temp.length>1) { thumb = temp[0]; thumbLegend = temp[1]; }
-	else thumbLegend = fullname
-	
-	
+
+
+    // SET THE PAGE TITLE & BARS BELOW +++++++++++++++++++++++++++++++++++++++++++
+    
 	// set the page title
-	document.querySelector('title').textContent = getName('', id, 'gf', false)
+	document.querySelector('title').textContent = getName('', thisPerson, 'gf', false)
 	
 	// draw top banner
-	out += '<div id="pageicon">📄</div><div id="banner"><div id="pagetitle">'+getName('', id, 'gfm', false)+'<br><span id="bannerdates">'+person.b+'\u2013'+person.d
+	out += '<div id="pageicon">📄</div><div id="banner"><div id="pagetitle">'+getName('', thisPerson, 'gfm', false)+'<br><span id="bannerdates">'+person.b+'\u2013'+person.d
 	if (person.occ) out += ' \u2022 '+person.occ
 	out += '</span></div></div>'
-	
-	// list parents
+
+    // gather data
+    var sid = []  // list of spouse ids
+	var cid = []  // list of child ids
+	if (person.fg) {
+		for (i=0;i<person.fg.length;i++) {
+			sid.push(person.fg[i][1])
+			}
+		for (i=0;i<person.fg.length;i++) {
+			for (j=2;j<person.fg[i].length;j++) {
+				cid.push(person.fg[i][j])
+				}
+			}
+		}
+        
+    // list parents
 	out += '<div id="subbanner"><div>Parents: '
-	if (fid) out += getName('', fid, 'both', true)
-	if (mid && fid ) out += ' \u2022 '
-	if (mid) out += getName('', mid, 'both', true)
-	if (!mid && !fid) out += 'Unknown'
+	if (person.father) out += getName('', person.father, 'both', true)
+	if (person.mother && person.father ) out += ' \u2022 '
+	if (person.mother) out += getName('', person.mother, 'both', true)
+	if (!person.mother && !person.father) out += 'Unknown'
 	out += ' </div></div>'
 
 	// list spouses
@@ -719,6 +732,7 @@ function redisplay (everything, id, summary ) {
 		}
 	else out += 'None'
 	out += '</div></div>'
+    sid = ''
 
 	// list children
 	out += '<div id="subsubsubbanner"><div>Children: '
@@ -741,10 +755,16 @@ function redisplay (everything, id, summary ) {
 
 	if (temp.length === 0) out += 'None'
 	out += '</div></div>'
+    cid = ''
 
 
 
-	// display the general information
+
+
+
+
+    // DISPLAY THE GENERAL INFORMATION  +++++++++++++++++++++++++++++++++++++++++++
+    
 	out += '<div id="main">'
 	out += '<div class="dateAndRecord">'
 	out += '<div id="summary" class="record"><div><p>'
@@ -755,48 +775,49 @@ function redisplay (everything, id, summary ) {
 
 
     // create the life summary
-	if (data[id] && data[id].intro) summary.innerHTML = data[id].intro
-	else {
-		var intro = getName('', id, 'gfm', false)
-		if (db[id].k) intro += ', known as '+db[id].k+', '
-		if (db[id].b) intro += ' was born in '+db[id].b
-		if (db[id].bplace) intro += ' at '+db[id].bplace
-		intro += '. '
-		if (db[id].fg) {
-			for (i=0;i<db[id].fg.length;i++) {
-				intro += pron+' married '+getName('', db[id].fg[i][1], 'gf', false)+' in '+db[id].fg[i][0].substr(0,4)
-				if (db[id].fg[i].length > 2) {
-					intro += ' and they had '
-					if (db[id].fg[i].length === 3) intro += ' one child'
-					else intro += db[id].fg[i].length-2+' children'
-					}
-				else intro += ' but we have no record of any children'
-				intro += '. '
-				}
-			}
-		if (db[id].occ) {
-			var occupations = db[id].occ.split(',')
-			intro += posspron+' occupations included '
-			for (i=0;i<occupations.length;i++) {
-				if (i === occupations.length-1 && i>0) intro += ' and '
-				else if (i>0) intro += ', ' 
-				intro += occupations[i]
-				}
-			intro += '. '
-			}
-		if (db[id].d) {
-			intro += pron+' died in '+db[id].d
-			if (db[id].dplace) intro += ' at '+db[id].dplace
-			var ed = ey = bd = by = '?'
-			if (db[id].b) intro += getAge(' aged ', db[id].ddate, db[id].d, db[id].bdate, db[id].b, '')
-			intro += '. '
-			intro = intro.replace('~',' about ')
-			}
-		intro += '</p>\n'
-		if (db[id].cstatus) intro += '<p style="color:#aaa; text-align:center;margin-top:1em;">&#x2014; '+db[id].cstatus+' &#x2014;</p>'
-		summary.innerHTML = intro
-		}
-	out += summary.innerHTML+'</div></div><div class="keypoints">'
+    if (person.intro) var intro = person.intro
+    else {
+        intro = getName('', id, 'gfm', false)
+        if (person.k) intro += ', known as '+person.k+', '
+        if (person.b) intro += ' was born in '+person.b
+        if (person.bplace) intro += ' at '+person.bplace
+        intro += '. '
+        if (person.fg) {
+            for (i=0;i<person.fg.length;i++) {
+                intro += person.pron+' married '+getName('', person.fg[i][1], 'gf', false)+' in '+person.fg[i][0].substr(0,4)
+                if (person.fg[i].length > 2) {
+                    intro += ' and they had '
+                    if (person.fg[i].length === 3) intro += ' one child'
+                    else intro += person.fg[i].length-2+' children'
+                    }
+                else intro += ' but we have no record of any children'
+                intro += '. '
+                }
+            }
+        if (person.occ) {
+            var occupations = person.occ.split(',')
+            intro += person.posspron+' occupations included '
+            for (i=0;i<occupations.length;i++) {
+                if (i === occupations.length-1 && i>0) intro += ' and '
+                else if (i>0) intro += ', ' 
+                intro += occupations[i]
+                }
+            intro += '. '
+            }
+        if (person.d) {
+            intro += person.pron+' died in '+person.d
+            if (person.dplace) intro += ' at '+person.dplace
+            var ed = ey = bd = by = '?'
+            if (person.b) intro += getAge(' aged ', person.ddate, person.d, person.bdate, person.b, '')
+            intro += '. '
+            intro = intro.replace('~',' about ')
+            }
+        intro += '</p>\n'
+        if (person.cstatus) intro += '<p style="color:#aaa; text-align:center;margin-top:1em;">&#x2014; '+person.cstatus+' &#x2014;</p>'
+        }
+    summary.innerHTML = intro
+
+    out += summary.innerHTML+'</div></div><div class="keypoints">'
 	
 	// add the general links
 	if (data[id] && data[id].links) {
@@ -806,52 +827,6 @@ function redisplay (everything, id, summary ) {
 		}
 	else out += '\u00A0'
 	out += '</div></div>\n'
-
-
-
-
-	
-	// COMPILE A LIST OF EVENTS INVOLVING CLOSE FAMILY +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    var eventList = []
-    var selfnode = db[thisPerson]
-    
-    // get parents
-    if (selfnode.father && (fathernode = db[selfnode.father])) {
-        if (fathernode.death) eventList.push(fathernode.death.timestamp+'^'+selfnode.father+'^death')
-        if (fathernode.marriages) {
-            mkeys = Object.keys(fathernode.marriages)
-            for (i=0;i<mkeys.length; i++) eventList.push(fathernode.marriages[mkeys[i]].timestamp+'^'+selfnode.father+'^marriage')
-            }
-        }
-    if (selfnode.mother && (mothernode = db[selfnode.mother])) {
-        if (mothernode.death) eventList.push(mothernode.death.timestamp+'^'+selfnode.mother+'^death')
-        if (mothernode.marriages) {
-            mkeys = Object.keys(mothernode.marriages)
-            for (i=0;i<mkeys.length; i++) eventList.push(mothernode.marriages[mkeys[i]].timestamp+'^'+selfnode.mother+'^marriage')
-            }
-        }
-
-    // get children
-    var childList = []
-    if (selfnode.fg) {
-        for (i=0;i<selfnode.fg.length;i++) {
-            for (c=2;c<selfnode.fg[i].length;c++) childList.push(selfnode.fg[i][c])
-            }
-        }
-    
-    //for (c=0;c<childList.length;c++) {
-    //    if (db[childList[c]] && db[childList[c]].birth)
-    //    }
-    
-    
-        /*
-        // stop if this is the start of research data  REPLACE THIS WITH LINK TO EXTERNAL FILE
-        if (records[i].trim().toLowerCase().startsWith('research')) {
-            researchNotes = records[i]
-            researchNotes = researchNotes.replace(/(http(s)?:\/\/[^\s]+)/g, '<a href="$&" target="_blank">link</a>')
-            //continue
-            }
-        */
         
     
 
@@ -868,10 +843,10 @@ function redisplay (everything, id, summary ) {
     events = records
     
     // add the local events to the event list
-    if (db[thisPerson].events) {
-        keys = Object.keys(db[thisPerson].events)
+    if (person.events) {
+        keys = Object.keys(person.events)
         for (i=0;i<keys.length;i++) {
-            events.push(keys[i]+' event @ '+db[thisPerson].events[keys[i]].type)
+            events.push(keys[i]+' event @ '+person.events[keys[i]].type)
             }
         }
     
@@ -882,7 +857,7 @@ function redisplay (everything, id, summary ) {
     
     
     // establish a window of time for inclusion of events
-    var periodStart = getTimestamp(db[thisPerson].bdate, db[thisPerson].b)
+    var periodStart = getTimestamp(person.bdate, person.b)
     if (periodStart == '') { // ie. no birth date found
         for (i=0;i<events.length;i++) { // check the ordered events list for a sign of life
             if (events[i].match('event | marriage| son| daughter|self dies')) {
@@ -892,9 +867,9 @@ function redisplay (everything, id, summary ) {
                 }
             }
         }
-    var periodEnd = getTimestamp(db[thisPerson].ddate, db[thisPerson].d)
+    var periodEnd = getTimestamp(person.ddate, person.d)
     if (periodEnd == '') { // ie. no birth date found
-        if (db[thisPerson].upto) periodEnd = db[thisPerson].upto
+        if (person.upto) periodEnd = person.upto
         else {
             for (i=events.length-1;i>-1;i--) { // check the reverse-ordered events list for a sign of life
                 if (events[i].match('event | marriage| son| daughter| husband|self born')) {
@@ -911,9 +886,9 @@ function redisplay (everything, id, summary ) {
     console.log(here,here,'periodStart',periodStart)
     console.log(here,here,'periodEnd',periodEnd)
 
-
-    var birth = getTimestamp(db[thisPerson].bdate, db[thisPerson].b)
-    var death = getTimestamp(db[thisPerson].ddate, db[thisPerson].d)
+// THESE MAY NEED TO BE CHANGED TO birthTS and deathTS respectively, if actually used
+    var birth = getTimestamp(person.bdate, person.b)
+    var death = getTimestamp(person.ddate, person.d)
 
 
 
@@ -927,238 +902,269 @@ function redisplay (everything, id, summary ) {
         //var info = events[e]
         var details = ''
         
-        // info carries information about the person the event relates to
-        var info = {}
+        // event carries information about the person the event relates to
+        var event = {}
         parts = events[e].split(' ')
-        info.timestamp = parts[0]
-        //info.ts = new Date(parts[0]+'T00:00:00')
-        info.ts = new Date(parts[0].replace(/-/g, '\/'))
-        info.person = parts[1]
-        info.relation = parts[2]
-        info.type = parts[3]
+        event.timestamp = parts[0]
+        event.dateObj = new Date(parts[0].replace(/-/g, '\/'))
+        event.person = parts[1]
+        event.relation = parts[2]
+        event.type = parts[3]
+       
+        //event.year = event.timestamp.substr(0,4)
+        event.year = event.dateObj.getFullYear().toString()
         
-        //info.year = info.timestamp.substr(0,4)
-        info.year = info.ts.getFullYear().toString()
+        event.title = ''
+        event.background = ''
+        event.border = ''
+        event.useGPS = true
         
-        info.title = ''
-        info.background = ''
-        info.border = ''
-        info.useGPS = true
-        
-        if (info.person !== 'event' && ! info.person.includes('^')) {
-            info.bdate = db[info.person].bdate
-            info.b = db[info.person].b
-            info.ddate = db[info.person].ddate
-            info.d = db[info.person].d
+        if (event.person !== 'event' && ! event.person.includes('^')) {
+            event.bdate = db[event.person].bdate
+            event.b = db[event.person].b
+            event.ddate = db[event.person].ddate
+            event.d = db[event.person].d
+            event.male = db[event.person].male
             }
-        info.relative = ''
-        
-        console.log('INFO',info)
+        event.relative = ''
+
+        if (event.male) { event.pron = 'He'; event.refpron = 'himself'; event.posspron = 'His'; }
+        else  { event.pron = 'She'; event.refpron = 'herself'; event.posspron = "Her"; }
+
+        console.log('EVENT',event)
         
         
         // check whether we have the data, and whether the dates fall within the person's lifespan
-        if (info.person !== 'event' && typeof db[info.person] === 'undefined' && ! info.person.includes('^')) { console.log(exit,'redisplay: Person undefined.'); continue }
-        if (info.timestamp < periodStart || info.timestamp > periodEnd) { console.log(exit,'redisplay: Outside lifespan (periodStart,death=',periodStart,periodEnd,')'); continue }
+        if (event.person !== 'event' && typeof db[event.person] === 'undefined' && ! event.person.includes('^')) { console.log(exit,'redisplay: Person undefined.'); continue }
+        if (event.timestamp < periodStart || event.timestamp > periodEnd) { console.log(exit,'redisplay: Outside lifespan (periodStart,death=',periodStart,periodEnd,')'); continue }
 
 
 
 
 
 
-        if (info.type === 'census') {
-            info.useGPS = true
-            info.title = 'Census'
-            
-            // add the census details to info
-            for (x in db[thisPerson].events[info.timestamp]) info[x] = db[thisPerson].events[info.timestamp][x]
-            for (x in censi[info.census]) info[x] = censi[info.census][x]
+        if (event.type === 'census') {
+            // add the census details to event
+            for (x in person.events[event.timestamp]) event[x] = person.events[event.timestamp][x]
+            for (x in censi[event.census]) event[x] = censi[event.census][x]
 
-            console.log(here,here,'INFO after census merge',info)
+            console.log(here,here,'EVENT after census merge',event)
 
-            isoDate = new Date(info.timestamp)
-            info.date = new Intl.DateTimeFormat('en-GB', dateOptions).format(isoDate)
-            info.date = new Intl.DateTimeFormat('en-GB', dateOptions).format(info.ts)
+            isoDate = new Date(event.timestamp)
+            event.date = new Intl.DateTimeFormat('en-GB', dateOptions).format(isoDate)
+            event.date = new Intl.DateTimeFormat('en-GB', dateOptions).format(event.dateObj)
     
-            record += '<p>On '+info.date+' '+info.year+', '+given+getAge(' (aged ', info.date, info.year, db[thisPerson].bdate, born, ')')
-            record += ' was at '+info.place+'. '
-            if (info.head) {
-                record += ' The household included '
-                if (info.relation && info.relation === 'head') {
-                    record += ' '+refpron
-                    if (info.wife == null && info.children == null && info.visitors == null && info.others == null && info.serv == null) record += ' alone'
-                    }
-                else if (info.relation && info.relation === 'wife') record += ' her husband '+getName('',info.head.split(',')[0],'kf',true)
-                else record += getName('',info.head.split(',')[0],'kfm',true)
-                if (! info.wife && info.children === 0) record += ''
-                else if (info.wife && info.children === 0) record += ' and '
-                else if (info.wife) record += ','
-                if (info.wife) {
-                    if (info.relation && info.relation === 'wife') record += ' '+refpron
-                    else record += ' his wife '+getName('',info.wife.split(',')[0],'k',true)
-                    }
-                if (info.wid && info.wid === id) record += ' ('+refpron+')'
-                if (info.children) {
-                    //if (info.children === 1) { record += ' and 1 child'; if (info.relation === 'child') record += ' ('+refpron+')' }
-                    if (info.children.length === 1) { record += ' and 1 child'; if (info.relation === 'child') record += ' ('+given+')' }
-                    else { record += ' and '+info.children.length+' children'; if (info.relation === 'child') record += ' (including '+given+')' }
-                    }
-                record += '. '
-                if (info.others || info.visitors) {
-                    record += ' There '
-                    if (info.others) {
-                        if (info.others.length === 1) { record += ' was also 1 other'; if (info.relation === 'other') record += ' ('+given+')' }
-                        else if (info.others) { record += ' were '+info.others.length+' others'; if (info.relation === 'other') record += ' (including '+given+')' }
-                        }
-                    if (info.others && info.visitors) record += ' and there '
-                    if (info.visitors) {
-                        if (info.visitors.length === 1) { record += ' was also 1 visitor'; if (info.relation === 'visitor') record += ' ('+given+')' }
-                        else if (info.visitors) { record += ' were also '+info.visitors.length+' visitors'; if (info.relation === 'visitor') record += ' (including '+given+')' }
-                        }
-                    record += '.'
-                    }
-                if (info.serv) {
-                    record += ' There '
-                    if (info.serv.length === 1) { record += ' was also 1 servant'; if (info.relation === 'serv') record += ' ('+given+')' }
-                    else if (info.serv) { record += ' were '+info.servlength+' servants'; if (info.relation === 'serv') record += ' (including '+given+')' }
-                    record += '.'
-                    }
-                record += '</p>'
+            record += '<p>On '+event.date+' '+event.year+', '+person.given+getAge(' (aged ', event.date, event.year, person.bdate, person.b, ')')
+            record += ' was at '+event.place+'. '
 
-                details = JSON.stringify(censi[info.census], ['place','head','wife','married','children','other','serv','visitors','cparish','details'], '\u200B').replace(/\{|\}/g,'').replace(/"/g,'')
 
-                info.notes = info.notes.split('\n')
-                for (n=0;n<info.notes.length;n++) if (info.notes[n] !== '') record += `<p>${ replaceNames(info.notes[n], info.timestamp) }</p>`
+
+            if (event.head) event.head = event.head.split(';')[0]
+            if (event.wife) event.wife = event.wife.split(';')[0]
+            event.childnames = new Set([])
+            if (event.children) for (i=0;i<event.children.length;i++) event.childnames.add(event.children[i].split(';')[0])
+
+
+            //if (typeof event.head === 'undefined') record += ' There was no head of the family.'
+            console.log(here, here, here, 'event.head', event.head, 'event.wife', event.wife)
+            
+            record += ' The household included '
+            if (event.head === thisPerson) {
+                record += ' '+person.refpron
                 }
-           }
+            else if (event.wife === thisPerson) record += ' her husband '+getName('',event.head,'kf',true, event.timestamp)
+            else record += getName('',event.head,'kfm',true, event.timestamp)
+            
+            if (event.wife == null && event.children == null && event.visitors == null && event.others == null && event.serv == null) record += ' alone'
+            
+            if (event.wife && event.children) record += ', '
+            else if (event.wife) record += ' and '
+            
+            if (event.wife) {
+                if (thisPerson === event.wife) record += ' '+person.refpron
+                else record += ' his wife '+getName('',event.wife,'k',true, event.timestamp)
+                }
+            
+            if (event.children) {
+                if (event.children.length === 1) record += ' and 1 child'
+                else record += ' and '+event.children.length+' children'
+                if (event.childnames.has(thisPerson)) record += ' (including '+person.given+')'
+                }
+            record += '. '
+            
+            if (event.childnames) console.log(here,here,here,'children',event.childnames,'this',thisPerson)
+
+            if (event.others || event.visitors) {
+                record += ' There '
+                if (event.others) {
+                    if (event.others.length === 1) { record += ' was also 1 other'; if (event.relation === 'other') record += ' ('+person.given+')' }
+                    else if (event.others) { record += ' were '+event.others.length+' others'; if (event.relation === 'other') record += ' (including '+person.given+')' }
+                    }
+                if (event.others && event.visitors) record += ' and there '
+                if (event.visitors) {
+                    if (event.visitors.length === 1) { record += ' was also 1 visitor'; if (event.relation === 'visitor') record += ' ('+person.given+')' }
+                    else if (event.visitors) { record += ' were also '+event.visitors.length+' visitors'; if (event.relation === 'visitor') record += ' (including '+person.given+')' }
+                    }
+                record += '.'
+                }
+
+            if (event.serv) {
+                record += ' There '
+                if (event.serv.length === 1) { record += ' was also 1 servant'; if (event.relation === 'serv') record += ' ('+person.given+')' }
+                else if (event.serv) { record += ' were '+event.servlength+' servants'; if (event.relation === 'serv') record += ' (including '+person.given+')' }
+                record += '.'
+                }
+            record += '</p>'
+
+            // get source data
+            details = JSON.stringify(censi[event.census], ['source','place','head','wife','married','children','others','serv','visitors','cparish','details'], '\u200B').replace(/\{|\}/g,'').replace(/"/g,'')
+            var lines = details.split('\n')
+            for (i=0;i<lines.length;i++) {
+                if (lines[i].startsWith('\u200Bsource:') && lines[i].match('http')) {
+                    parts = lines[i].split('http')
+                    parts[0] = parts[0].replace(/source: /,'')
+                    lines[i] = `<img src="lib/i/source.png" alt="Source link" title="Source link"><a target="_blank" href="http${ parts[1] }">${ parts[0] }</a>`
+                    }
+                }
+            details = lines.join('\n')
+
+
+            event.notes = event.notes.split('\n')
+            for (n=0;n<event.notes.length;n++) if (event.notes[n] !== '') record += `<p>${ replaceNames(event.notes[n], event.timestamp) }</p>`
+        
+            event.useGPS = true
+            event.title = 'Census'
+            }
+            
 
 
 
-        if (info.type === 'born' && info.relation === 'self') {
-            for (x in db[info.person].birth) info[x] = db[info.person].birth[x]
+        if (event.type === 'born' && event.relation === 'self') {
+            for (x in db[event.person].birth) event[x] = db[event.person].birth[x]
           
-            siblingList = getSiblings(thisPerson)
+            siblingList = getSiblings(thisPerson, event.timestamp)
 
             // set date to bdate (which means no need to define date here)
-            if (db[thisPerson] && db[thisPerson].bdate) info.date = db[thisPerson].bdate
-            else info.date = ''
+            if (person && person.bdate) event.date = person.bdate
+            else event.date = ''
             
             // check whether the birth date is based on the baptism date
             var goingByBap = false
-            if (info.date && info.bapdate && info.date.match('~') && info.date.replace('~','') === info.bapdate) {
+            if (event.date && event.bapdate && event.date.match('~') && event.date.replace('~','') === event.bapdate) {
                 goingByBap = true
-                info.date = info.date.replace('~','onob ')
+                event.date = event.date.replace('~','onob ')
                 }
-            if (info.discussion) {
-                record += '<img class="commentaryIcon" src="lib/i/discn.png" alt="Commentary" title="Commentary notes for this event." onclick="alert(`' + info.discussion + '`)">'
+            if (event.discussion) {
+                record += '<img class="commentaryIcon" src="lib/i/discn.png" alt="Commentary" title="Commentary notes for this event." onclick="alert(`' + event.discussion + '`)">'
                 }
-            record += '<p>'+fullname+' was born '+getDatePhrase(info.date,info.year,withWeekday)
+            record += '<p>'+person.fullname+' was born '+getDatePhrase(event.date,event.year,withWeekday)
             if (goingByBap) {
-                record += ' (the date of '+posspron.toLowerCase()+' baptism)'
+                record += ' (the date of '+person.posspron.toLowerCase()+' baptism)'
                 }
-            if (info.place) record += ' at <span class="space">'+info.place+'</span>'
+            if (event.place) record += ' at <span class="space">'+event.place+'</span>'
             record += getDBParents(', to ', thisPerson)
             record += '.'
 
-            if (db[thisPerson].mother && db[db[thisPerson].mother]  && db[db[thisPerson].mother].f) {
-                record += ' '+posspron+' mother\'s maiden name was '+db[db[thisPerson].mother].f+'.' 
+            if (person.mother && db[person.mother]  && db[person.mother].f) {
+                record += ' '+person.posspron+' mother\'s maiden name was '+db[person.mother].f+'.' 
                 }
-            if (info.informant) {
-                informantText = replaceNames(info.informant)
+            if (event.informant) {
+                informantText = replaceNames(event.informant)
                 record += '<p>The informant on the birth certificate was '+informantText+'.</p>'
                 }
-            if (info.focc) {
-                record += ' '+posspron+' father\'s occupation was '+info.focc+'.' 
+            if (event.focc) {
+                record += ' '+person.posspron+' father\'s occupation was '+event.focc+'.' 
                 }
             record += '</p>'
 
             if (siblingList) {
                 // get the number of siblings by checking the markup
                 siblingLinks = siblingList.split('<a')
-                if (siblingLinks.length === 1) record += '<p>'+pron+' had an elder sibling, '+getName('', siblingList[0].trim(), 'given', true)+'.</p>'
+                if (siblingLinks.length === 1) record += '<p>'+person.pron+' had an elder sibling, '+getName('', siblingList[0].trim(), 'given', true)+'.</p>'
                 else {
-                    record += '<p>'+pron+' had '+eval(siblingLinks.length-1)+' elder siblings: '+siblingList
+                    record += '<p>'+person.pron+' had '+eval(siblingLinks.length-1)+' elder siblings: '+siblingList
                     record += '.</p>'
                     }
                 }
 
-            if (info.bapdate) {
-                record += '<p>'+given+' was baptised '
+            if (event.bapdate) {
+                record += '<p>'+person.given+' was baptised '
                 if (! goingByBap) {
-                    if (info.bapyear) record += getDatePhrase(info.bapdate,info.bapyear)
-                    else record += getDatePhrase(info.bapdate,year)
+                    if (event.bapyear) record += getDatePhrase(event.bapdate,event.bapyear)
+                    else record += getDatePhrase(event.bapdate,year)
                     }
-                if (info.bapplace) record += ' at '+info.bapplace+'.'
+                if (event.bapplace) record += ' at '+event.bapplace+'.'
                 record += '</p>'
                 }
-            if (info.notes && info.notes.length > 0) for (n=0;n<info.notes.length;n++) { record += '<p>'+replaceNames(info.notes[n])+'</p>' }
-            if (info.fnotes && info.fnotes.length > 0) {
+            if (event.notes && event.notes.length > 0) for (n=0;n<event.notes.length;n++) { record += '<p>'+replaceNames(event.notes[n])+'</p>' }
+            if (event.fnotes && event.fnotes.length > 0) {
                 record += '<div class="footnotes"><p>Notes</p><ol>'
-                for (n=0;n<info.fnotes.length;n++) record += '<li>'+info.fnotes[n]+'</li>'
+                for (n=0;n<event.fnotes.length;n++) record += '<li>'+event.fnotes[n]+'</li>'
                 record += '</ol></div>'
                 }
 
 
             // settings for outside the main text
-            info.title = 'Birth'
+            event.title = 'Birth'
             
-            info.useGPS = true
+            event.useGPS = true
             
-            details = formatSource(info.sources, info.discussion)
+            details = formatSource(event.sources, event.discussion)
             
-            if (typeof info.occ === 'undefined') info.occ = ''
+            if (typeof event.occ === 'undefined') event.occ = ''
            }
 
 
 
 
-        else if (info.type === 'born') {
+        else if (event.type === 'born') {
             // this is the birth of a relative
-            for (x in db[info.person].birth) info[x] = db[info.person].birth[x]
+            for (x in db[event.person].birth) event[x] = db[event.person].birth[x]
 
             record += '<p>'
-            record += upperCaseFirst(info.relation) +' '
-            record += getName('', info.person, 'kg', true)
+            record += upperCaseFirst(event.relation) +' '
+            record += getName('', event.person, 'kg', true)
             record += ' was born '
             
-            //record += getDatePhrase(info.bdate,info.b)
-            record += getDatePhrase(info.bdate,info.b,withWeekday)
+            //record += getDatePhrase(event.bdate,event.b)
+            record += getDatePhrase(event.bdate,event.b,withWeekday)
             
-            //if (db[info.person] && db[info.person].bdate) record += getDatePhrase(db[info.person].bdate,year)
-            //else if (data[info.person] && data[info.person].birth && data[info.person].birth.date) record += getDatePhrase(data[info.person].birth.date,year)
+            //if (db[event.person] && db[event.person].bdate) record += getDatePhrase(db[event.person].bdate,year)
+            //else if (data[event.person] && data[event.person].birth && data[event.person].birth.date) record += getDatePhrase(data[event.person].birth.date,year)
             //else record += getDatePhrase('',year)
             
-            if (info.place) record += ' at '+info.place 
-            if (birth) record += getAgeTS(', when '+given+' was ', info.timestamp, birth, ' years old')
+            if (event.place) record += ' at '+event.place 
+            if (birth) record += getAgeTS(', when '+person.given+' was ', event.timestamp, birth, ' years old')
             record += '.</p>'
-            if (info.focc) {
-                if (male) record += '<p>'+given+'\'s '
-                else record += '<p>'+getName('', info.person, 'kx', true)+'\'s father\'s '
-                record += ' occupation at the time was '+info.focc+'.</p>'
+            if (event.focc) {
+                if (person.male) record += '<p>'+person.given+'\'s '
+                else record += '<p>'+getName('', event.person, 'kx', true)+'\'s father\'s '
+                record += ' occupation at the time was '+event.focc+'.</p>'
                 }
-            if (info.notes && info.notes.length > 0) for (n=0;n<info.notes.length;n++) { record += '<p>'+replaceNames(info.notes[n])+'</p>' }
+            if (event.notes && event.notes.length > 0) for (n=0;n<event.notes.length;n++) { record += '<p>'+replaceNames(event.notes[n])+'</p>' }
 
 
             // prepare other settings
-            //info.title = getName('', info.person, 'kg', true) + ' ' + info.type
+            //event.title = getName('', event.person, 'kg', true) + ' ' + event.type
            
-            if (db[info.person] && db[info.person].birth) details = db[info.person].birth.sources
+            if (db[event.person] && db[event.person].birth) details = db[event.person].birth.sources
 
-            if (info.relation.match('son|daughter|father|mother')) {}
-            else info.background = 'other'
+            if (event.relation.match('son|daughter|father|mother')) {}
+            else event.background = 'other'
 
-            if (info.relation.match('sister|brother')) {
-                if (db[info.person].male) info.title = 'Brother '
-                else info.title = 'Sister '
+            if (event.relation.match('sister|brother')) {
+                if (db[event.person].male) event.title = 'Brother '
+                else event.title = 'Sister '
                 }
-            else info.title = ''
-            info.title += getName('', info.person, 'kg', true) + ' ' + info.type
+            else event.title = ''
+            event.title += getName('', event.person, 'kg', true) + ' ' + event.type
 
             
-            info.useGPS = true
+            event.useGPS = true
             
-            details = formatSource(info.sources, info.discussion)
+            details = formatSource(event.sources, event.discussion)
             
-            if (info.focc && db[info.person].father === thisPerson) info.occ = info.focc
+            if (event.focc && db[event.person].father === thisPerson) event.occ = event.focc
             }
 
 
@@ -1166,64 +1172,69 @@ function redisplay (everything, id, summary ) {
 
 
 
-        if (info.type === 'dies' && info.relation === 'self') {
-            info = db[thisPerson].death
-            info.useGPS = true
-            info.title = 'Death'
-            timestamp = new Date(info.timestamp)
+        if (event.type === 'dies' && event.relation === 'self') {
+            event = person.death
+            event.useGPS = true
+            event.title = 'Death'
+            timestamp = new Date(event.timestamp)
             year = timestamp.getFullYear().toString()
            
 
-            if (info.discussion) {
-                record += '<img class="commentaryIcon" src="lib/i/discn.png" alt="Commentary" title="Commentary notes for this event." onclick="alert(`' + info.discussion + '`)">'
+            if (event.discussion) {
+                record += '<img class="commentaryIcon" src="lib/i/discn.png" alt="Commentary" title="Commentary notes for this event." onclick="alert(`' + event.discussion + '`)">'
                 }
 
-            // overwrite info.date with thisPerson.ddate
-            if (db[thisPerson].ddate) info.date = db[thisPerson].ddate
-            else info.date = ''
+            // overwrite event.date with thisPerson.ddate
+            if (person.ddate) event.date = person.ddate
+            else event.date = ''
 
             // check whether this is the burial date
             var goingByBur = false
-            if (info.date && info.burdate && info.date.match('~') && info.date.replace('~','') === info.burdate) {
+            if (event.date && event.burdate && event.date.match('~') && event.date.replace('~','') === event.burdate) {
                 goingByBur = true
-                info.date = info.date.replace('~','onob ')
+                event.date = event.date.replace('~','onob ')
                 }
             record += '<p>'+getName('', id, 'kfm', false)
-            if (info.of) record += ' of '+info.of
-            record += ' died '+getDatePhrase(info.date,year)
-            if (info.place) record += ' at '+info.place
+            //if (event.of) record += ' of '+event.of
+            record += ' died '+getDatePhrase(event.date,year)
+            //if (event.place) record += ' at '+event.place
             if (goingByBur) {
-                record += ' (the date of '+posspron.toLowerCase()+' burial)'
+                record += ' (the date of '+person.posspron.toLowerCase()+' burial)'
                 }
-            //if (info.place) record += ' at '+info.place
-            if (male) pron = 'he'; else pron = 'she'
-            record += getAge(' when '+pron+' was ', info.date, year, db[thisPerson].bdate, born, ' years old')
+            //if (event.place) record += ' at '+event.place
+            //if (person.male) pron = 'he'; else pron = 'she'
+            record += getAge(' when '+person.pron.toLowerCase()+' was ', event.date, year, person.bdate, person.b, ' years old')
             record += '. '
-            if (info.cause) record += ' The cause was '+info.cause+'. '
-            if (info.occ) {
-                if (male) record += ' His '; else record += ' Her '
-                record += ' occupation at the time was '+info.occ.toLowerCase()+'. '
+            if (event.cause) record += ' The cause was '+event.cause+'. '
+
+            if (event.of) record += ' '+person.posspron+' place of residence was '+event.of
+            if (event.place && event.place !== event.of) record += ', and '+person.pron.toLowerCase()+' died at '+event.place
+            record += '.'
+            
+            if (event.occ) {
+                if (person.male) record += ' His '; else record += ' Her '
+                record += ' occupation at the time was '+event.occ.toLowerCase()+'. '
                 }
             record += '</p>'
-            //if (info.informant) record += '<p>The informant was '+info.informant+'.</p>'
-            if (info.informant) {
-                informantText = replaceNames(info.informant)
+            //if (event.informant) record += '<p>The informant was '+event.informant+'.</p>'
+            if (event.informant) {
+                informantText = replaceNames(event.informant)
                 record += '<p>The informant was '+informantText+'.</p>'
                 }
 
-            if (info.burdate || info.burplace) {
-                if (male) record += '<p>He '; else record += '<p>She '
-                record += ' was buried at '+info.burplace
-                if (! goingByBur && info.burdate) record += getDatePhrase(info.burdate,year)
+            if (event.burdate || event.burplace) {
+                if (person.male) record += '<p>He '; else record += '<p>She '
+                record += ' was buried at '+event.burplace
+                if (! goingByBur && event.burdate) record += getDatePhrase(event.burdate,year)
                 record += '.</p>'
                 }
-            if (info.gravestone) {
-                if (male) record += '<p>His '; else record += '<p>Her '
-                record += ' gravestone reads: <q>'+info.gravestone+'</q>.</p>'
+            if (event.gravestone) {
+                if (person.male) record += '<p>His '; else record += '<p>Her '
+                record += ' gravestone reads: <q>'+event.gravestone+'</q>.</p>'
                 }
-            if (info.probate) record += '<p>The probate index says: <q>'+info.probate+'</q>.</p>'
-            if (info.namedinprobate) {
-                var pnames = info.namedinprobate.split(',')
+            if (event.probate) record += '<p>The probate index says: <q>'+event.probate+'</q>.</p>'
+            if (event.namedinprobate) {
+                var pnames = event.namedinprobate.split(',')
                 var probatenames = ''
                 for (w=0;w<pnames.length;w++) {
                     if (w>0) probatenames += ', '
@@ -1233,21 +1244,22 @@ function redisplay (everything, id, summary ) {
                     }
                 record += `<p>Named in probate: ${ probatenames }.</p>`
                 }
-            if (info.obit) record += '<p>Obituary: <q>'+info.obit+'</q>.</p>'
-            if (info.notes && info.notes.length > 0) for (n=0;n<info.notes.length;n++) { record += '<p>'+replaceNames(info.notes[n])+'</p>' }
-            if (info.fnotes && info.fnotes.length > 0) {
+            if (event.obit) record += '<p>Obituary: <q>'+event.obit+'</q>.</p>'
+            if (event.notes && event.notes.length > 0) for (n=0;n<event.notes.length;n++) { record += '<p>'+replaceNames(event.notes[n])+'</p>' }
+            if (event.fnotes && event.fnotes.length > 0) {
                 record += '<div class="footnotes"><p>Notes</p><ol>'
-                for (n=0;n<info.fnotes.length;n++) record += '<li>'+info.fnotes[n]+'</li>'
+                for (n=0;n<event.fnotes.length;n++) record += '<li>'+event.fnotes[n]+'</li>'
                 record += '</ol></div>'
                 }
  
-            details = formatSource(info.sources)
-            info.border = 'death'
+            details = formatSource(event.sources, event.discussion)
+            event.border = 'death'
+            event.titleColour = 'black'
 
             // clarify occupation for right panel
-            if (typeof info.occ === 'undefined') info.occ = ''
-            if (typeof info.of !== 'undefined') info.place = info.of
-            if (typeof info.place === 'undefined') info.place = ''
+            if (typeof event.occ === 'undefined') event.occ = ''
+            if (typeof event.of !== 'undefined') event.place = event.of
+            if (typeof event.place === 'undefined') event.place = ''
            }
 
 
@@ -1256,62 +1268,80 @@ function redisplay (everything, id, summary ) {
 
 
         // relative dies
-        else if (info.type === 'dies') {
-            for (x in db[info.person].death) info[x] = db[info.person].death[x]
+        else if (event.type === 'dies') {
+            for (x in db[event.person].death) event[x] = db[event.person].death[x]
 
             record += '<p>'
-            record += upperCaseFirst(info.relation) +' '
-            switch (info.relation.toLowerCase()) {
+            record += upperCaseFirst(event.relation) +' '
+            switch (event.relation.toLowerCase()) {
                 case 'grandfather':
-                case 'grandmother': record += getName('', info.person, 'kfm', true); break
-                default: record += getName('', info.person, 'k', true)
+                case 'grandmother': record += getName('', event.person, 'kfm', true); break
+                default: record += getName('', event.person, 'k', true)
                 }
-            if (info.cause && info.cause.match(/killed/i)) record += ' was killed '
+            if (event.cause && event.cause.match(/killed/i)) record += ' was killed '
             else record += ' passed away '
-            if (data[info.person] && data[info.person].death && data[info.person].death.date) record+= getDatePhrase(data[info.person].death.date,info.year)
-            else if (db[info.person] && db[info.person].ddate) record+= getDatePhrase(db[info.person].ddate,info.year)
-            else record+= getDatePhrase('',info.year)
-            if (info.age) record += ', aged '+info.age+', '
-            if (info.place) record += ' at '+info.place+', ';
-            record += getAgeTS(' when '+given+' was ', info.timestamp, birth, ' years old.')
-            if (info.relation === 'husband') {
-                if (info.of && info.place) record += ' '+getName('', info.person, 'kx', true)+' lived at '+info.of+', and died at '+info.place+'.'
-                else if (info.of) record += ' '+getName('', info.person, 'kx', true)+' lived at '+info.of+'.'
-                else if (info.place) record += ' '+getName('', info.person, 'kx', true)+' died at '+info.place+'.'
-                }
-            else {
-                if (info.of && info.place) record += ' '+getName('', info.person, 'kx', true)+' lived at '+info.of+', and died at '+info.place+'.'
-                else if (info.of) record += ' '+getName('', info.person, 'kx', true)+' lived at '+info.of+'.'
-                else if (info.place) record += ' '+getName('', info.person, 'kx', true)+' died at '+info.place+'.'
-                }
-            if (info.cause) record += ' '+getName('', info.person, 'given', true)+'\'s cause of death was '+info.cause+'. '
+            if (data[event.person] && data[event.person].death && data[event.person].death.date) record+= getDatePhrase(data[event.person].death.date,event.year)
+            else if (db[event.person] && db[event.person].ddate) record+= getDatePhrase(db[event.person].ddate,event.year)
+            else record+= getDatePhrase('',event.year)
+            if (event.age) record += ', aged '+event.age+', '
+            //if (event.place) record += ' at '+event.place+', ';
+            record += getAgeTS(' when '+person.given+' was ', event.timestamp, birth, ' years old.')
+            
+            //if (event.relation === 'husband') {
+                if (event.of && event.place) record += ' '+getName('', event.person, 'kx', true)+' was resident at '+event.of+', and died at '+event.place+'.'
+                else if (event.of) record += ' '+getName('', event.person, 'kx', true)+' was resident at '+event.of+'.'
+                else if (event.place) record += ' '+getName('', event.person, 'kx', true)+' died at '+event.place+'.'
+            //    }
+            //else {
+            //    if (event.of && event.place) record += ' '+getName('', event.person, 'kx', true)+' lived at '+event.of+', and died at '+event.place+'.'
+            //    else if (event.of) record += ' '+getName('', event.person, 'kx', true)+' lived at '+event.of+'.'
+            //    else if (event.place) record += ' '+getName('', event.person, 'kx', true)+' died at '+event.place+'.'
+            //    }
+
+            if (event.occ) record += ' '+event.posspron+' occupation was '+event.occ+'. '
+            if (event.cause) record += ' '+getName('', event.person, 'given', true)+'\'s cause of death was '+event.cause+'. '
             record += '</p>'
             
-            if (info.relation.match('father|mother') && info.burplace) record += `<p>${ getName('', info.person, 'kx', true) } was buried at ${ info.burplace }</p>`
+            if (event.relation.match('father|mother') && event.burplace) record += `<p>${ getName('', event.person, 'kx', true) } was buried at ${ event.burplace }</p>`
             
-            if (info.informant) {
-                informantText = replaceNames(info.informant)
+            if (event.informant) {
+                informantText = replaceNames(event.informant)
                 record += '<p>The informant was '+informantText+'.</p>'
                 }
-            if (info.probate && info.relation === 'husband') record += `The probate record has: <q>${ info.probate }</q>.`
-            if (info.notes && info.notes.length > 0) for (n=0;n<info.notes.length;n++) { record += '<p>'+replaceNames(info.notes[n])+'</p>' }
+            if (event.probate && event.relation === 'husband') record += `The probate record has: <q>${ event.probate }</q>.`
+            if (event.notes && event.notes.length > 0) for (n=0;n<event.notes.length;n++) { record += '<p>'+replaceNames(event.notes[n])+'</p>' }
 
 
             // prepare information for elsewhere
-            if (db[info.person] && db[info.person].death) details = formatSource(info.sources, info.discussion)
+            if (db[event.person] && db[event.person].death) details = formatSource(event.sources, event.discussion)
 
-            info.title = ''
-            //if (info.relation.match('son|daughter')) info.title += info.relation+' dies'
-             if (info.relation.match('father|mother')) info.title += info.relation+' dies'
-            else if (info.relation.match('brother|sister')) info.title += info.relation+' dies'
-            else info.title = getName('', info.person, 'kg', true) + ' ' + info.type
+            event.title = ''
+            //if (event.relation.match('son|daughter')) event.title += event.relation+' dies'
+            if (event.relation.match('father|mother')) {
+                event.title += event.relation+' dies'
+                event.titleColour = 'black'
+                }
+            else if (event.relation.match('brother|sister')) {
+                event.title += event.relation+' dies'
+                event.titleColour = '#444'
+                }
+            else {
+                event.title = getName('', event.person, 'k', false) + ' ' + event.type
+                event.titleColour = ''
+                }
             
-            if (info.relation.match('son|daughter|father|mother')) { info.background = 'familydeath' }
-            else info.background = 'other'
+            if (event.relation.match('son|daughter|father|mother')) event.background = 'familydeath'
+            else event.background = 'other'
             
-            if (info.relation.match('wife|husband')) info.border = 'death'
+            if (event.relation.match('wife|husband')) {
+                event.title = getName('', event.person, 'k', false) + ' ' + event.type
+                event.border = 'death'
+                event.titleColour = 'black'
+                event.background = 'familydeath'
+                }
             
-            info.place = ''
+            event.place = ''
+            event.occ = ''
             }
 
 
@@ -1320,94 +1350,94 @@ function redisplay (everything, id, summary ) {
 
 
 
-        if (info.type === 'marriage' && info.relation === 'spouse') {
+        if (event.type === 'marriage' && event.relation === 'spouse') {
             // find the data
-            if (db[thisPerson].marriages && db[thisPerson].marriages[info.person]) info = db[thisPerson].marriages[info.person]
-            else if (db[info.person].marriages && db[info.person].marriages[thisPerson]) info = db[info.person].marriages[thisPerson]
+            if (person.marriages && person.marriages[event.person]) event = person.marriages[event.person]
+            else if (db[event.person].marriages && db[event.person].marriages[thisPerson]) event = db[event.person].marriages[thisPerson]
             else { alert('Marriage data not found!'); return }
             
-            year = info.timestamp.substr(0,4)
+            year = event.timestamp.substr(0,4)
         
-            if (info.discussion) {
-                record += '<img class="commentaryIcon" src="lib/i/discn.png" alt="Commentary" title="Commentary notes for this event." onclick="alert(`' + info.discussion + '`)">'
+            if (event.discussion) {
+                record += '<img class="commentaryIcon" src="lib/i/discn.png" alt="Commentary" title="Commentary notes for this event." onclick="alert(`' + event.discussion + '`)">'
                 }
-            if (info.marriagetype === 'unmarried') {
-                record += '<p>'+given+' began a relationship with '
-                if (male) record += getName('', info.bid, 'gkf', true)
-                else record += getName('', info.gid, 'both', true)
-                record += ' at '+info.place+', '
-                if (info.date) record+= getDatePhrase(info.date,year)
-                if (male) pron = 'he'; else pron = 'she'
-                record += getAgeTS(' when '+pron+' was ', info.timestamp, birth, ' years old')
+            if (event.marriagetype === 'unmarried') {
+                record += '<p>'+person.given+' began a relationship with '
+                if (person.male) record += getName('', event.bid, 'gkf', true, event.timestamp)
+                else record += getName('', event.gid, 'both', true, event.timestamp)
+                record += ' at '+event.place+', '
+                if (event.date) record+= getDatePhrase(event.date,year)
+                //if (person.male) pron = 'he'; else pron = 'she'
+                record += getAgeTS(' when '+person.pron.toLowerCase()+' was ', event.timestamp, birth, ' years old')
                 record += '. '
-                if (male) record += getName('', info.bid, 'gkf', true)+' was '+getAgeTS('', info.timestamp, db[info.bid].bdate+' '+db[info.bid].b, ' years old')
-                else record += getName('', info.gid, 'gkf', true)+' was '+getAgeTS('', info.timestamp, db[info.gid].bdate+' '+db[info.bid].b, ' years old')
+                //if (person.male) record += getName('', event.bid, 'gkf', true)+' was '+getAgeTS('', event.timestamp, db[event.bid].bdate+' '+db[event.bid].b, ' years old')
+                //else record += getName('', event.gid, 'gkf', true)+' was '+getAgeTS('', event.timestamp, db[event.gid].bdate+' '+db[event.bid].b, ' years old')
                 }
             else {
-                record += '<p>'+given+' married '
-                if (male) record += getName('', info.bid, 'gkf', true)
-                else record += getName('', info.gid, 'both', true)
-                record += ' at '+info.place+', '
-                if (info.date) record+= getDatePhrase(info.date,year)
-                if (male) pron = 'he'; else pron = 'she'
-                record += getAgeTS(' when '+pron+' was ', info.timestamp, birth, ' years old')
+                record += '<p>'+person.given+' married '
+                if (person.male) record += getName('', event.bid, 'gkf', true)
+                else record += getName('', event.gid, 'both', true)
+                record += ' at '+event.place+', '
+                if (event.date) record+= getDatePhrase(event.date,year)
+                //if (person.male) pron = 'he'; else pron = 'she'
+                record += getAgeTS(' when '+person.pron.toLowerCase()+' was ', event.timestamp, birth, ' years old')
                 record += '. '
                 }
 
-            if (info.bage || info.bstatus || info.gocc || info.bocc || info.bparish || info.gparish) record += '<p>'
-            if (male) {
-                if (info.bage) record += 'The bride was '+info.bage+' years old'
-                if (info.bage && info.bstatus) record += ' and a '+info.bstatus
-                else if (info.bstatus) record += ' The bride was a '+info.bstatus
-                if (info.bage || info.bstatus) record += '. '
+            if (event.bage || event.bstatus || event.gocc || event.bocc || event.bparish || event.gparish) record += '<p>'
+            if (person.male) {
+                if (event.bage) record += 'The bride was '+event.bage+' years old'
+                if (event.bage && event.bstatus) record += ' and a '+event.bstatus
+                else if (event.bstatus) record += ' The bride was a '+event.bstatus
+                if (event.bage || event.bstatus) record += '. '
                 }
             else {	
-                if (info.gage) record += ' The groom was '+info.gage+' years old'
-                if (info.gage && info.gstatus) record += ' and a '+info.gstatus
-                else if (info.gstatus) record += ' The groom was a '+info.gstatus
-                if (info.gage || info.gstatus) record += '. '
+                if (event.gage) record += ' The groom was '+event.gage+' years old'
+                if (event.gage && event.gstatus) record += ' and a '+event.gstatus
+                else if (event.gstatus) record += ' The groom was a '+event.gstatus
+                if (event.gage || event.gstatus) record += '. '
                 }
 
-            if (info.gocc) record += getName('', info.gid, 'k', true)+'\'s occupation was '+info.gocc+'. '
-            if (info.bocc) record += getName('', info.bid, 'k', true)+'\'s occupation was '+info.bocc+'. '
+            if (event.gocc) record += getName('', event.gid, 'k', true)+'\'s occupation was '+event.gocc+'. '
+            if (event.bocc) record += getName('', event.bid, 'k', true)+'\'s occupation was '+event.bocc+'. '
 
-            if (info.bparish && info.bparish === info.gparish) {
-                if (info.gparish==='otp') record += ' Both were of this parish. '
-                else record += ' Both were living at '+info.bparish+'. '
+            if (event.bparish && event.bparish === event.gparish) {
+                if (event.gparish==='otp') record += ' Both were of this parish. '
+                else record += ' Both were living at '+event.bparish+'. '
                 }
             else {
-                if (info.bparish) {
-                    if (info.bparish==='otp') record += ' The bride was of this parish'
-                    else record += ' The bride was from '+info.bparish
+                if (event.bparish) {
+                    if (event.bparish==='otp') record += ' The bride was of this parish'
+                    else record += ' The bride was from '+event.bparish
                     }
-                if (info.gparish && info.bparish) record += ' and the '
-                else if (info.gparish) record += '. The '
-                if (info.gparish) {
-                    if (info.gparish==='otp') record += ' groom was of this parish'
-                    else record += ' groom was from '+info.gparish
+                if (event.gparish && event.bparish) record += ' and the '
+                else if (event.gparish) record += '. The '
+                if (event.gparish) {
+                    if (event.gparish==='otp') record += ' groom was of this parish'
+                    else record += ' groom was from '+event.gparish
                     }
-                if (info.bparish || info.gparish) record += '. '
+                if (event.bparish || event.gparish) record += '. '
                 }
-            if (info.bage || info.bstatus || info.gocc || info.bocc || info.bparish || info.gparish) record += '</p>'
-            if (info.bfid || info.gfid) record += '<p>'
-            if (male) {
-                if (info.bfid) record += ' The bride\'s father was '+getName('', info.bfid, 'gf', true)
-                else if (info.bfather) record += ' The bride\'s father was '+info.bfather
-                if (info.bfocc) record += ', and his occupation '+info.bfocc
-                if (info.bfid || info.bfather) record += '. '
-                if (info.gfocc) record += given+'\'s father\'s occupation was '+info.gfocc+'. '
+            if (event.bage || event.bstatus || event.gocc || event.bocc || event.bparish || event.gparish) record += '</p>'
+            if (event.bfid || event.gfid) record += '<p>'
+            if (person.male) {
+                if (event.bfid) record += ' The bride\'s father was '+getName('', event.bfid, 'gf', true)
+                else if (event.bfather) record += ' The bride\'s father was '+event.bfather
+                if (event.bfocc) record += ', and his occupation '+event.bfocc
+                if (event.bfid || event.bfather) record += '. '
+                if (event.gfocc) record += person.given+'\'s father\'s occupation was '+event.gfocc+'. '
                 }
             else {
-                if (info.gfid) record += ' The groom\'s father was '+getName('', info.gfid, 'gf', true)
-                else if (info.gfather) record += ' The groom\'s father was '+info.gfather
-                if (info.gfocc) record += ', and his occupation '+info.gfocc
-                if (info.gfid || info.gfather) record += '. '
-                if (info.bfocc) record += given+'\'s father\'s occupation was '+info.bfocc+'. '
+                if (event.gfid) record += ' The groom\'s father was '+getName('', event.gfid, 'gf', true)
+                else if (event.gfather) record += ' The groom\'s father was '+event.gfather
+                if (event.gfocc) record += ', and his occupation '+event.gfocc
+                if (event.gfid || event.gfather) record += '. '
+                if (event.bfocc) record += person.given+'\'s father\'s occupation was '+event.bfocc+'. '
                 }
-            if (info.bfid || info.gfid) record += '</p>'
+            if (event.bfid || event.gfid) record += '</p>'
 
-            if (info.witnesses) {
-                var wits = info.witnesses.split(',')
+            if (event.witnesses) {
+                var wits = event.witnesses.split(',')
                 var witnesses = ''
                 for (var w=0;w<wits.length;w++) {
                     if (w>0) witnesses += ', '
@@ -1416,53 +1446,53 @@ function redisplay (everything, id, summary ) {
                     else  witnesses += `${ wits[w].trim() }`
                     }
                 }
-            if (info.by && witnesses) record += '<p>They were married by '+info.by+' and the witnesses were '+witnesses+'.<p>'
+            if (event.by && witnesses) record += '<p>They were married by '+event.by+' and the witnesses were '+witnesses+'.<p>'
             else { 
-                if (info.by) record += '<p>They were married by '+info.by+'.<p>'
+                if (event.by) record += '<p>They were married by '+event.by+'.<p>'
                 if (witnesses) record += '<p>Witnesses were '+witnesses+'.<p>'
                 }
 
-            if (db[info.bid] && db[info.gid] && db[info.bid].d && db[info.gid].d) {
-                var marrLength = Math.min(db[info.bid].d, db[info.gid].d) - parseInt(info.timestamp.substr(0,4))
+            if (db[event.bid] && db[event.gid] && db[event.bid].d && db[event.gid].d) {
+                var marrLength = Math.min(db[event.bid].d, db[event.gid].d) - parseInt(event.timestamp.substr(0,4))
                 if (marrLength < 1) record += '<p>They were to be married for less than a year.</p>'
                 else if (marrLength === 1) record += '<p>They were to be married for about a year.</p>'
                 else {
-                    if (info.marriagetype === 'unmarried') record += '<p>They were together for around '+marrLength+' years.</p>'
+                    if (event.marriagetype === 'unmarried') record += '<p>They were together for around '+marrLength+' years.</p>'
                     else record += '<p>They were to be married for around '+marrLength+' years.</p>'
                     }
                 }
-            if (info.notes && info.notes.length > 0) for (n=0;n<info.notes.length;n++) { record += '<p>'+replaceNames(info.notes[n])+'</p>' }
-            if (info.fnotes && info.fnotes.length > 0) {
+            if (event.notes && event.notes.length > 0) for (n=0;n<event.notes.length;n++) { record += '<p>'+replaceNames(event.notes[n])+'</p>' }
+            if (event.fnotes && event.fnotes.length > 0) {
                 record += '<div class="footnotes"><p>Notes</p><ol>'
-                for (n=0;n<info.fnotes.length;n++) record += '<li>'+info.fnotes[n]+'</li>'
+                for (n=0;n<event.fnotes.length;n++) record += '<li>'+event.fnotes[n]+'</li>'
                 record += '</ol></div>'
                 }
 
 
             // stuff for display alongside the main text
-            details = formatSource(info.sources, info.discussion)
+            details = formatSource(event.sources, event.discussion)
 
-            info.useGPS = true
+            event.useGPS = true
             
-            info.title = 'Marriage to '+getName('', info.person, 'kg', true)
-            if (info.marriagetype === 'unmarried') {
-                if (db[thisPerson].male) info.title = 'Marriage to '+info.bride
-                else info.title = 'Relationship with '+info.groom
+            event.title = 'Marriage to '+getName('', event.person, 'kg', true)
+            if (event.marriagetype === 'unmarried') {
+                if (person.male) event.title = 'Marriage to '+event.bride
+                else event.title = 'Relationship with '+event.groom
                 }
             else {
-                if (db[thisPerson].male) info.title = 'Marriage to '+info.bride
-                else info.title = 'Marriage to '+info.groom
+                if (person.male) event.title = 'Marriage to '+event.bride
+                else event.title = 'Marriage to '+event.groom
                 }
 
             // get occupation for display in right panel
-            if (db[thisPerson].male && info.gocc) info.occ = info.gocc
-            else if (info.bocc) info.occ = info.bocc
-            else info.occ = ''
-            info.border = 'marriage'
+            if (person.male && event.gocc) event.occ = event.gocc
+            else if (event.bocc) event.occ = event.bocc
+            else event.occ = ''
+            event.border = 'marriage'
             
             // set the place to their abode
-            if (db[thisPerson].male && info.gparish) info.place = info.gparish
-            else if (info.bparish) info.place = info.bparish
+            if (person.male && event.gparish) event.place = event.gparish
+            else if (event.bparish) event.place = event.bparish
             }
 
 
@@ -1470,125 +1500,166 @@ function redisplay (everything, id, summary ) {
 
 
 
-        else if (info.type == 'marriage') {
+        else if (event.type == 'marriage') {
             // marriage of a relative
             
-            // find the info data
-            var couple = info.person.split('^')
+            // find the event data
+            var couple = event.person.split('^')
             if (db[couple[0]] && db[couple[0]].marriages && db[couple[0]].marriages[couple[1]]) var ptr = db[couple[0]].marriages[couple[1]]
             else if (db[couple[1]] && db[couple[1]].marriages && db[couple[1]].marriages[couple[0]]) var ptr = db[couple[1]].marriages[couple[0]]
             else alert('Couple data not found!')
-            for (x in ptr) info[x] = ptr[x]
+            for (x in ptr) event[x] = ptr[x]
             
             record += '<p>'
-            if (info.relation === 'daughter') { 
-                record += given+'\'s daughter '+getName('', info.bid, 'kg', true)+' married '+getName('', info.gid, 'gkf', true)+getDatePhrase(info.date,info.timestamp.substr(0,4))
-                if (info.place) record += ' at '+info.place
+            if (event.relation === 'daughter') { 
+                record += person.given+'\'s daughter '+getName('', event.bid, 'kg', true, event.timestamp)+' married '+getName('', event.gid, 'gkf', true)+getDatePhrase(event.date,event.timestamp.substr(0,4))
+                if (event.place) record += ' at '+event.place
                 record += '.</p>'
                 }
-            if (info.relation.toLowerCase() === 'son') {
-                record += given+'\'s '+info.relation.toLowerCase()+' '+getName('', info.gid, 'given', true)+' married '+getName('', info.bid, 'both', true)+getDatePhrase(info.date,info.timestamp.substr(0,4))
-                if (info.place) record += ' at '+info.place
+            if (event.relation.toLowerCase() === 'son') {
+                record += person.given+'\'s '+event.relation.toLowerCase()+' '+getName('', event.gid, 'given', true, event.timestamp)+' married '+getName('', event.bid, 'both', true)+getDatePhrase(event.date,event.timestamp.substr(0,4))
+                if (event.place) record += ' at '+event.place
                 record += '.</p>'
                 }
-            if (info.relation.toLowerCase() === 'father') {
-                record += given+'\'s '+info.relation.toLowerCase()+' '+getName('', info.gid, 'given', true)+' married '+getName('', info.bid, 'both', true)+getDatePhrase(info.date,info.timestamp.substr(0,4))
-                if (info.place) record += ' at '+info.place
+            if (event.relation.toLowerCase() === 'father') {
+                record += person.given+'\'s '+event.relation.toLowerCase()+' '+getName('', event.gid, 'given', true, event.timestamp)+' married '+getName('', event.bid, 'both', true)+getDatePhrase(event.date,event.timestamp.substr(0,4))
+                if (event.place) record += ' at '+event.place
                 record += '.</p>'
                 }
-            if (info.relation.toLowerCase() === 'mother') {
-                record += given+'\'s '+info.relation.toLowerCase()+' '+getName('', info.bid, 'given', true)+' married '+getName('', info.gid, 'both', true)+getDatePhrase(info.date,info.timestamp.substr(0,4))
-                if (info.place) record += ' at '+info.place
+            if (event.relation.toLowerCase() === 'mother') {
+                record += person.given+'\'s '+event.relation.toLowerCase()+' '+getName('', event.bid, 'given', true, event.timestamp)+' married '+getName('', event.gid, 'both', true)+getDatePhrase(event.date,event.timestamp.substr(0,4))
+                if (event.place) record += ' at '+event.place
                 record += '.</p>'
                 }
 
-            if (info.relation.toLowerCase() === 'daughter' && info.gfid) {
-                record += '<p>The father of the groom was '+getName('', info.gfid, 'both', true)
-                if (info.gfocc) record += ', '+info.gfocc
+            if (event.relation.toLowerCase() === 'daughter' && event.gfid) {
+                record += '<p>The father of the groom was '+getName('', event.gfid, 'both', true)
+                if (event.gfocc) record += ', '+event.gfocc
                 record += '. '
-                if (info.bfocc) record += ' The occupation of '+getName('', info.bfid, 'both', true)+' was '+info.bfocc+'. '
+                if (event.bfocc) record += ' The occupation of '+getName('', event.bfid, 'both', true)+' was '+event.bfocc+'. '
                 record += '</p>'
                 }
-            if (info.relation.toLowerCase() === 'son' && info.bfid) {
-                record += '<p>The father of the bride was '+getName('', info.bfid, 'both', true)
-                if (info.bfocc) record += ', '+info.bfocc
+            if (event.relation.toLowerCase() === 'son' && event.bfid) {
+                record += '<p>The father of the bride was '+getName('', event.bfid, 'both', true)
+                if (event.bfocc) record += ', '+event.bfocc
                 record += '. '
-                if (info.gfocc) record += ' The occupation of '+getName('', info.gfid, 'both', true)+' was '+info.gfocc+'. '
+                if (event.gfocc) record += ' The occupation of '+getName('', event.gfid, 'both', true)+' was '+event.gfocc+'. '
                 record += '</p>'
                 }
-            if (info.relation === 'son' && info.bfather) {
-                record += '<p>The father of the bride was '+getName('', info.bfather, 'both', true)
-                if (info.bfocc) record += ', '+info.bfocc
+            if (event.relation === 'son' && event.bfather) {
+                record += '<p>The father of the bride was '+getName('', event.bfather, 'both', true)
+                if (event.bfocc) record += ', '+event.bfocc
                 record += '. '
-                if (info.gfocc) record += ' The occupation of '+getName('', info.gfid, 'both', true)+' was '+info.gfocc+'. '
+                if (event.gfocc) record += ' The occupation of '+getName('', event.gfid, 'both', true)+' was '+event.gfocc+'. '
                 record += '</p>'
                 }
-            if (info.notes && info.notes.length > 0) for (n=0;n<info.notes.length;n++) { record += '<p>'+replaceNames(info.notes[n])+'</p>' }
-            info.background = 'other'
+            if (event.notes && event.notes.length > 0) for (n=0;n<event.notes.length;n++) { record += '<p>'+replaceNames(event.notes[n])+'</p>' }
+            event.background = 'other'
 
 
             // prepare information for elsewhere
-            if (info.sources) details = formatSource(info.sources, info.discussion)
+            if (event.sources) details = formatSource(event.sources, event.discussion)
             
-            if (info.relation === 'son') info.title = `<span style="font-size:90%; white-space: normal;">${ info.groom } marries ${ info.bride }</span>`
-            else info.title = `<span style="font-size:90%; white-space: normal;">${ info.bride } marries ${ info.groom }</span>`
+            if (event.relation === 'son') event.title = `<span style="font-size:90%; white-space: normal;">${ event.groom } marries ${ event.bride }</span>`
+            else event.title = `<span style="font-size:90%; white-space: normal;">${ event.bride } marries ${ event.groom }</span>`
             
 
-            if (info.relation === 'son' && info.gfocc) info.occ = info.gfocc
-            if (info.relation === 'daughter' && info.bfocc) info.occ = info.bfocc
-            info.place = ''
+            if (event.relation === 'son' && event.gfocc) event.occ = event.gfocc
+            if (event.relation === 'daughter' && event.bfocc) event.occ = event.bfocc
+            event.place = ''
 
             }
 
+
+
+
+
+        if (event.type === 'note') {
+            // add the census details to event
+            for (x in person.events[event.timestamp]) event[x] = person.events[event.timestamp][x]
+            if (event.sharednote) for (x in notae[event.sharednote]) event[x] = notae[event.sharednote][x]
+
+            console.log(here,here,'EVENT after notes merge',event)
+
+            isoDate = new Date(event.timestamp)
+            event.date = new Intl.DateTimeFormat('en-GB', dateOptions).format(isoDate)
+            event.date = new Intl.DateTimeFormat('en-GB', dateOptions).format(event.dateObj)
+    
+            event.notes = event.notes.split('\n')
+            for (n=0;n<event.notes.length;n++) {
+                if (event.notes[n] !== '') {
+                    if (event.notes[n].startsWith('note:')) record += `<p>${ replaceNames(event.notes[n].replace('note: ',''), event.timestamp) }</p>`
+                    }
+                }
+
+            details = formatSource(event.sources, event.discussion)
+
+
+
+            // prepare information for elsewhere
+            if (db[event.person] && db[event.person].death) details = formatSource(event.sources, event.discussion)
+
+            event.useGPS = true
+            }
+            
+
+
 //. ****** NOTE THAT THE DETAILS PANEL USED TO INCLUDE LOTS OF LINKS TO IMAGES, GPS, ETC AND DISCUSSION TEXT. NOW THAT'S ONLY DISPLAYED VIA ICONS IN THE RIGHT SIDE PANEL. ALSO, DISPLAY DATA KEY-VALUE PAIRS ARE NO LONGER SHOWN.
 
-// info needed coming into this section: info.title, details, info.type/occ/place
+// info needed coming into this section: event.title, details, event.type/occ/place
 
 
         // clarify occupation for right panel
-        if (typeof info.occ === 'undefined') info.occ = ''
-        //if (typeof info.of !== 'undefined') info.place = info.of
-        if (typeof info.place === 'undefined') info.place = ''
-        if (typeof info.timestamp === 'undefined') alert('info.timestamp undefined for '+events[e])
+        if (typeof event.occ === 'undefined') event.occ = ''
+        //if (typeof event.of !== 'undefined') event.place = event.of
+        if (typeof event.place === 'undefined') event.place = ''
+        if (typeof event.timestamp === 'undefined') alert('event.timestamp undefined for '+events[e])
 
 
         // draw age + year 
 		out += '<div class="dateAndRecord">'
         out += '<div><div class="recordDate"'
-		if (info.type === 'background' || info.type === 'figure') out += ' style="background-color:transparent;">'
-		else out += '><span class="recordDateAge">'+getAgeTS('', info.timestamp, birth, '')+'</span><span class="recordDateAge" style="font-size:1px;line-height:1px;"> &bull; </span><span class="theYear">'+info.timestamp.substr(0,4)+'</span>'
+		if (event.type === 'background' || event.type === 'figure') out += ' style="background-color:transparent;">'
+		else out += '><span class="recordDateAge">'+getAgeTS('', event.timestamp, birth, '')+'</span><span class="recordDateAge" style="font-size:1px;line-height:1px;"> &bull; </span><span class="theYear">'+event.timestamp.substr(0,4)+'</span>'
         out += '</div>'
         out += '</div>'
          
-        out += '<div class="record '+info.border+' '+info.background+'">'
+        out += '<div class="record '+event.border+' '+event.background+'">'
       
 		// add the record title and any floating icons
 		out += '<div class="titleEtc">\n'
-		if (info.type !== 'background') out += '<p class="recordTitleAge">'+getAgeTS('', info.timestamp, birth, '')+'</p>'
-		out += '<p class="recordTitle">'+info.title+'</p>'
+		if (event.type !== 'background') out += '<p class="recordTitleAge">'+getAgeTS('', event.timestamp, birth, '')+'</p>'
+		out += '<p class="recordTitle"'
+        if (event.titleColour) out += ` style="color:${ event.titleColour }"`
+        out += '>'+event.title+'</p>'
         out += '</div>\n'
         
         out += '<div class="descriptionText">' + record + '</div>'
         
-        if (info.type !== 'background' && info.type !== 'figure') out += '<details><summary></summary><pre>'+details+'</pre></details>'
+        if (event.type !== 'background' && event.type !== 'figure') out += '<details><summary></summary><pre>'+details+'</pre></details>'
         out += '</div>\n' // close record
         
         //keypoints here
-        out += '<div class="keypoints kp'+info.type+'">'
-		out += '<div class="occ">'+info.occ+'</div>'
-		out += '<div class="place">'+info.place+'</div>'
+        out += '<div class="keypoints kp'+event.type+'">'
+		out += '<div class="occ">'+event.occ+'</div>'
+		out += '<div class="place">'+event.place+'</div>'
         out += '<div></div>'
         
         // create the floated icon links
         floatedIcons = ''
-        if (info.images) {
-            for (j=0;j<info.images.length;j++) {
-                floatedIcons += addFIcon(info.images[j],'record')
+        if (event.images) {
+            for (j=0;j<event.images.length;j++) {
+                floatedIcons += addFIcon(event.images[j],'record')
                 }
             }
-        if (info.gps) {
-            for (j=0;j<info.gps.length;j++) {
-                floatedIcons += addFIcon(info.gps[j],'gps')
+        if (event.gps) {
+            for (j=0;j<event.gps.length;j++) {
+                floatedIcons += addFIcon(event.gps[j],'gps')
+                }
+            }
+        if (event.links) {
+            for (j=0;j<event.links.length;j++) {
+                floatedIcons += addFIcon(event.links[j],'link')
                 }
             }
         out += `<p class="floatedIcons">${ floatedIcons }</p>`
@@ -1599,6 +1670,20 @@ function redisplay (everything, id, summary ) {
         }
 
 
+
+
+
+        // add research notes, if there are any
+        if (researchNotes && researchNotes.trim() !== '') {
+            researchNotes = researchNotes.replace(/(http(s)?:\/\/[^\s]+)/g, '<a href="$&" target="_blank">link</a>')
+            out += '<details'
+            if (localStorage.ancestryShowResearch == 'yes') out += ' open'
+            out += '><summary '
+            out += ' onclick="if (parentNode.open) {localStorage.ancestryShowResearch = \'no\';} else {localStorage.ancestryShowResearch = \'yes\';}"'
+            out += ' style="text-align:center; margin-inline-end: 3em; margin-top: 2em; text-transform: uppercase; font-family: \'Source Sans Pro\', \'Helvetica Neue\', Arial, sans-serif; font-size: 100%; color:#666;">Notes &amp; research</summary>\n<p style="white-space: pre-wrap; font-size:90%;margin:1em;">'
+            out += researchNotes
+            out += '</p>\n</details>'
+            }
 
 
 
@@ -1918,7 +2003,7 @@ function cleanYear (year) {
 
 
 
-
+/*
 function findRelatives (individual) {
 	var person = db[individual]
 	var out = ''
@@ -1999,6 +2084,7 @@ function getRelatives (relative) {
     window.data[relative] = db[relative]
     counter --
 	}
+*/
 
 function getPersonDataOLD (relative) {
 		var queryURL = window.project+'/'+relative+'.txt'
@@ -2022,7 +2108,7 @@ function getPersonDataOLD (relative) {
 function getPersonData (relative) {
 	if (trace) console.log('getPersonData(', relative,',')
 
-    document.getElementById('in').textContent = relative.timeline;
+    document.getElementById('in').textContent = relative.timeline
     counter--
 	}
 
@@ -2030,18 +2116,19 @@ function getPersonData (relative) {
 function init () {
 	// make a list of related people who have json data
 	if (trace) console.log(enter,'init()')
-	var relatives = findRelatives(thisPerson)
-	relatives.push(thisPerson)
+	//var relatives = findRelatives(thisPerson)
+	//relatives.push(thisPerson)
 	if (debug) console.log('Init: thisPerson is ',thisPerson)
-	if (debug) console.log('Init: relatives is ',relatives)
+	//if (debug) console.log('Init: relatives is ',relatives)
 	
 	// read in the json data for relatives
-	for (var r=0;r<relatives.length;r++) getRelatives(relatives[r])
+	//for (var r=0;r<relatives.length;r++) getRelatives(relatives[r])
     
     // add the timeline sequence to a hidden div
     document.getElementById('in').textContent = db[thisPerson].timeline
     
     setUpPage(thisPerson)
+    
     if (trace) console.log(exit, 'init')
     }
 

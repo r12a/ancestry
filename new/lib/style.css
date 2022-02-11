@@ -62,9 +62,9 @@ body { font: 16.5px/1.45 "Helvetica Neue", Arial, TriangleWF, sans-serif; -moz-o
 summary { font-size: 90%; text-align: start; cursor: pointer; }
 details pre { font-size: 80%; white-space: pre-wrap; }
 textarea { width: 90%; height: 100px; }
-.marriage { border-color: red; border-width: 2px; border-left: 2px solid red; }
-.death { border-color: black; border-width: 2px; border-left: 2px solid black; }
-.familydeath { border-color: black; border-width: 1px; background-color: #F0eee9; border-left: 2px solid black; }
+.marriage { border-color: red; border-width: 2px; border-left: 3px solid red; }
+.death { border-color: black; border-width: 2px; border-left: 3px solid black; }
+.familydeath { border-color: black; border-width: 1px; background-color: #F0eee9; border-left: 3px solid black; }
 .footnotes { font-size: 80%; margin-top: 1em; }
 .footnotes p { margin-top: 1em; }
 .footnotes ol { margin-top: 0; margin-bottom: 0; }
