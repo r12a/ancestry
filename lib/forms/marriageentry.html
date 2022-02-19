@@ -190,15 +190,15 @@ function addQuotesTo (content) {
 			var parts = lines[i].split(':')
 			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
 			parts[1] = parts[1].replace(/[\s]+/g,' ')
-			out += '"['+parts[0]+': '+parts[1].trim()+']"'
-			out += ',\n'
+			out += parts[0]+': '+parts[1].trim()
+			out += '\n'
 			}
 		else if (lines[i].match('\t')) {
 			var parts = lines[i].split('\t')
 			parts[0] = parts[0].replace(/ /g,'').replace(/'/g,'')
 			parts[1] = parts[1].replace(/[\s]+/g,' ')
-			out += '"['+parts[0]+': '+parts[1].trim()+']"'
-			out += ',\n'
+			out += parts[0]+': '+parts[1].trim()
+			out += '\n'
 			}
 		}
 	return out
@@ -223,12 +223,18 @@ function clearAll () {
 function draftResult () {
     // called each time a field is changed; updates the output
     
-    document.getElementById('id').textContent = `"id: ${ document.getElementById('idIn').value.trim() }",`
-    
-    if (document.getElementById('yearIn').value.trim()) document.getElementById('year').textContent = `"year: ${ document.getElementById('yearIn').value.trim() }",` 
+    //document.getElementById('id').textContent = `"id: ${ document.getElementById('idIn').value.trim() }",`
+
+    if (document.getElementById('timestampIn').value.trim()) {
+        document.getElementById('timestamp').textContent = `timestamp: "${ document.getElementById('timestampIn').value.trim() }",`
+        }
+    else document.getElementById('timestamp').textContent = ''
+
+
+    if (document.getElementById('yearIn').value.trim()) document.getElementById('year').textContent = `year: "${ document.getElementById('yearIn').value.trim() }",` 
     else document.getElementById('year').textContent = ''
     
-    if (document.getElementById('dateIn').value.trim()) document.getElementById('date').textContent = `"date: ${ document.getElementById('dateIn').value.trim() }",` 
+    if (document.getElementById('dateIn').value.trim()) document.getElementById('date').textContent = `date: "${ document.getElementById('dateIn').value.trim() }",` 
     else document.getElementById('date').textContent = ''
     
     if (document.getElementById('spouseIdIn').value.trim()) document.getElementById('spouseId').textContent = `"${ document.getElementById('spouseIdIn').value.trim() }": [` 
@@ -239,72 +245,72 @@ function draftResult () {
 
 
 // certificate
-    if (document.getElementById('certImageIn').value.trim()) document.getElementById('certImage').textContent = `"record: Marriage record  url:records/${ document.getElementById('certImageIn').value.trim() }",` 
-    else document.getElementById('certImage').textContent = ''
+    //if (document.getElementById('certImageIn').value.trim()) document.getElementById('certImage').textContent = `"record: Marriage record  url:records/${ document.getElementById('certImageIn').value.trim() }",` 
+    //else document.getElementById('certImage').textContent = ''
     
-    if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceURLIn').value.trim()) document.getElementById('certSource').textContent = `\n"SOURCE: ${ document.getElementById('certSourceIn').value.trim() } ${ document.getElementById('certSourceURLIn').value }",` 
+    if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceURLIn').value.trim()) document.getElementById('certSource').textContent = `\nSOURCE: ${ document.getElementById('certSourceIn').value.trim() } ${ document.getElementById('certSourceURLIn').value }` 
     else document.getElementById('certSource').textContent = ''
 
     if (document.getElementById('certAtIn').value.trim()) 
-        document.getElementById('certAt').textContent = `"[At: ${ document.getElementById('certAtIn').value.trim() }]",`
+        document.getElementById('certAt').textContent = `At: ${ document.getElementById('certAtIn').value.trim() }`
     else document.getElementById('certAt').textContent = ''
  
     if (document.getElementById('certWhenIn').value.trim()) 
-        document.getElementById('certWhen').textContent = `"[When: ${ document.getElementById('certWhenIn').value.trim() }]",`
+        document.getElementById('certWhen').textContent = `When: ${ document.getElementById('certWhenIn').value.trim() }`
     else document.getElementById('certWhen').textContent = ''
  
     if (document.getElementById('certNameIn').value.trim()) 
-        document.getElementById('certName').textContent = `"[Name: ${ document.getElementById('certNameIn').value.trim() }]",`
+        document.getElementById('certName').textContent = `Name: ${ document.getElementById('certNameIn').value.trim() }`
     else document.getElementById('certName').textContent = ''
  
     if (document.getElementById('certAgeIn').value.trim()) 
-        document.getElementById('certAge').textContent = `"[Age: ${ document.getElementById('certAgeIn').value.trim() }]",`
+        document.getElementById('certAge').textContent = `Age: ${ document.getElementById('certAgeIn').value.trim() }`
     else document.getElementById('certAge').textContent = ''
  
     if (document.getElementById('certConditionIn').value.trim()) 
-        document.getElementById('certCondition').textContent = `"[Condition: ${ document.getElementById('certConditionIn').value.trim() }]",`
+        document.getElementById('certCondition').textContent = `Condition: ${ document.getElementById('certConditionIn').value.trim() }`
     else document.getElementById('certCondition').textContent = ''
  
     if (document.getElementById('certProfessionIn').value.trim()) 
-        document.getElementById('certProfession').textContent = `"[Profession: ${ document.getElementById('certProfessionIn').value.trim() }]",`
+        document.getElementById('certProfession').textContent = `Profession: ${ document.getElementById('certProfessionIn').value.trim() }`
     else document.getElementById('certProfession').textContent = ''
  
     if (document.getElementById('certResidenceIn').value.trim()) 
-        document.getElementById('certResidence').textContent = `"[Residence: ${ document.getElementById('certResidenceIn').value.trim() }]",`
+        document.getElementById('certResidence').textContent = `Residence: ${ document.getElementById('certResidenceIn').value.trim() }`
     else document.getElementById('certResidence').textContent = ''
  
     if (document.getElementById('certFNameIn').value.trim()) 
-        document.getElementById('certFName').textContent = `"[FName: ${ document.getElementById('certFNameIn').value.trim() }]",`
+        document.getElementById('certFName').textContent = `FName: ${ document.getElementById('certFNameIn').value.trim() }`
     else document.getElementById('certFName').textContent = ''
  
     if (document.getElementById('certFOccIn').value.trim()) 
-        document.getElementById('certFOcc').textContent = `"[FOcc: ${ document.getElementById('certFOccIn').value.trim() }]",`
+        document.getElementById('certFOcc').textContent = `FOcc: ${ document.getElementById('certFOccIn').value.trim() }`
     else document.getElementById('certFOcc').textContent = ''
  
     if (document.getElementById('certByIn').value.trim()) 
-        document.getElementById('certBy').textContent = `"[By: ${ document.getElementById('certByIn').value.trim() }]",`
+        document.getElementById('certBy').textContent = `By: ${ document.getElementById('certByIn').value.trim() }`
     else document.getElementById('certBy').textContent = ''
  
     if (document.getElementById('certSignedIn').value.trim()) 
-        document.getElementById('certSigned').textContent = `"[Signatures: ${ document.getElementById('certSignedIn').value.trim() }]",`
+        document.getElementById('certSigned').textContent = `Signatures: ${ document.getElementById('certSignedIn').value.trim() }`
     else document.getElementById('certSigned').textContent = ''
  
     if (document.getElementById('certWitnessIn').value.trim()) 
-        document.getElementById('certWitness').textContent = `"[Witnesses: ${ document.getElementById('certWitnessIn').value.trim() }]",`
+        document.getElementById('certWitness').textContent = `Witnesses: ${ document.getElementById('certWitnessIn').value.trim() }`
     else document.getElementById('certWitness').textContent = ''
  
 
-    if (document.getElementById('certTextIn').value.trim()) document.getElementById('certText').textContent = `"text: ${ document.getElementById('certTextIn').value.trim() }",` 
+    if (document.getElementById('certTextIn').value.trim()) document.getElementById('certText').textContent = `text: ${ document.getElementById('certTextIn').value.trim() }` 
     else document.getElementById('certText').textContent = ''
     
     
 
 
 // index
-    if (document.getElementById('indexSourceIn').value.trim() || document.getElementById('indexSourceURLIn').value.trim()) document.getElementById('indexSource').textContent = `\n"SOURCE: ${ document.getElementById('indexSourceIn').value.trim() } ${ document.getElementById('indexSourceURLIn').value }",` 
+    if (document.getElementById('indexSourceIn').value.trim() || document.getElementById('indexSourceURLIn').value.trim()) document.getElementById('indexSource').textContent = `SOURCE: ${ document.getElementById('indexSourceIn').value.trim() } ${ document.getElementById('indexSourceURLIn').value }` 
     else document.getElementById('indexSource').textContent = ''
       
-    if (document.getElementById('indexTextIn').value.trim()) document.getElementById('indexText').textContent = `"text: ${ document.getElementById('indexTextIn').value.trim() }",` 
+    if (document.getElementById('indexTextIn').value.trim()) document.getElementById('indexText').textContent = `text: ${ document.getElementById('indexTextIn').value.trim() }` 
     else document.getElementById('indexText').textContent = ''
     
     if (document.getElementById('indexPastedIn').value.trim()) document.getElementById('indexPasted').textContent = 
@@ -317,50 +323,50 @@ function draftResult () {
 
 
 // parish record
-    if (document.getElementById('parishImageIn').value.trim()) document.getElementById('parishImage').textContent = `"record: Parish record  url:records/${ document.getElementById('parishImageIn').value.trim() }",` 
-    else document.getElementById('parishImage').textContent = ''
+    //if (document.getElementById('parishImageIn').value.trim()) document.getElementById('parishImage').textContent = `"record: Parish record  url:records/${ document.getElementById('parishImageIn').value.trim() }",` 
+    //else document.getElementById('parishImage').textContent = ''
     
-    if (document.getElementById('parishSourceIn').value.trim() || document.getElementById('parishSourceURLIn').value.trim()) document.getElementById('parishSource').textContent = `\n"SOURCE: ${ document.getElementById('parishSourceIn').value.trim() } ${ document.getElementById('parishSourceURLIn').value }",` 
+    if (document.getElementById('parishSourceIn').value.trim() || document.getElementById('parishSourceURLIn').value.trim()) document.getElementById('parishSource').textContent = `\nSOURCE: ${ document.getElementById('parishSourceIn').value.trim() } ${ document.getElementById('parishSourceURLIn').value }` 
     else document.getElementById('parishSource').textContent = ''
 
     if (document.getElementById('parishOfIn').value.trim()) 
-        document.getElementById('parishOf').textContent = `"[Parish: ${ document.getElementById('parishOfIn').value.trim() }]",`
+        document.getElementById('parishOf').textContent = `Parish: ${ document.getElementById('parishOfIn').value.trim() }]`
     else document.getElementById('parishOf').textContent = ''
  
     if (document.getElementById('parishGroomIn').value.trim()) 
-        document.getElementById('parishGroom').textContent = `"[Groom: ${ document.getElementById('parishGroomIn').value.trim() }]",`
+        document.getElementById('parishGroom').textContent = `Groom: ${ document.getElementById('parishGroomIn').value.trim() }`
     else document.getElementById('parishGroom').textContent = ''
  
     if (document.getElementById('parishGDetailsIn').value.trim()) 
-        document.getElementById('parishGDetails').textContent = `"[GroomDetails: ${ document.getElementById('parishGDetailsIn').value.trim() }]",`
+        document.getElementById('parishGDetails').textContent = `GroomDetails: ${ document.getElementById('parishGDetailsIn').value.trim() }`
     else document.getElementById('parishGDetails').textContent = ''
  
     if (document.getElementById('parishBrideIn').value.trim()) 
-        document.getElementById('parishBride').textContent = `"[Bride: ${ document.getElementById('parishBrideIn').value.trim() }]",`
+        document.getElementById('parishBride').textContent = `Bride: ${ document.getElementById('parishBrideIn').value.trim() }`
     else document.getElementById('parishBride').textContent = ''
  
     if (document.getElementById('parishBDetailsIn').value.trim()) 
-        document.getElementById('parishBDetails').textContent = `"[BrideDetails: ${ document.getElementById('parishBDetailsIn').value.trim() }]",`
+        document.getElementById('parishBDetails').textContent = `BrideDetails: ${ document.getElementById('parishBDetailsIn').value.trim() }`
     else document.getElementById('parishBDetails').textContent = ''
  
     if (document.getElementById('parishByIn').value.trim()) 
-        document.getElementById('parishBy').textContent = `"[By: ${ document.getElementById('parishByIn').value.trim() }]",`
+        document.getElementById('parishBy').textContent = `By: ${ document.getElementById('parishByIn').value.trim() }`
     else document.getElementById('parishBy').textContent = ''
  
     if (document.getElementById('parishWhenIn').value.trim()) 
-        document.getElementById('parishWhen').textContent = `"[When: ${ document.getElementById('parishWhenIn').value.trim() }]",`
+        document.getElementById('parishWhen').textContent = `When: ${ document.getElementById('parishWhenIn').value.trim() }`
     else document.getElementById('parishWhen').textContent = ''
  
     if (document.getElementById('parishSignedIn').value.trim()) 
-        document.getElementById('parishSigned').textContent = `"[Signatures: ${ document.getElementById('parishSignedIn').value.trim() }]",`
+        document.getElementById('parishSigned').textContent = `Signatures: ${ document.getElementById('parishSignedIn').value.trim() }`
     else document.getElementById('parishSigned').textContent = ''
  
     if (document.getElementById('parishWitnessesIn').value.trim()) 
-        document.getElementById('parishWitnesses').textContent = `"[Witnesses: ${ document.getElementById('parishWitnessesIn').value.trim() }]",`
+        document.getElementById('parishWitnesses').textContent = `Witnesses: ${ document.getElementById('parishWitnessesIn').value.trim() }`
     else document.getElementById('parishWitnesses').textContent = ''
  
 
-    if (document.getElementById('parishTextIn').value.trim()) document.getElementById('parishText').textContent = `"text: ${ document.getElementById('parishTextIn').value.trim() }",` 
+    if (document.getElementById('parishTextIn').value.trim()) document.getElementById('parishText').textContent = `text: ${ document.getElementById('parishTextIn').value.trim() }` 
     else document.getElementById('parishText').textContent = ''
     
     
@@ -371,19 +377,19 @@ function draftResult () {
 
 // second source
     if (document.getElementById('secondSourceIn').value.trim() || document.getElementById('secondSourceURLIn').value.trim())
-        document.getElementById('secondSource').textContent = `\n"SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }",` 
+        document.getElementById('secondSource').textContent = `\nSOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }` 
     else document.getElementById('secondSource').textContent = ''
  
-    if (document.getElementById('secondImageIn').value.trim()) 
-        document.getElementById('secondImage').textContent = `"record: Marriage url:records/${ document.getElementById('secondImageIn').value.trim() }${ document.getElementById('secondImageExtIn').value.trim() }",`
-    else document.getElementById('secondImage').textContent = ''
+    //if (document.getElementById('secondImageIn').value.trim()) 
+    //    document.getElementById('secondImage').textContent = `"record: Marriage url:records/${ document.getElementById('secondImageIn').value.trim() }${ document.getElementById('secondImageExtIn').value.trim() }",`
+    //else document.getElementById('secondImage').textContent = ''
 
     if (document.getElementById('secondPastedIn').value.trim()) 
         document.getElementById('secondPasted').textContent = addQuotesTo(document.getElementById('secondPastedIn').value.trim())
     else document.getElementById('secondPasted').textContent = ''
  
     if (document.getElementById('secondTextIn').value.trim()) 
-        document.getElementById('secondText').textContent = `"text: ${ document.getElementById('secondTextIn').value.trim() }",`
+        document.getElementById('secondText').textContent = `text: ${ document.getElementById('secondTextIn').value.trim() }`
     else document.getElementById('secondText').textContent = ''
 
 
@@ -391,70 +397,70 @@ function draftResult () {
 
 
     // page build data
-    if (document.getElementById('marrPlaceIn').value.trim()) document.getElementById('place').textContent = `"place: ${ document.getElementById('marrPlaceIn').value.trim() }",` 
+    if (document.getElementById('marrPlaceIn').value.trim()) document.getElementById('place').textContent = `place: "${ document.getElementById('marrPlaceIn').value.trim() }",` 
     else document.getElementById('place').textContent = ''
 
-    if (document.getElementById('groomIn').value.trim()) document.getElementById('groom').textContent = `"groom: ${ document.getElementById('groomIn').value.trim() }",` 
+    if (document.getElementById('groomIn').value.trim()) document.getElementById('groom').textContent = `groom: "${ document.getElementById('groomIn').value.trim() }",` 
     else document.getElementById('groom').textContent = ''
 
-    if (document.getElementById('gidIn').value.trim()) document.getElementById('gid').textContent = `"gid: ${ document.getElementById('gidIn').value.trim() }",` 
+    if (document.getElementById('gidIn').value.trim()) document.getElementById('gid').textContent = `gid: "${ document.getElementById('gidIn').value.trim() }",` 
     else document.getElementById('gid').textContent = ''
 
-    if (document.getElementById('brideIn').value.trim()) document.getElementById('bride').textContent = `"bride: ${ document.getElementById('brideIn').value.trim() }",` 
+    if (document.getElementById('brideIn').value.trim()) document.getElementById('bride').textContent = `bride: "${ document.getElementById('brideIn').value.trim() }",` 
     else document.getElementById('bride').textContent = ''
 
-    if (document.getElementById('bidIn').value.trim()) document.getElementById('bid').textContent = `"bid: ${ document.getElementById('bidIn').value.trim() }",` 
+    if (document.getElementById('bidIn').value.trim()) document.getElementById('bid').textContent = `bid: "${ document.getElementById('bidIn').value.trim() }",` 
     else document.getElementById('bid').textContent = ''
 
-    if (document.getElementById('gageIn').value.trim()) document.getElementById('gage').textContent = `"gage: ${ document.getElementById('gageIn').value.trim() }",` 
+    if (document.getElementById('gageIn').value.trim()) document.getElementById('gage').textContent = `gage: "${ document.getElementById('gageIn').value.trim() }",` 
     else document.getElementById('gage').textContent = ''
 
-    if (document.getElementById('bageIn').value.trim()) document.getElementById('bage').textContent = `"bage: ${ document.getElementById('bageIn').value.trim() }",` 
+    if (document.getElementById('bageIn').value.trim()) document.getElementById('bage').textContent = `bage: "${ document.getElementById('bageIn').value.trim() }",` 
     else document.getElementById('bage').textContent = ''
 
-    if (document.getElementById('gparishIn').value.trim()) document.getElementById('gparish').textContent = `"gparish: ${ document.getElementById('gparishIn').value.trim() }",` 
+    if (document.getElementById('gparishIn').value.trim()) document.getElementById('gparish').textContent = `gparish: "${ document.getElementById('gparishIn').value.trim() }",` 
     else document.getElementById('gparish').textContent = ''
 
-    if (document.getElementById('bparishIn').value.trim()) document.getElementById('bparish').textContent = `"bparish: ${ document.getElementById('bparishIn').value.trim() }",` 
+    if (document.getElementById('bparishIn').value.trim()) document.getElementById('bparish').textContent = `bparish: "${ document.getElementById('bparishIn').value.trim() }",` 
     else document.getElementById('bparish').textContent = ''
 
-    if (document.getElementById('gstatusIn').value.trim()) document.getElementById('gstatus').textContent = `"gstatus: ${ document.getElementById('gstatusIn').value.trim() }",` 
+    if (document.getElementById('gstatusIn').value.trim()) document.getElementById('gstatus').textContent = `gstatus: "${ document.getElementById('gstatusIn').value.trim() }",` 
     else document.getElementById('gstatus').textContent = ''
 
-    if (document.getElementById('bstatusIn').value.trim()) document.getElementById('bstatus').textContent = `"bstatus: ${ document.getElementById('bstatusIn').value.trim() }",` 
+    if (document.getElementById('bstatusIn').value.trim()) document.getElementById('bstatus').textContent = `bstatus: "${ document.getElementById('bstatusIn').value.trim() }",` 
     else document.getElementById('bstatus').textContent = ''
 
-    if (document.getElementById('goccIn').value.trim()) document.getElementById('gocc').textContent = `"gocc: ${ document.getElementById('goccIn').value.trim() }",` 
+    if (document.getElementById('goccIn').value.trim()) document.getElementById('gocc').textContent = `gocc: "${ document.getElementById('goccIn').value.trim() }",` 
     else document.getElementById('gocc').textContent = ''
 
-    if (document.getElementById('boccIn').value.trim()) document.getElementById('bocc').textContent = `"bocc: ${ document.getElementById('boccIn').value.trim() }",` 
+    if (document.getElementById('boccIn').value.trim()) document.getElementById('bocc').textContent = `bocc: "${ document.getElementById('boccIn').value.trim() }",` 
     else document.getElementById('bocc').textContent = ''
 
 
 
-    if (document.getElementById('gfatherIn').value.trim()) document.getElementById('gfather').textContent = `"gfather: ${ document.getElementById('gfatherIn').value.trim() }",` 
+    if (document.getElementById('gfatherIn').value.trim()) document.getElementById('gfather').textContent = `gfather: "${ document.getElementById('gfatherIn').value.trim() }",` 
     else document.getElementById('gfather').textContent = ''
 
-    if (document.getElementById('gfidIn').value.trim()) document.getElementById('gfid').textContent = `"gfid: ${ document.getElementById('gfidIn').value.trim() }",` 
+    if (document.getElementById('gfidIn').value.trim()) document.getElementById('gfid').textContent = `gfid: "${ document.getElementById('gfidIn').value.trim() }",` 
     else document.getElementById('gfid').textContent = ''
 
-    if (document.getElementById('gfoccIn').value.trim()) document.getElementById('gfocc').textContent = `"gfocc: ${ document.getElementById('gfoccIn').value.trim() }",` 
+    if (document.getElementById('gfoccIn').value.trim()) document.getElementById('gfocc').textContent = `gfocc: "${ document.getElementById('gfoccIn').value.trim() }",` 
     else document.getElementById('gfocc').textContent = ''
 
-    if (document.getElementById('bfatherIn').value.trim()) document.getElementById('bfather').textContent = `"bfather: ${ document.getElementById('bfatherIn').value.trim() }",` 
+    if (document.getElementById('bfatherIn').value.trim()) document.getElementById('bfather').textContent = `bfather: "${ document.getElementById('bfatherIn').value.trim() }",` 
     else document.getElementById('bfather').textContent = ''
 
-    if (document.getElementById('bfidIn').value.trim()) document.getElementById('bfid').textContent = `"bfid: ${ document.getElementById('bfidIn').value.trim() }",` 
+    if (document.getElementById('bfidIn').value.trim()) document.getElementById('bfid').textContent = `bfid: "${ document.getElementById('bfidIn').value.trim() }",` 
     else document.getElementById('bfid').textContent = ''
 
-    if (document.getElementById('bfoccIn').value.trim()) document.getElementById('bfocc').textContent = `"bfocc: ${ document.getElementById('bfoccIn').value.trim() }",` 
+    if (document.getElementById('bfoccIn').value.trim()) document.getElementById('bfocc').textContent = `bfocc: "${ document.getElementById('bfoccIn').value.trim() }",` 
     else document.getElementById('bfocc').textContent = ''
 
 
-    if (document.getElementById('witnessesIn').value.trim()) document.getElementById('witnesses').textContent = `"witnesses: ${ document.getElementById('witnessesIn').value.trim() }",` 
+    if (document.getElementById('witnessesIn').value.trim()) document.getElementById('witnesses').textContent = `witnesses: "${ document.getElementById('witnessesIn').value.trim() }",` 
     else document.getElementById('witnesses').textContent = ''
 
-    if (document.getElementById('byIn').value.trim()) document.getElementById('by').textContent = `"by: ${ document.getElementById('byIn').value.trim() }",` 
+    if (document.getElementById('byIn').value.trim()) document.getElementById('by').textContent = `by: "${ document.getElementById('byIn').value.trim() }",` 
     else document.getElementById('by').textContent = ''
 
     /*
@@ -462,15 +468,51 @@ function draftResult () {
     else document.getElementById('length').textContent = ''
     */
     
+    
+    var imagesArray = []
+    if (document.getElementById('certImageIn').value.trim()) imagesArray.push('Marriage certificate url:records/'+document.getElementById('certImageIn').value + document.getElementById('certImageExtIn').value)
+    if (document.getElementById('parishImageIn').value.trim()) imagesArray.push('Parish record url:records/'+document.getElementById('parishImageIn').value + document.getElementById('parishImageExtIn').value)
+    if (document.getElementById('secondImageIn').value.trim()) imagesArray.push('Record url:records/'+document.getElementById('secondImageIn').value + document.getElementById('secondImageExtIn').value)
+    var imagesOut = ''
+    for (i=0;i<imagesArray.length;i++) {
+        imagesOut += '"'+imagesArray[i].trim()+'"'
+        if (i<imagesArray.length-1) imagesOut += ', '
+        }
+    if (imagesArray.length > 0) document.getElementById('images').textContent = 'images: ['+imagesOut+'],'
+    else (document.getElementById('images').textContent = '')
+    
 
-    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
+    /*if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
         document.getElementById('gps').textContent = `"gps: ${ document.getElementById('gpsPlace').value.trim() }` 
         if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim() }` 
         document.getElementById('gps').textContent += `",`
         }
     else document.getElementById('gps').textContent = ''
-    
+    */
 
+
+    if (document.getElementById('gpsIn').value.trim()) {
+        lines = document.getElementById('gpsIn').value.split('\n')
+        output = ''
+        for (o=0;o<lines.length;o++) {
+            temp = lines[o].split(':')
+            output += '"'+temp[0]+' https://maps.google.com/maps?q='+temp[1].replace(/ /g,'')+'"'
+            if (o<lines.length-1) output += ', '
+            }
+        document.getElementById('gps').textContent = `gps: [${ output }],`
+        }
+    else document.getElementById('gps').textContent = ''
+
+    // check for timestamp
+    if (document.getElementById('timestamp').textContent === '') {
+        document.getElementById('timestamp').textContent = 'Add timestamp'
+        document.getElementById('timestamp').style.background = 'red'
+        document.getElementById('timestamp').style.color = 'white'
+        }
+    else {
+        document.getElementById('timestamp').style.background = 'white'
+        document.getElementById('timestamp').style.color = 'brown'
+        }
 
     }
 
@@ -848,6 +890,13 @@ onInput="draftResult()"></textarea>
 <tr>
 <td colspan="2" class="heading">Data for building the page</td></tr>
 <tr>
+     <tr>
+        <td>Timestamp:</td>
+        <td colspan="3"><input type="text" id="timestampIn"
+            placeholder="YYYY-MM-DD"
+            onInput="draftResult()">
+            </td>
+      </tr>
   <tr>
     <td>Year:</td>
     <td><input type="text" id="yearIn" style="color:red; width:200px;" placeholder="Fill this in." onInput="draftResult()"/></td>
@@ -950,7 +999,7 @@ onInput="draftResult()"></textarea>
 
 
 
-      <tr>
+      <!--tr>
         <td>GPS:</td>
         <td><select id="gpsList" onChange="
             document.getElementById('gpsPlace').value=this.value.split(':')[0]
@@ -965,8 +1014,24 @@ onInput="draftResult()"></textarea>
             <input type="text" id="gpsPlace" placeholder="Name of location" class="halfInputBox" onInput="draftResult()" onChange="draftResult()">
             <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" class="halfInputBox" onInput="draftResult()" onChange="draftResult()">
             </td>
+      </tr-->
+       <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select></td>
       </tr>
       <tr>
+        <td>GPS:</td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+      </tr>
+
+
+    <tr>
         <td>Notes:</td>
         <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
       </tr>
@@ -982,17 +1047,17 @@ onInput="draftResult()"></textarea>
    
    
    
-   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file.</p>
    
    
    <div id="draft" style="margin:2rem; color: brown;">
     <div id="start">marriages: {</div>
       <div id="spouseId">: [</div>
 
+      <div id="timestamp"></div>
       <div id="year"></div>
       <div id="date"></div>
       <div id="place"></div>
-      <div id="gps"></div>
       <div id="id"></div>
       <div id="groom"></div>
       <div id="gid"></div>
@@ -1018,8 +1083,23 @@ onInput="draftResult()"></textarea>
       <div id="witnesses"></div>
       <div id="by"></div>
       <div id="length"></div>
-      
+ 
+       <div id="note"></div>
+      <div id="fnote"></div> 
+     <div id="discussion"></div>
+
+        <div id="images"></div>
+        <div id="gps"></div>
+
             
+      <div id="src">sources: `</div>
+
+    <!-- index -->
+      <div id="indexSource" style="white-space: pre;"></div>
+      <div id="indexPasted" style="white-space:pre-line"></div>
+      <div id="indexText" style="white-space: pre;"></div>
+      
+      
     <!-- certificate -->
     <div id="certSource" style="white-space: pre;"></div>
     <div id="certImage"></div>
@@ -1035,7 +1115,7 @@ onInput="draftResult()"></textarea>
     <div id="certBy"></div>
     <div id="certSigned"></div>
     <div id="certWitness"></div>
-    <div id="certText"></div>
+    <div id="certText" style="white-space: pre;"></div>
       
             
     <!-- parish record -->
@@ -1050,26 +1130,17 @@ onInput="draftResult()"></textarea>
     <div id="parishWhen"></div>
     <div id="parishSigned"></div>
     <div id="parishWitnesses"></div>
-    <div id="parishText"></div>
+    <div id="parishText" style="white-space: pre;"></div>
  
 
-      <!-- index -->
-      <div id="indexSource" style="white-space: pre;"></div>
-      <div id="indexPasted" style="white-space:pre-line"></div>
-      <div id="indexText"></div>
-      
-      
       <!-- 2nd source -->
       <div id="secondSource" style="white-space: pre;"></div>
       <div id="secondImage"></div>
       <div id="secondPasted" style="white-space:pre-line"></div>
-      <div id="secondText"></div>
+      <div id="secondText" style="white-space: pre;"></div>
 
 
-      <div id="note"></div>
-      <div id="fnote"></div> 
-     <div id="discussion">&quot;discussion: &quot;</div>
-      <div id="arrayEnd">]</div>
+      <div id="arrayEnd">`}</div>
       <div id="end">}</div>
       </div>
       
