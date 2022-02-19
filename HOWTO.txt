@@ -1,12 +1,12 @@
 HOW TO CREATE DATA
 
 
-You can set up separate projects by creating separate top-level directories. The default project should have the name 'data'. Use whatever name you want for other projects.
+You set up separate projects by creating separate top-level directories. Use whatever name you want for your project.
 
 
 [1] ADD TO THE DB.JS FILE
 
-Add details for a new person to the db.js file in alphabetical order. This file is found in your project directory.
+Add details for a new person to the db.js file. This file is found in your project directory.
 
 An example entry is:
 
@@ -15,8 +15,6 @@ g:"Grace", k:"", f:"Keam", bdate:"~19 Nov", b:"1827", ddate:"Oct-Dec", d:"1894",
 bplace:"St Austell", dplace:"St Austell", thumb:false, p:true,
 father:"keam_peter_1791", mother:"crossman_jane_jennifer_1791", occ:"", m:['Peters'],
 fg:[["1853", "peters_william_1828", "peters_charles_1856", "peters_william_henry_1857", "peters_thomas_1859", "peters_edwin_1863"]],
-recordData:
-{}
 },
 
 The id key (in this case keam_grace_1827) should be be full name of the person and the year of their birth. If two or more people with the same name are born in the same year, add a, b, etc to the year. These names need to be unique.
@@ -44,7 +42,33 @@ cstatus: Used for someone who died young or single. Typical values are "Died as 
 recordData: Add here the birth, marriage, and death information, aggregated using the forms for creating that information.  You only need to create marriage information for one spouse per marriage. This information is also read by pages of relations as well as the person in question.
 
 
-[2] CREATE A JSON FILE WITH BIRTH, MARRIAGE, AND DEATH INFORMATION  (obsoleted by the recordData field in the previous section!)
+[2] ADDITIONAL INFORMATION
+
+After the basic template given above, which must be included for all persons, additional information can be added.
+
+Three special events, that are called out with their own property names are birth, marriages, and death.
+
+In addition, other items can be added in
+events: {
+	}
+
+Each event needs to have a timestamp.
+
+
+The following can be added to all events.
+Notes. Note information is written as:
+notes: `.....`,
+The content of a note can be multi-line. Each line can optionally begin with intro: or quote: (or note:, but that's the default).  Intro lines are italicised, and should be used only to introduce the note.  Quote lines receive quote marks and italicisation.
+
+Footnotes. Listed below the main entry as a bulleted list in slightly smaller type.  Content is held in an array, with one paragraph per note, eg.
+fnotes: [`first note`, `second note`, `etc`],
+
+Discussions: Discussion text is not displayed on the general UI, but an icon is added that makes it appear as an alert. Discussion text also appears when sources are shown.  This is for commentary on the entry, and is stored as:
+discussion: `.....`
+The content can be multi-line.
+
+
+
 
 Information for these (and similar) records can be created using the forms at lib/forms/birthentry.html etc. Add whatever information you have, using the prompts, and you'll see some code being generated at the bottom of the page. Once you have entered all the information, copy the script code to a file named <id_key>.json (eg. keam_grace_1827.json).
 

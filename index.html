@@ -29,6 +29,7 @@ for (var p=0;p<parameters.length;p++) {
 // load the appropriate db file	
 if (! project || project.match(/\.\./)) {
     while (project === '' || project.match(/\.\./)) project = prompt('What project do you want to work with?')
+    window.location += '?project='+project
     }
 var db = document.createElement('script')
 db.src = project+'/db.js'
@@ -94,24 +95,33 @@ function secondFilter (str) {
 function init () {
 	var out = ''
 	var total = 0
-	for (var person in db) {
+    
+    // sort the db alphabetically
+     dbOrdered = Object.keys(db).sort().reduce(
+          (obj, key) => { 
+            obj[key] = db[key]
+            return obj
+            },{})
+
+
+	for (var person in dbOrdered) {
 		//if (db[person].p) out += '<p><a href="data/'+person+'.html">'+db[person].f
 		//else 
 		out += '<p class="personRow">'
 
         out += '<span style="margin-inline: 2em; float:right;">'
-        if (db[person].p) out += `<a href="person.html?project=${ window.project }&person=${ person }" style="" title="Show details">📄</a> `
-		out += `<a href="tree.html?project=${ window.project }&person=${ person }" style="opacity:90%;" title="Show relationships">⏳</a> `
-		out += `<a href="ancestors.html?project=${ window.project }&person=${ person }" style="opacity:60%;" title="Show family tree">🌳</a> `
-		out += `<a href="precedents.html?project=${ window.project }&person=${ person }" style="opacity:80%" title="Show ancestors">⏫</a> `
-		if (! db[person].cstatus) out += `<a href="descendants.html?project=${ window.project }&person=${ person }" style="opacity:80%" title="Show descendants">⏬</a>`
+        if (db[person].p) out += `<a href="person.html?person=${ person }&project=${ window.project }" style="" title="Show details">📄</a> `
+		out += `<a href="tree.html?person=${ person }&project=${ window.project }" style="opacity:90%;" title="Show relationships">⏳</a> `
+		out += `<a href="ancestors.html?person=${ person }&project=${ window.project }" style="opacity:60%;" title="Show family tree">🌳</a> `
+		out += `<a href="precedents.html?person=${ person }&project=${ window.project }" style="opacity:80%" title="Show ancestors">⏫</a> `
+		if (! db[person].cstatus) out += `<a href="descendants.html?person=${ person }&project=${ window.project }" style="opacity:80%" title="Show descendants">⏬</a>`
         else out += `<span style="visibility:hidden;">⏬</span>`
 		out += '</span>'
         
-        out += '<a href="tree.html?project='+project+'&person='+person+'">'+db[person].f
+        out += '<a href="tree.html?person='+person+'&project='+project+'">'+db[person].f
 		if (db[person].m) {
 			for (var i=0;i<db[person].m.length;i++) {
-				out += ' ('+db[person].m[i]+')'
+				out += '⏵'+db[person].m[i]
 				}
 			}
 		out += ', '+db[person].g
@@ -124,8 +134,10 @@ function init () {
 			out += ', ~'+temp[temp.length-1]
 			}
 		//if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
-		out += '</a></p>'
- 		out += '</div>'
+		out += '</a>'
+		out += `<span style="color:gray;margin-inline-start: 2em; font-size: 70%;">${ person }</span>`
+		out += '</p>'
+ 		//out += '</div>'
        
 		total++
 		}

@@ -1,7 +1,9 @@
 <!doctype html>
-<html><head id="head">
+<html>
+<head id="head">
 <meta charset="utf-8">
 <title>Person page</title>
+
 <link href="lib/style.css" rel="stylesheet" />
 <style>
 #pageicon {
@@ -10,15 +12,14 @@
   padding: 1rem 2rem;
 }
 </style>
+
 <script src="lib/script.js"></script>
-<!--script src="data/db.js"></script-->
 <!--script src="events.js"></script-->
 <script src="history.js"></script>
 
-</head>
-
 <script>
 // read in thisPerson
+var project = ''
 parameters = location.search.split('&');
 parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
@@ -27,20 +28,39 @@ for (var p=0;p<parameters.length;p++) {
 	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
 	}
 
+//if (! project || project.match(/\.\./)) project = 'data'
+if (! project || project.match(/\.\./)) {
+    while (project === '' || project.match(/\.\./)) project = prompt('What project do you want to work with?')
+    window.location += '?project='+project
+    }
+
 // load the appropriate db file	
-if (! project || project.match(/\.\./)) project = 'data'
 var db = document.createElement('script')
 db.src = project+'/db.js'
 db.async = false
 document.head.appendChild(db)
+
+// load the appropriate census file	
+var db = document.createElement('script')
+db.src = project+'/census.js'
+db.async = false
+document.head.appendChild(db)
+
+// load the appropriate shared notes file	
+var db = document.createElement('script')
+db.src = project+'/notes.js'
+db.async = false
+document.head.appendChild(db)
+
 
 // load the appropriate timeline file	
 var tl = document.createElement('script')
 tl.src = project+'/'+thisPerson+'.txt'
 tl.async = false
 document.head.appendChild(tl)
-
 </script>
+</head>
+
 
 <body onLoad="init()">
 <div id="summaryIn"><p></p></div>

@@ -1,9 +1,10 @@
 <!doctype html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <title>Relationships page</title>
+
 <link href="lib/tree.css" rel="stylesheet" />
-<script src="data/db.js"></script>
 <style>
 details[open] summary {
     background-color: cadetblue;
@@ -12,7 +13,7 @@ details[open] summary {
     border-top-right-radius: 10px;
     }
 </style>
-</head>
+
 <script>
 // read in thisPerson
 thisPerson = ''
@@ -51,12 +52,17 @@ function getParent (id) {
         }
     }
 </script>
+</head>
+
+
+
+
 <body onLoad="start()">
 
 <div id="banner"><div id="pageicon">⏳</div><div id="pagetitle"><div id="bannerdates">Relationships</div></div></div>
 
 <div id="topMenu">
-	<a href="#top" onClick="this.href=`tree.html?project=${ window.project }&person=${ mark }`">Go to root</a>
+	<a href="#top" onClick="this.href=`tree.html?person=${ mark }&project=${ window.project }`">Go to root</a>
 	<a id="detailSwitch" href="#top" onClick="if (localStorage.treeDetailed == 'yes') {localStorage.treeDetailed='no'; this.textContent='More detail';} else {localStorage.treeDetailed='yes'; this.textContent='Less detail';} console.log(localStorage.treeDetailed); location.reload(); return false;">More detail</a>
 	<!--a id="indexLink" href="index.html">Index</a-->
 	</div>
@@ -177,8 +183,8 @@ function getPersonDetails (id, type, loc) {
 		else  { out += '<img src="lib/i/'; if (! db[id].male) out += 'wo'; out +='man_pic.png" alt=""/>' }
 
 		out += '<div class="data">'
-		//out += '<div class="name"><a href="tree.html?project='+window.project+'&person='+id+'">'
-		out += `<div class="name"><a href="tree.html?project=${ window.project }&person=${ id }"`
+		//out += '<div class="name"><a href="tree.html?person='+id+'&project='+window.project+'">'
+		out += `<div class="name"><a href="tree.html?person=${ id }&project=${ window.project }"`
         if (markList.has(id)) out += ` style="color: chocolate;"`
         out += `>`
 		//out += db[id].g+' '
@@ -218,10 +224,10 @@ function getPersonDetails (id, type, loc) {
 			out += '<div class="sp">'+temp+'</div>'
 			}
 		out += '<div class="showme">'
-		if (db[id].p) { out += '<a href="person.html?project='+window.project+'&person='+id+'" style="font-size:120%;" title="Show details">📄</a> ' }
-		out += '<a href="ancestors.html?project='+window.project+'&person='+id+'" style="font-size:120%; opacity:60%;" title="Show family tree">🌳</a> '
-		out += '<a href="precedents.html?project='+window.project+'&person='+id+'" style="font-size:120%; opacity:80%;" title="Show ancestors">⏫</a> '
-		if (! db[id].cstatus) out += '<a href="descendants.html?project='+window.project+'&person='+id+'" style="font-size:120%; opacity: 80%;" title="Show descendants">⏬</a> '
+		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'" style="font-size:120%;" title="Show details">📄</a> ' }
+		out += '<a href="ancestors.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:60%;" title="Show family tree">🌳</a> '
+		out += '<a href="precedents.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:80%;" title="Show ancestors">⏫</a> '
+		if (! db[id].cstatus) out += '<a href="descendants.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity: 80%;" title="Show descendants">⏬</a> '
 		out += '</div>'
 		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
 			out += '<div class="stop">'+db[id].cstatus+'</div>'
