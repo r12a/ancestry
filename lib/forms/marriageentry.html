@@ -31,7 +31,7 @@ document.head.appendChild(db)
 
 <script>
 
-function makeNotes (content, target) {
+function makeNotesOLD (content, target) {
 	segments = content.split('\n')
 	var out = ''
 	for (var i=0;i<segments.length;i++) out += '<p>&quot;'+target+': '+segments[i]+'&quot;,<p>'
@@ -39,6 +39,13 @@ function makeNotes (content, target) {
 	}
 
 
+function makeNotes (content, target) {
+	segments = content.split('\n')
+	var out = 'fnotes: ['
+	for (var i=0;i<segments.length;i++) out += '"'+segments[i]+'", '
+    out += '],'
+	document.getElementById(target).textContent = out
+	}
 
 
 function autoPropagate (person) {
@@ -1030,20 +1037,21 @@ onInput="draftResult()"></textarea>
         <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
       </tr>
 
-
+ 
+ 
     <tr>
         <td>Notes:</td>
-        <td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')"></textarea></td>
+        <td colspan="3"><textarea id="censusNotes" onInput="draftResult()"></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
-        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+        <td colspan="3"><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
       </tr>
       <tr>
-        <td>Discussion: </td>
-        <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+        <td>Discussion:</td>
+        <td colspan="3"><textarea id="censusDisc" onInput="draftResult()"></textarea></td>
       </tr>
-   </table>
+</table>
    
    
    
@@ -1052,7 +1060,7 @@ onInput="draftResult()"></textarea>
    
    <div id="draft" style="margin:2rem; color: brown;">
     <div id="start">marriages: {</div>
-      <div id="spouseId">: [</div>
+      <div id="spouseId">: {</div>
 
       <div id="timestamp"></div>
       <div id="year"></div>
