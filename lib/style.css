@@ -22,6 +22,7 @@ body { font: 16.5px/1.45 "Helvetica Neue", Arial, TriangleWF, sans-serif; -moz-o
     margin: 0 1em; color: #666; cursor: pointer;
     color: chocolate;
     font-family: raleway, arial, sans-serif;
+    color: brown;
     }
 #banner { height: 10em; width: 100%; background-color: #706B63; display: flex; align-items: center; /*border-top-left-radius: .5em;*/ border-top-right-radius: .5em; }
 #top { font-size: 80%; line-height: 2; }
@@ -62,14 +63,17 @@ body { font: 16.5px/1.45 "Helvetica Neue", Arial, TriangleWF, sans-serif; -moz-o
 summary { font-size: 90%; text-align: start; cursor: pointer; }
 details pre { font-size: 80%; white-space: pre-wrap; }
 textarea { width: 90%; height: 100px; }
-.marriage { border-color: red; border-width: 2px; border-left: 2px solid red; }
-.death { border-color: black; border-width: 2px; border-left: 2px solid black; }
-.familydeath { border-color: black; border-width: 1px; background-color: #F0eee9; border-left: 2px solid black; }
+.marriage { border-color: red; border-width: 2px; border-left: 3px solid red; }
+.death { border-color: black; border-width: 2px; border-left: 3px solid black; }
+.familydeath { border-color: black; border-width: 1px; background-color: #F0eee9; border-left: 3px solid black; }
 .footnotes { font-size: 80%; margin-top: 1em; }
 .footnotes p { margin-top: 1em; }
 .footnotes ol { margin-top: 0; margin-bottom: 0; }
 .commentaryIcon { margin-top: 0; float: right; }
 a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; }
+.descriptionText a {
+      color: chocolate;
+    }
 #places { background-color: #dedcd6; color: rgb(83, 77, 70); font-size: 80%; padding: 0.5em 3em;  margin-top: 3em; margin-bottom: 2em; }
 #places p { margin: .3em 0; }
 .portrait { max-height: 200px; float: left; margin: .5em 1em 1em 0; border-radius: 5px; }
@@ -92,14 +96,17 @@ figcaption { font-style: italic; text-align: center; }
 .treeLink { border-bottom: 2px dotted #ccc; }
 
 .keypoints {
-    font-size: 80%;
+    font-size: .8rem;
     width: 12%;
     margin: 1em 0 0 0;
     clear: both;
 	text-align: start;
-}
+    }
 .keypoints .occ { text-transform:capitalize; }
 .keypoints .place {font-style:italic; }
+.floatedIcons {
+    font-size: 1rem;
+    }
 
 #links { display: none; }
 .detaillink { font-size:70%; margin-left: 1em; }
@@ -242,6 +249,55 @@ article {
 .personRow:hover {
     background-color: #eee;
     }
+
+#networkList {
+    margin-block: 1rem;
+    }
+.ageTag {
+    color: grey;
+    font-size: 70%;
+    margin-inline-start: .2rem;
+    }
+
+.noteIntro {
+    font-family: serif;
+    font-style: italic;
+    line-height: 1.2;
+    }
+
+#summaryWin {
+    display: none;
+    font-size: .9rem;
+    position: fixed;
+    background-color: white;
+    margin: auto;
+    padding: 2em;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 1em;
+    max-width: 70%;
+    max-height: 80vh;
+    bottom: 2em;
+    box-shadow: gray 10px 5px 5px;
+    left: .5rem;
+    overflow-y: auto;
+    scrollbar-color: tan transparent;
+    scrollbar-width: thin;
+    z-index: 1000;
+    }
+
+#summaryWin::-webkit-scrollbar-thumb {
+    background: #000;
+    }
+/*.summaryClose {
+    background-color:#eee; color:darkgray; font-size: 1.4em; padding: .5em; border:0; border-radius: 1em; float: right;
+    }*/
+.summaryClose {
+    color:#ccc; background-color: transparent; font-size: 2em; border:0; float: right; cursor: pointer;
+    }
+
+
+
+
 
 
 
