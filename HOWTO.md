@@ -21,7 +21,7 @@ Notes related to work on a particular person are also stored in the top level of
 
 
 
-## Add to the db.js file
+## Add essential data to the db.js file
 
 Add details for a new person to the db.js file. This file is found in your project directory.
 
@@ -60,29 +60,35 @@ Fill in the values for the other keys as follows:
 - `recordData`: Add here the birth, marriage, and death information, aggregated using the forms for creating that information.  You only need to create marriage information for one spouse per marriage. This information is also read by pages of relations as well as the person in question.
 
 
-## Additional information
+## Add record data to the db.js file
 
-After the basic template given above, which must be included for all persons, additional information can be added.
+After the basic template given above, which must be included for all persons, additional information is added to capture data obtained from sources.
 
-Three special events, that are called out with their own property names are birth, marriages, and death.
+Three special events, that are called out with their own property names are `birth`, `marriages`, and `death`.
 
-In addition, other items can be added in
+In addition, other items can be added using:
+````
 events: {
 	}
-
-Each event needs to have a timestamp.
+````
+Each event needs to have a timestamp, with the format `YYYY-MM-DD`.
 
 
 The following can be added to all events.
-Notes. Note information is written as:
+
+**Notes**. Note information is written as:
+````
 notes: `.....`,
+````
 The content of a note can be multi-line. Each line can optionally begin with intro: or quote: (or note:, but that's the default).  Intro lines are italicised, and should be used only to introduce the note.  Quote lines receive quote marks and italicisation.
 
-Footnotes. Listed below the main entry as a bulleted list in slightly smaller type.  Content is held in an array, with one paragraph per note, eg.
-fnotes: [`first note`, `second note`, `etc`],
+**Footnotes**. Listed below the main entry as a bulleted list in slightly smaller type.  Content is held in an array, with one paragraph per note, eg.
+`fnotes: [`first note`, `second note`, `etc`],`
 
-Discussions: Discussion text is not displayed on the general UI, but an icon is added that makes it appear as an alert. Discussion text also appears when sources are shown.  This is for commentary on the entry, and is stored as:
+**Discussions**: Discussion text is not displayed on the general UI, but an icon is added that makes it appear as an alert. Discussion text also appears when sources are shown.  This is for commentary on the entry, and is stored as:
+````
 discussion: `.....`
+````
 The content can be multi-line.
 
 
