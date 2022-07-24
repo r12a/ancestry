@@ -16,14 +16,14 @@ Files/directories to add to the project file:
 5. db.js [plain text file]  Will contain the data for all records.
 6. census.js [plain text file] Will contain data for census returns.
 
-Notes related to work on a particular person are also stored in the top level of the project directory, with filenames `<person_id>.txt`, eg. `hunt_ellen_1843.txt`. These notes typically contain unsubstantiated leads, questions, or other information that is not yet ready to capture in the main data.
+Notes related to work on a particular person are also stored in the top level of the project directory, with filenames `<person_id>.txt`, eg. `hunt_ellen_1843.txt`. See below for details.
 
 
 
 
 ## Add essential data to the db.js file
 
-Add details for a new person to the db.js file. This file is found in your project directory.
+Add details for a new person to the db.js file. This file is found in your project directory.  The essential information is entered by hand (although it typically helps to copy-paste an empty template to get started.)
 
 An example entry is:
 ````
@@ -60,20 +60,30 @@ Fill in the values for the other keys as follows:
 - `recordData`: Add here the birth, marriage, and death information, aggregated using the forms for creating that information.  You only need to create marriage information for one spouse per marriage. This information is also read by pages of relations as well as the person in question.
 
 
+
+
 ## Add record data to the db.js file
 
 After the basic template given above, which must be included for all persons, additional information is added to capture data obtained from sources.
 
 Most data is added to the person entries in the db.js file.  Census data is added to the census.js file (although some personal, descriptive data is added to the db.js file, too.)
 
-Information for these (and similar) records can be created using the forms at lib/forms/birthentry.html etc. Add whatever information you have, using the prompts, and you'll see some code being generated at the bottom of the page. Once you have entered all the information, copy the script code to a file named <id_key>.json (eg. keam_grace_1827.json).
+Information for these (and similar) records should normally be created using the forms at lib/forms/birthentry.html etc. Add whatever information you have, using the prompts, and you'll see some code being generated at the bottom of the page. Once you have entered all the information, copy the output at the bottom of the page to the record for this individual which you created in the previous step.
 
+Note that the first step in filling in the aforementioned forms is to provide the id of the person in question.  When you do so, the form should automatically be filled with existing information that is already in the db.js file.  This makes it easy to update small amounts of information, as well as starting a new record from scratch.
 
-
-
+	
+	
+	
+	
+	
 ### Capture data for BMD
 
-Three special events, that are called out with their own property names are `birth`, `marriages`, and `death`. For example:
+Three special events, that are called out with their own property names are `birth`, `marriages`, and `death`. 
+
+The db.js file should contain all information you have for birth, marriage and death, except that you only need to create marriage information for one spouse per marriage. (The other spouse will pick up the same information automatically.) This information will be read to create the summaries for the individual named at the start of the record, but will also be used for pages of relations
+
+Examples:
 
 ````
 birth: {
@@ -218,7 +228,6 @@ SOURCE: Lincolnshire Burials https://www.findmypast.com/transcript?id=GBPRS%2FLI
 `},
 ````
 
-This file should contain all information you have for birth, marriage and death, except that you only need to create marriage information for one spouse per marriage. (The other spouse will pick up the same information automatically.) This information is stored in the json file so that it can be read by pages of relations as well as the person in question.  Other information will go in a file called <id_key>.txt (eg. keam_grace_1827.txt).
 
 
 
