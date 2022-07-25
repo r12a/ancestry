@@ -233,17 +233,7 @@ SOURCE: Lincolnshire Burials https://www.findmypast.com/transcript?id=GBPRS%2FLI
 
 
 
-### Capture data for other events
-
-In addition, other items can be added using:
-````
-events: {
-	}
-````
-Each event needs to have a timestamp, with the format `YYYY-MM-DD`.
-
-Note that the census data is stored in the census.js file – one record per census entry – but some tailored information about an individual is also stored in the db.js file. The information is automatically split in the output of the page where you enter census information from the source.
-
+### Notes, footnotes & discussions
 
 The following can be added to all events.
 
@@ -261,6 +251,25 @@ The content of a note can be multi-line. Each line can optionally begin with int
 discussion: `.....`
 ````
 The content can be multi-line.
+
+
+
+
+### Capture data for other events
+
+In addition, other items can be added using:
+````
+events: {
+	}
+````
+Each event needs to have a timestamp, with the format `YYYY-MM-DD`.
+	
+Census information is listed as an event with `type: census`. The census data is stored in the census.js file – one record per census entry – but some tailored information about an individual is also stored in this db.js file. The information is automatically split in the output of the form where you transcribe the census information.
+
+Other kinds of event can also be listed.  Commonly, these will have `type: note`.  Use the `notes` field described above for the detail.
+
+Sometimes you will want to point to note information in the notes.js file. In such cases, use the `title` and `sharednote` fields as shown in the examples below.
+
 
 Here is an example of events data for one individual:
 ````
