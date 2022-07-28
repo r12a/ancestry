@@ -436,6 +436,24 @@ notes: `{robinson_ishmael_1813:kx}, was a farmer. The children were {robinson_ha
 }
 ````
 
+
+
+
+### Pictures and pointers to documents
+	
+These are also created as subrecords within the events record. They therefore also need to begin with a timestamp.
+
+Photographs and pictures are stored in a subdirectory and pulled into the narrative using `img` and `caption` fields as in the following example.  This will insert a centred picture with the caption centred below.
+
+````
+"1891-04-06": {
+type: "figure",
+img: "photos/lakelin/ps_76_greendale_road_1.jpg",
+caption: "76 Greendale Road (second door from the left), which was 12 Greendale Road that that time."
+},
+````
+
+
 	
 	
 	
@@ -477,7 +495,7 @@ rooms: "4",
 
 
 
-## Capture notes and unsubstantiated information in text files
+## Capture research notes and unsubstantiated information in text files
 
 Notes related to work on a particular person are also stored in the top level of the project directory, with filenames `<person_id>.txt`, eg. `hunt_ellen_1843.txt`. These notes typically contain unsubstantiated leads, questions, or other information that is not yet ready to capture in the main data.
 
