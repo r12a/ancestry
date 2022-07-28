@@ -443,7 +443,7 @@ notes: `{robinson_ishmael_1813:kx}, was a farmer. The children were {robinson_ha
 	
 These are also created as subrecords within the events record. They therefore also need to begin with a timestamp.
 
-Photographs and pictures are stored in a subdirectory and pulled into the narrative using `img` and `caption` fields as in the following example.  This will insert a centred picture with the caption centred below.
+Photographs and pictures are stored in a subdirectory and pulled into the narrative using the `figure` type and  `img` and `caption` fields as in the following example.  This will insert a centred picture with the caption centred below.
 
 ````
 "1891-04-06": {
