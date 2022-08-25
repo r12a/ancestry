@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<title>Search</title>
+<link href="lib/style.css" rel="stylesheet">
+<style>
+#xbanner::before {
+  content: '📇';
+  font-size: 4rem;
+  padding: 1rem;
+}
+#pageicon {
+  position: absolute;
+  font-size: 4rem;
+  padding: 1rem 2rem;
+}
+.desc {
+    color: chocolate;
+    font-size: 90%;
+    margin-inline-start: 2rem;
+    }
+.personsName {
+    margin-inline-start: 2rem;
+    }
+</style>
+<script>
+// read in project
+var project = ''
+parameters = location.search.split('&');
+parameters[0] = parameters[0].substring(1);
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) {
+    while (project === '' || project.match(/\.\./)) project = prompt('What project do you want to work with?')
+    window.location += '?project='+project
+    }
+var db = document.createElement('script')
+db.src = project+'/db.js'
+db.async = false
+document.head.appendChild(db)
+
+// load the appropriate census file	
+var census = document.createElement('script')
+census.src = project+'/census.js'
+census.async = false
+document.head.appendChild(census)
+</script>
+
+
+
+
+<script>
+function filter (str) {
+	str = str.toLowerCase()
+	//str = str.replace(/ /,'.*')
+	var total = 0
+    window.lines = []
+    
+    for (name in dbOrdered) {
+        found = ''
+        if (db[name].birth && db[name].birth.place && db[name].birth.place.toLowerCase().includes(str)) found += 'birth'
+        if (db[name].birth && db[name].birth.bapplace && db[name].birth.bapplace.toLowerCase().includes(str)) found += ' baptism'
+        
+        if (found.includes('birth') && found.includes('baptism')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Birth & baptism place'+'§'+db[name].birth.place)
+        else if (found.includes('birth')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Birth place'+'§'+db[name].birth.place)
+        else if (found.includes('baptism')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Baptism place'+'§'+db[name].birth.place)
+        
+        
+        
+        //if (db[name].birth && db[name].birth.place && db[name].birth.place.toLowerCase().includes(str)) lines.push(db[name].birth.timestamp+'§'+name+'§'+'Birth place'+'§'+db[name].birth.place)
+        //if (db[name].birth && db[name].birth.bapplace && db[name].birth.bapplace.toLowerCase().includes(str)) lines.push(db[name].birth.timestamp+'§'+name+'§'+'Baptism place</span>'+'§'+db[name].birth.bapplace)
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                found = ''
+                if (db[name].marriages[mRec].place && db[name].marriages[mRec].place.toLowerCase().includes(str)) found +="m"
+                if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].gparish.toLowerCase().includes(str)) found += "g"
+                if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) found += 'b'
+                
+                if (found.includes('mgb')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & bride and groom residence'+'§'+db[name].marriages[mRec].place)
+                else if (found.includes('mb')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & bride residence'+'§'+db[name].marriages[mRec].place)
+                else if (found.includes('mg')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & groom residence'+'§'+db[name].marriages[mRec].place)
+                else if (found.includes('m')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place)
+
+                //if (db[name].marriages[mRec].place && db[name].marriages[mRec].place.toLowerCase().includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place)
+                //if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].gparish.toLowerCase().includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'Residence at time of marriage'+'§'+db[name].marriages[mRec].gparish)
+                //if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'Residence at time of marriage'+'§'+db[name].marriages[mRec].bparish)
+                }
+            }
+        
+        found = ''
+        if (db[name].death && db[name].death.place && db[name].death.place.toLowerCase().includes(str)) found += 'd'
+        if (db[name].death && db[name].death.burplace && db[name].death.burplace.toLowerCase().includes(str))  found += 'b'
+
+        if (found.includes('db')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death & burial place'+'§'+db[name].death.place)
+        else if (found.includes('d')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death place'+'§'+db[name].death.place)
+        else if (found.includes('b')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace)
+        //if (db[name].death && db[name].death.place && db[name].death.place.toLowerCase().includes(str)) lines.push(db[name].death.timestamp+'§'+name+'§'+'Death place'+'§'+db[name].death.place)
+        //if (db[name].death && db[name].death.burplace && db[name].death.burplace.toLowerCase().includes(str)) lines.push(db[name].death.timestamp+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace)
+        }
+    
+    
+    for (name in censi) {
+        if (censi[name].place && censi[name].place.toLowerCase().includes(str)) {
+            var head = censi[name].head
+            head = head.split(';')[0]
+            
+            var year = name.split('_')[0]
+            lines.push(year+'§'+head+'§'+'Census location'+'§'+censi[name].place)
+            }
+        }
+        
+        
+
+	document.getElementById('total').textContent = total
+	}
+
+
+function drawLines () {
+    var out = ''
+    
+    lines.sort()
+    
+    for (l=0;l<lines.length;l++) {
+        var line = lines[l].split('§')
+        var timestamp = line[0]
+        var person = line[1]
+        var description = line[2]
+        var field = line[3]
+        
+        //console.log(timestamp, person, description, field)
+        
+        out += '<p class="personRow">'
+
+        if (db[person]) {
+            // draw the icons
+            out += '<span style="margin-inline: 2em; float:right;">'
+            if (db[person].p) out += `<a href="person.html?person=${ person }&project=${ window.project }" style="" title="Show details">📄</a> `
+            out += `<a href="tree.html?person=${ person }&project=${ window.project }" style="opacity:90%;" title="Show relationships">⏳</a> `
+            out += `<a href="ancestors.html?person=${ person }&project=${ window.project }" style="opacity:60%;" title="Show family tree">🌳</a> `
+            out += `<a href="precedents.html?person=${ person }&project=${ window.project }" style="opacity:80%" title="Show ancestors">⏫</a> `
+            if (! db[person].cstatus) out += `<a href="descendants.html?person=${ person }&project=${ window.project }" style="opacity:80%" title="Show descendants">⏬</a>`
+            else out += `<span style="visibility:hidden;">⏬</span>`
+            out += '</span>'
+            }
+
+        out += timestamp+' '
+
+        if (typeof db[person] === 'undefined') out += `<span class="personsName">${ person }</span>`
+        else {
+            out += '<a class="personsName" href="tree.html?person='+person+'&project='+project+'">'+db[person].f
+            if (db[person].m) {
+                for (var i=0;i<db[person].m.length;i++) {
+                    out += '⏵'+db[person].m[i]
+                    }
+                }
+
+            out += ', '+db[person].g
+            if (db[person].b) {
+                out += ', '+db[person].b
+                if (db[person].d) out += '-'+db[person].d
+                }
+            else {
+                var temp = person.split('_')
+                out += ', ~'+temp[temp.length-1]
+                }
+            //if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
+            out += '</a>'
+            }
+
+        out += ' <span class="desc">'+description+':</span> '+field
+
+        //out += `<span style="color:gray;margin-inline-start: 2em; font-size: 70%;">${ person }</span>`
+        out += '</p>'
+        }
+    
+	document.getElementById('listrecord').innerHTML = out    
+	//document.getElementById('listrecord').innerHTML = '<div>'+document.getElementById('listrecord').innerHTML+out+'</div>'    
+    }
+</script>
+</head>
+<body onLoad="init()">
+<div id="out">
+  <div id="banner">
+    <div id="pageicon">🔍</div>
+    <div id="pagetitle">Search<br>
+    </div>
+  </div>
+  <div id="subbanner">
+    <div>Filter <input id="filter" type="text" onChange="
+        document.getElementById('listrecord').innerHTML = ''
+        filter(document.getElementById('filter').value.trim().toLowerCase())
+        drawLines()
+    "> <button onclick="
+        document.getElementById('listrecord').innerHTML = ''
+        filter(document.getElementById('filter').value.trim().toLowerCase())
+        drawLines()
+    ">Find a place</button> 
+    <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div><a href="#explanations">Total <span id="total"></span></a></div>
+  </div>
+  <div id="subsubsubbanner" style="text-transform: none;">
+    <div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>
+  </div>
+  <article>
+    <section id="listrecord">
+      </section>
+    <!--div id="places">
+      <p class="recordTitle" id="explanations">Explanations regarding dates</p>
+      <p>Where the date  Note that the dates following each name are only token dates, associated with the name as part of its ID. In some cases these dates are pure guesswork, such as in the case where a father is known from a marriage record but no other information. In some cases the date may accurately reflect the birth date of the person. In others, that birth date may be ajusted in the light of new evidence in the actual records, but the date here will remain the same.<a target="_blank" href="https://maps.google.com/maps?q=53.8352112,-2.832418"></a></p>
+    </div-->
+  </article>
+</div>
+
+<script>
+function compareByTimestamp(a,b) {  // comparison function
+    if (a.timestamp < b.timestamp)  // compare by timestamp
+        return -1
+    if (a.timestamp > b.timestamp)
+        return 1
+    return 0
+    }
+
+function init () {
+	var out = ''
+	var total = 0
+    
+    // sort the db alphabetically
+    dbOrdered = Object.keys(db).sort().reduce(
+          (obj, key) => { 
+            obj[key] = db[key]
+            return obj
+            },{})
+
+    //db.sort(compareByTimestamp)
+
+	document.getElementById('total').textContent = total
+	
+	//document.getElementById('listrecord').innerHTML = '<div>'+out+'</div>'
+	
+	document.getElementById('filter').focus()
+	}
+/*
+var sortkeys = []
+var names = document.querySelectorAll('#list p')
+for (var i=0;i<names.length;i++) {
+	var id = names[i].textContent
+	id = id.replace(/ \([^\)]+\)/g,'')
+	id = id.toLowerCase().trim()
+	sortkeys.push(id)
+	id = id.replace(/ /g,'_')
+	id = id.replace(/,/g,'')
+	
+	var anchor = '<a href="data/'+id+'.html">'+names[i].textContent+'</a>'
+	names[i].innerHTML = anchor
+	}
+*/
+</script>
+</body>
+</html>

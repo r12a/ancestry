@@ -225,7 +225,10 @@ function getPersonDetails (id, type, loc) {
 			}
 		out += '<div class="showme">'
 		if (db[id].p) { out += '<a href="person.html?person='+id+'&project='+window.project+'" style="font-size:120%;" title="Show details">📄</a> ' }
-		out += '<a href="ancestors.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:60%;" title="Show family tree">🌳</a> '
+
+        else if (db[id].recent) { out += '<a href="person.html?person='+id+'&project='+db[id].recent+'" style="font-size:120%;" title="Show details in private database">📄</a> ' }
+
+        out += '<a href="ancestors.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:60%;" title="Show family tree">🌳</a> '
 		out += '<a href="precedents.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:80%;" title="Show ancestors">⏫</a> '
 		if (! db[id].cstatus) out += '<a href="descendants.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity: 80%;" title="Show descendants">⏬</a> '
 		out += '</div>'

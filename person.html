@@ -58,6 +58,17 @@ var tl = document.createElement('script')
 tl.src = project+'/'+thisPerson+'.txt'
 tl.async = false
 document.head.appendChild(tl)
+
+
+
+function openWindow (locn) {
+    const windowFeatures = "left=50,top=50";
+	//var newwindow = window.open(locn, 'newwindow', windowFeatures) 
+	var newwindow = window.open(locn, '_blank') 
+	newwindow.focus()
+	}
+
+
 </script>
 </head>
 
@@ -82,6 +93,7 @@ document.head.appendChild(tl)
   <div>&nbsp;</div>
 </div>
 <div id="main">
+
 <div class="dateAndRecord">
   <div>
     <div class="recordDate"><span style="font-size: 100%; margin-top:.8em;">-</span><span>&nbsp;</span></div>
@@ -95,6 +107,8 @@ document.head.appendChild(tl)
 </div>
 </div>
 </div>
+
+
 <script>
 
 </script>

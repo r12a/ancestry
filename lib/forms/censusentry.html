@@ -35,16 +35,23 @@ function draftNotes () {
     var wifeId = document.getElementById('wifeId').value
     
     if (headId) out += `{${ headId }:kx}`
-    else out +=  `${ document.getElementById('censusHeadName').value }`
+    else out +=  `${ document.getElementById('censusHeadName').value }, document.getElementById('censusHeadAge').value,`
     //if (document.getElementById('censusHeadAge').value) out += `, ${ document.getElementById('censusHeadAge').value }`
-    if (document.getElementById('censusHeadOcc').value) out += `, was a ${ document.getElementById('censusHeadOcc').value }`
+    if (document.getElementById('censusOcc').value) out += ` was a ${ document.getElementById('censusOcc').value }`
+    else if (document.getElementById('censusHeadOcc').value) out += ` was a ${ document.getElementById('censusHeadOcc').value }`
     out += '. '
     
-    if (document.getElementById('censusWifeName').value) {
+    if (document.getElementById('censusWifeName').value 
+        && document.getElementById('censusWifeOcc').value) {
         if (wifeId) out += `His wife {${ wifeId }:kx}`
-        else out +=  `His wife ${ document.getElementById('censusWifeName').value }`
-        //if (document.getElementById('censusWifeAge').value) out += ` was ${ document.getElementById('censusWifeAge').value }`
-        if (document.getElementById('censusWifeOcc').value) out += `, and was a ${ document.getElementById('censusWifeOcc').value }`
+        else out +=  `His wife ${ document.getElementById('censusWifeName').value }, ${ document.getElementById('censusWifeAge').value },`
+        if (document.getElementById('censusWifeOcc').value) out += ` was a ${ document.getElementById('censusWifeOcc').value }`
+        out += '.'
+        }
+    
+   else if (document.getElementById('censusWifeName').value 
+        && document.getElementById('wifeId').value == '') {
+        out +=  `His wife ${ document.getElementById('censusWifeName').value } was ${ document.getElementById('censusWifeAge').value }`
         out += '.'
         }
     
@@ -283,9 +290,22 @@ function draftResult () {
     if (document.getElementById('censusRecordURL').value.trim()) {
         if (document.getElementById('yearList').elements['censusYear'].value == '1939') var recordType='Registration'
         else recordType='Census'
-        document.getElementById('record').textContent = `images: ["${ recordType } record url:records/${ document.getElementById('censusRecordURL').value.trim() }.jpg"],`
+        var scans = document.getElementById('censusRecordURL').value.split(',')
+        var scanOut = ''
+        for (i=0;i<scans.length;i++) {
+            scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
+            if (i<scans.length-1) scanOut += ', '
+            }
+        document.getElementById('record').textContent = `images: [${ scanOut }],`
         }
     else document.getElementById('record').textContent = ''
+    
+    /*if (document.getElementById('censusRecordURL').value.trim()) {
+        if (document.getElementById('yearList').elements['censusYear'].value == '1939') var recordType='Registration'
+        else recordType='Census'
+        document.getElementById('record').textContent = `images: ["${ recordType } record url:records/${ document.getElementById('censusRecordURL').value.trim() }.jpg"],`
+        }
+    else document.getElementById('record').textContent = ''*/
     
     if (document.getElementById('censusSourceName').value.trim() || document.getElementById('censusSourceURL').value.trim()) document.getElementById('source').textContent = `source: "${ document.getElementById('censusSourceName').value.trim() } ${ document.getElementById('censusSourceURL').value }",` 
     else document.getElementById('source').textContent = ''
@@ -317,7 +337,7 @@ function draftResult () {
     
     
     if (document.getElementById('headId').value.trim() || document.getElementById('censusHeadName').value.trim() || document.getElementById('censusHeadAge').value.trim() || document.getElementById('censusHeadOcc').value.trim() || document.getElementById('censusHeadBorn').value.trim() || document.getElementById('censusHeadOther').value.trim()) {
-        var headSummary = []
+        /*var headSummary = []
         if (document.getElementById('headId').value.trim()) headSummary.push(document.getElementById('headId').value.trim())
         else headSummary.push(document.getElementById('censusHeadName').value.trim())
         if (document.getElementById('censusHeadName').value.trim()) headSummary.push(document.getElementById('censusHeadName').value.trim())
@@ -327,11 +347,42 @@ function draftResult () {
         if (document.getElementById('censusHeadOther').value.trim()) headSummary.push(document.getElementById('censusHeadOther').value.trim())
         if (document.getElementById('censusHeadBorn').value.trim()) headSummary.push(document.getElementById('censusHeadBorn').value.trim())
         document.getElementById('head').textContent = `head: "${ headSummary.join(';') }",` 
+        */
+        var headSummary = ''
+        if (document.getElementById('headId').value.trim()) headSummary += document.getElementById('headId').value.trim()+';'
+        else if (document.getElementById('censusHeadName').value.trim()) headSummary += document.getElementById('censusHeadName').value.trim()+';'
+        else headSummary += ';'
+        if (document.getElementById('censusHeadName').value.trim()) headSummary += document.getElementById('censusHeadName').value.trim()+';'
+        else headSummary += 'unknown;'
+        if (document.getElementById('censusHeadAge').value.trim()) headSummary += document.getElementById('censusHeadAge').value.trim()+';'
+        else headSummary += ';'
+        if (document.getElementById('censusHeadOcc').value.trim()) headSummary += document.getElementById('censusHeadOcc').value.trim()+';'
+        else headSummary += ';'
+        if (document.getElementById('censusHeadOther').value.trim()) headSummary += document.getElementById('censusHeadOther').value.trim()+';'
+        else headSummary += ';'
+        if (document.getElementById('censusHeadBorn').value.trim()) headSummary += document.getElementById('censusHeadBorn').value.trim()
+ 
+        document.getElementById('head').textContent = `head: "${ headSummary }",` 
         }
     else document.getElementById('head').textContent = ''
     
     if (document.getElementById('wifeId').value.trim() || document.getElementById('censusWifeName').value.trim() || document.getElementById('censusWifeAge').value.trim() || document.getElementById('censusWifeOcc').value.trim() || document.getElementById('censusWifeBorn').value.trim() || document.getElementById('censusWifeOther').value.trim()) {
-        var wifeSummary = []
+        var wifeSummary = ''
+        if (document.getElementById('wifeId').value.trim()) wifeSummary += document.getElementById('wifeId').value.trim()+';'
+        else if (document.getElementById('censusWifeName').value.trim()) wifeSummary += document.getElementById('censusWifeName').value.trim()+';'
+        else wifeSummary += ';'
+        if (document.getElementById('censusWifeName').value.trim()) wifeSummary += document.getElementById('censusWifeName').value.trim()+';'
+        else wifeSummary += 'unknown;'
+        if (document.getElementById('censusWifeAge').value.trim()) wifeSummary += document.getElementById('censusWifeAge').value.trim()+';'
+        else wifeSummary += ';'
+        if (document.getElementById('censusWifeOcc').value.trim()) wifeSummary += document.getElementById('censusWifeOcc').value.trim()+';'
+        else wifeSummary += ';'
+        if (document.getElementById('censusWifeOther').value.trim()) wifeSummary += document.getElementById('censusWifeOther').value.trim()+';'
+        else wifeSummary += ';'
+        if (document.getElementById('censusWifeBorn').value.trim()) wifeSummary += document.getElementById('censusWifeBorn').value.trim()
+ 
+        document.getElementById('wife').textContent = `wife: "${ wifeSummary }",` 
+        /*var wifeSummary = []
         if (document.getElementById('wifeId').value.trim()) wifeSummary.push(document.getElementById('wifeId').value.trim())
         else wifeSummary.push(document.getElementById('censusWifeName').value.trim())
         if (document.getElementById('censusWifeName').value.trim()) wifeSummary.push(document.getElementById('censusWifeName').value.trim())
@@ -341,6 +392,7 @@ function draftResult () {
         if (document.getElementById('censusWifeOther').value.trim()) wifeSummary.push(document.getElementById('censusWifeOther').value.trim())
         if (document.getElementById('censusWifeBorn').value.trim()) wifeSummary.push(document.getElementById('censusWifeBorn').value.trim())
         document.getElementById('wife').textContent = `wife: "${ wifeSummary.join(';') }",` 
+        */
         }
     else document.getElementById('wife').textContent = ''
 
@@ -424,7 +476,7 @@ function draftResult () {
             out += `;${ servs[i].querySelector('.inputBorn').value }`
             out += '"'
             }
-         document.getElementById('servOut').textContent = `servs: [${ out }\n],`
+         document.getElementById('servOut').textContent = `serv: [${ out }\n],`
        }
     else document.getElementById('servOut').textContent = ''
 
@@ -455,6 +507,10 @@ function draftResult () {
 
     if (document.getElementById('censusFNotes').value.trim()) makeNotes(document.getElementById('censusFNotes').value.trim(),'fnote') 
     else document.getElementById('fnote').textContent = ''
+
+    if (document.getElementById('censusDisc').value.trim())  document.getElementById('discussion').textContent = `discussion: \u0060${ document.getElementById('censusDisc').value.trim() }\u0060,`
+
+    if (document.getElementById('cautionIn').value.trim())  document.getElementById('caution').textContent = `caution: \u0060${ document.getElementById('cautionIn').value.trim() }\u0060,`
 
     if (document.getElementById('censusDisc').value.trim()) makeNotes(document.getElementById('censusDisc').value.trim(),'discussion') 
     else document.getElementById('discussion').textContent = ''
@@ -509,30 +565,30 @@ function draftResult () {
       <tr>
         <td>Year:</td>
         <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
-            <input type="radio" name="censusYear" value="1841"/>
+            <input type="radio" name="censusYear" value="1841" onClick="document.getElementById('censusSourceName').value = `1841 England Census`">
             1841 &nbsp;
-            <input type="radio" name="censusYear" value="1851"/>
+            <input type="radio" name="censusYear" value="1851" onClick="document.getElementById('censusSourceName').value = `1851 England Census`">
             1851 
             &nbsp;
-            <input type="radio" name="censusYear" value="1861"/>
+            <input type="radio" name="censusYear" value="1861" onClick="document.getElementById('censusSourceName').value = `1861 England Census`">
             1861 
             &nbsp;
-            <input type="radio" name="censusYear" value="1871"/>
+            <input type="radio" name="censusYear" value="1871" onClick="document.getElementById('censusSourceName').value = `1871 England Census`">
             1871 
             &nbsp;
-            <input type="radio" name="censusYear" value="1881"/>
+            <input type="radio" name="censusYear" value="1881" onClick="document.getElementById('censusSourceName').value = `1881 England Census`">
             1881 
             &nbsp;
-            <input type="radio" name="censusYear" value="1891"/>
+            <input type="radio" name="censusYear" value="1891" onClick="document.getElementById('censusSourceName').value = `1891 England Census`">
             1891
             &nbsp;
-            <input type="radio" name="censusYear" value="1901"/>
+            <input type="radio" name="censusYear" value="1901" onClick="document.getElementById('censusSourceName').value = `1901 England Census`">
             1901
             &nbsp;
-            <input type="radio" name="censusYear" value="1911"/>
+            <input type="radio" name="censusYear" value="1911" onClick="document.getElementById('censusSourceName').value = `1911 England Census`">
             1911
             &nbsp;
-            <input type="radio" name="censusYear" value="1939"/>
+            <input type="radio" name="censusYear" value="1939" onClick="document.getElementById('censusSourceName').value = `1939 Register`">
             1939 &nbsp;
           </form></td>
       </tr>
@@ -556,16 +612,16 @@ function draftResult () {
           </form></td>
       </tr>
       <tr>
-        <td>Record:</td>
-        <td><input type="text" id="censusRecordURL" style="width:200px;" onInput="draftResult()"/></td>
-      </tr>
-      <tr>
         <td>Source:</td>
         <td>
         <input type="text" id="censusSourceName" onInput="draftResult()" placeholder="Source name.">
         <input type="text" id="censusSourceURL" onInput="draftResult()" placeholder="Source URL."><br>
-        <input type="text" id="censusSourceDetails" onInput="draftResult()" placeholder="Copy here the detailed info for ED, Piece, etc." style="width:40em;">
+        <input type="text" id="censusSourceDetails" onInput="draftResult()" placeholder="Copy here the detailed info for Reg. District, etc." style="width:40em;">
         </td>
+      </tr>
+      <tr>
+        <td>Scans:</td>
+        <td><input type="text" id="censusRecordURL" style="width:40em;" onInput="draftResult()" placeholder="A comma-separated list of filenames (no extension)"></td>
       </tr>
        <tr>
         <td>CParish</td>
@@ -647,7 +703,9 @@ function draftResult () {
       <tr>
         <td style="vertical-align: top;">Notes:<br><button onClick="draftNotes()">Draft</button></td>
         <!--td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')" style="padding: 1rem; font-size: 100%; height: 15rem;"></textarea></td-->
-        <td><textarea id="censusNotes" onInput="draftResult(this.value)" style="padding: 1rem; font-size: 100%; height: 15rem;"></textarea></td>
+        <td><textarea id="censusNotes" onInput="draftResult(this.value)" style="padding: 1rem; font-size: 100%; height: 15rem;"></textarea><br>
+        <span style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">Use this to indicate ages of people not in the db: <input value='&lt;sup class="ageTag"&gt;XX&lt;/sup&gt;' onClick="this.select()" style="width:15rem; border:0;"></span>
+        </td>
       </tr>
       <tr>
         <td>FNotes:</td>
@@ -655,14 +713,18 @@ function draftResult () {
       </tr>
       <tr>
         <td>Discussion:</td>
-        <td><textarea id="censusDisc" onInput="makeNotes(this.value,'discussion')"></textarea></td>
+        <td><textarea id="censusDisc" onInput="draftResult(this.value)"></textarea></td>
+      </tr>
+      <tr>
+        <td>Caution:</td>
+        <td><textarea id="cautionIn" onInput="draftResult(this.value)"></textarea></td>
       </tr>
    </table>
+    
+    
+    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>
 
-
-
-
-   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
 
 
     <div id="draft" style="margin:2em; color: brown;">
@@ -699,10 +761,30 @@ function draftResult () {
       <div id="note" style="white-space: pre"></div>
       <div id="fnote"></div>
       <div id="discussion" style="white-space: pre"></div>
+      <div id="caution" style="white-space: pre"></div>
       <div id="end">},</div>
       </div>
       
-     
+
+<script>
+function prepCopy () {
+    draft = document.getElementById('draft')
+    copied = document.getElementById('draftCopy')
+    copied.value = ''
+    divs = draft.querySelectorAll('div')
+    for (i=0;i<divs.length;i++) {
+        if (divs[i].textContent.trim() !== '') copied.value += divs[i].textContent+'\n'
+        }
+    copied.focus()
+    copied.select()
+    document.execCommand('copy')
+    return false
+    }
+</script>
+<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>
+
+
+
     <pre id="places">
     </pre>
   </div>

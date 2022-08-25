@@ -1,7 +1,7 @@
 HOW TO CREATE DATA
 
 
-You set up separate projects by creating separate top-level directories. Use whatever name you want for your project.
+You set up separate projects by creating separate top-level directories. Use whatever name you want for your project. The project name usually consists of a pair of family names for a couple representing the main branches of the project, separated by an underline, eg. robinson_gray.
 
 
 [1] ADD TO THE DB.JS FILE

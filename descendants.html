@@ -26,7 +26,13 @@ document.head.appendChild(db);
 <style>
 summary { font-size: 100%; }
 summary:hover { background-color: #eee; }
-.spouse { margin-top: 0; margin-bottom: 0; margin-inline-start: 3rem; /*background-color: #eee;*/ font-style: italic; color: gray; }
+.spouse { margin-top: 0; margin-bottom: 0; margin-inline-start: 3rem; /*background-color: #eee;*/ font-style: italic; color: gray; color: tan; }
+.spouse, .lineEnd, .lineHead, .lineTBD {
+  accent-color: antiquewhite;
+  }
+.spouse {
+  margin-inline-start: 1.2rem;
+  }
 details { margin-left: 3em; border-left: 1px solid #ccc; color: #333; /*border-bottom: 1px solid #ccc;*/  }
 details[open] { width: auto; }
 .dates, .bplace, .occ { font-size: 70%; margin-left: 1em; color: chocolate; }
@@ -208,6 +214,17 @@ function clearChecks (node) {
     }
 
 
+function checkFromList () {
+    // removes all checks, then checks people in a list at the top of the page
+    uncheckAll()
+    checkedNames = document.getElementById('listOfCheckedNames').value.split('\n')
+    const checkedNameSet = new Set(checkedNames)
+    
+    persons = document.querySelectorAll('input[type=checkbox]')
+    for (var i=0;i<persons.length;i++) if (checkedNameSet.has(persons[i].title)) persons[i].checked = true
+    }
+
+
 function listChecked () {
     // creates an array of ids for all checked names
     window.checkedNames = []
@@ -217,6 +234,37 @@ function listChecked () {
     
     document.getElementById('listOfCheckedNames').value = window.checkedNames.join('\n') 
     document.getElementById('listOfCheckedNames').style.display = 'block'
+    document.getElementById('listOfCheckedNames').select()
+    }
+
+
+function uncheck100 () {
+    // highlights and unchecks all people who were born less than 100 years ago, and have not died
+    var nodes, input, byear
+    uncheckAll()
+    
+    var nodes = document.querySelectorAll('.n, .spousen')
+    for (var i=0;i<nodes.length;i++) {
+        input = nodes[i].querySelector('input')
+        if (input) {
+            found = false
+            if (db[input.title]) {
+                byear = db[input.title].b
+                dyear = db[input.title].d
+                //console.log(input.title, byear, dyear)
+                if (dyear === '' && parseInt(byear) > 1920) {
+                    nodes[i].style.color = 'red'
+                    nodes[i].style.border = '1px solid red'
+                    input.checked = true
+                    }
+                else if (parseInt(byear) > 1920) {
+                    nodes[i].style.color = 'green'
+                    nodes[i].style.border = '1px solid green'
+                    }
+                }
+            
+            }
+        }
     }
 </script>
 <style>
@@ -238,11 +286,12 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 <div id="topMenu">
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
-	<a href="#top">Top</a>
 	<a id="openAll" href="#" onClick="openAll(); return false">Open all</a>
 	<a id="closeAll" href="#" onClick="closeAll(); return false">Close all</a>
 	<a id="removeChecks" href="#" onClick="uncheckAll(); return false">Remove checks</a>
-	<a id="captureNames" href="#" onClick="listChecked(); return false">List checked</a>
+	<a href="#top" onClick="uncheck100()">&lt;100 years</a>
+	<a id="captureNames" href="#" onClick="listChecked(); return false">List FROM checked</a>
+	<a id="listNames" href="#" onClick="checkFromList(); return false">Check from list</a>
 	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
     
@@ -264,8 +313,8 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
     </div>
   </div>
   <div id="subsubbanner">
-  <div><a href="#explanations">Total <span id="total"></span></a></div>
-  <textarea id="listOfCheckedNames" style="display:none;"></textarea>
+  <div><a href="#explanations" onClick="if (document.getElementById('listOfCheckedNames').style.display == 'block') document.getElementById('listOfCheckedNames').style.display = 'none'; else document.getElementById('listOfCheckedNames').style.display = 'block'">Lists <span id="total"></span></a></div>
+  <textarea id="listOfCheckedNames" style="display:none;" placeholder="Add a list of ids here, one per line, and click on CHECK FROM LIST. Only those people will be checked below. Alternatively, clicking on LIST FROM CHECKED will add a list here."></textarea>
   </div>
   <article>
       <div id="outTable"></div>
