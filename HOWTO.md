@@ -35,6 +35,36 @@ fg:[["1853", "peters_william_1828", "peters_charles_1856", "peters_william_henry
 },
 ````
 
+Here is a template for a new person.
+
+````
+person_id:{
+g:"given_names", k:"known_as", f:"family_name", m:['married_name','married_name'], bdate:"date", b:"year", ddate:"date", d:"year",
+bplace:"place", dplace:"place", thumb:false, male: false, p:true,
+father:"father_name", mother:"mother_name", occ:"",
+fg:[["year_of_marriage", "spouse_id", "child_id", "child_id", "child_id", "child_id"]],
+},
+
+birth: {
+// data from form goes here
+},
+
+marriages: {
+// data from form(s) goes here
+}, // ends marr
+
+
+death: {
+// data from form goes here
+},
+
+
+events: {
+// census data, notes, images, etc go here
+}, // ends events
+}, //ends person
+````
+
 **The id key** (in this case `keam_grace_1827`) should be be full name of the person and the year of their birth. If two or more people with the same name are born in the same year, add a, b, etc to the year. These names need to be unique. If the exact year is not known, use something like 18xx, with a view to changing this later if the actual year is known (by search & replace).  Note that this is purely a unique identifier, and often a date chosen on the basis of preliminary evidence proves to be out by a couple of years; in such cases it isn't strictly necessary to change the identifier when more accurate information becomes available.
 
 Fill in the values for the other keys as follows:
