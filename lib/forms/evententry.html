@@ -10,8 +10,43 @@ details { margin-left: 2em; }
 input, textarea {  }
 </style>
 <script src="formentrylookup.js"></script>
+
+
 <script>
-trace = false
+// read in project
+var project
+parameters = location.search.split('&')
+parameters[0] = parameters[0].substring(1)
+for (var p=0;p<parameters.length;p++) {  
+	pairs = parameters[p].split('=');
+	if (pairs[0] == 'project' && pairs[1]) { var project = pairs[1] }
+	if (pairs[0] == 'person' && pairs[1]) { var theperson = pairs[1] }
+	if (pairs[0] == 'timestamp' && pairs[1]) { var timestamp = pairs[1] }
+	}
+
+// load the appropriate db file	
+if (! project || project.match(/\.\./)) {
+    project = ''
+    while (project === '') project = prompt('What project do you want to work with?')
+    window.location += '?project='+project
+    }
+
+// load the appropriate db file	
+//if (! project) alert('Specify the project name in the URL, using ?project=...')
+var database = document.createElement('script')
+database.id = 'database'
+database.src = '../../'+project+'/db.js'
+database.async = false
+document.head.appendChild(database)
+
+if (theperson) {
+    setTimeout(() => autoPropagate(theperson), 1000)
+    }
+</script>
+
+
+<script>
+/*trace = false
 // read in project
 var project
 parameters = location.search.split('&');
@@ -34,6 +69,7 @@ document.head.appendChild(db);
 //if (theperson) {
 //    setTimeout(() => autoPropagate(theperson), 1000)
 //    }
+*/
 </script>
 <script>
 
@@ -71,9 +107,29 @@ function autoPropagate (person) {
         return
         }
     if (document.getElementById('timestampIn').value.trim() === '') {
-        alert('No timestamp provided.')
-        return
+        //var ts = document.getElementById('timestampIn').value
+        //if (ts === '') {
+            // get any known event timestamps
+            if (db[person] && db[person].events) {
+                tsList = 'Known timetamps:\n'
+                for (tStamp in db[person].events) tsList += tStamp+'\n'
+                }
+            ts = prompt(tsList+'Provide a timestamp.')
+            //}
+        document.getElementById('timestampIn').value = ts
         }
+        
+
+                
+                
+            
+      /*      tsArray = db[person].events
+            tsList = ''
+            for (s=0;s<tsArray.length;s++) listOfSpouses += fgArray[s][1]+'\n'
+            if (fgArray.length > 0) listOfSpouses = 'Known spouses:\n'+listOfSpouses+'\n'
+            }
+        spouse = prompt(listOfSpouses+'Provide the id of the spouse.')
+        document.getElementById('spouseIdIn').value = spouse*/
 
     
     // add id for parameter driven use
@@ -81,16 +137,29 @@ function autoPropagate (person) {
 
     // populate the places pulldown
     out = '<option value="">select one</option>\n'
-    for (place in placeIndex) {
-	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+    for (place in placesDB) {
+	out += `<option value="${ placesDB[place].p }, ${ placesDB[place].c } ${ placesDB[place].gps }">${ place }`
+    if (placesDB[place].gps) out += ' G'
+    if (placesDB[place].desc) out += ' I'
+    out += `</option>,\n`
 	}
     document.getElementById('gpsList').innerHTML = out
+
+    /*
+    out = '<option value="">select one</option>\n'
+    for (place in placesDB) {
+	out += `<option value="${ placesDB[place] }">${ placesDB[place].split(':')[0] }</option>,\n`
+	}
+    document.getElementById('gpsList').innerHTML = out
+    */
 
     // make a list of relatives to the right
 	listRelations(person)
     
     console.log(document.getElementById('timestampIn').value.trim())
     console.log(db[person].events)
+    console.log()
+    console.log('Looking for',db[person].events[document.getElementById('timestampIn').value.trim()])
     
     if (db[person] && db[person].events && db[person].events[document.getElementById('timestampIn').value.trim()]) {
         document.getElementById('notesYearIn').value = db[person].b.trim()
@@ -379,9 +448,20 @@ hideShowFields()
 
 
 
+// figure out whether there are any sources
+    sourcesFound = false
+    if (document.getElementById('firstSourceIn').value.trim() || 
+        document.getElementById('secondSourceIn').value.trim() ||
+        document.getElementById('thirdSourceIn').value.trim() ||
+        document.getElementById('bapSourceIn').value.trim()) {
+        document.getElementById('sourcesStart').textContent = "sources: `"
+        document.getElementById('sourcesEnd').textContent = "`,"
+        }
+
+
 // first
     if (document.getElementById('firstSourceIn').value.trim() || document.getElementById('firstSourceURLIn').value.trim())
-        document.getElementById('firstSource').textContent = `SOURCE: ${ document.getElementById('firstSourceIn').value.trim() }  ${ document.getElementById('firstSourceURLIn').value.trim() },` 
+        document.getElementById('firstSource').textContent = `SOURCE: ${ document.getElementById('firstSourceIn').value.trim() }  ${ document.getElementById('firstSourceURLIn').value.trim() }` 
     else document.getElementById('firstSource').textContent = ''
     
     if (document.getElementById('firstPastedIn').value.trim()) 
@@ -474,6 +554,11 @@ hideShowFields()
     if (document.getElementById('informantIn').value.trim()) 
         document.getElementById('informant').textContent = `informant: "${ document.getElementById('informantIn').value.trim() }",`
     else document.getElementById('informant').textContent = ''
+
+
+    if (document.getElementById('censusNotes').value) {
+        document.getElementById('note').textContent = "notes: \u0060"+document.getElementById('censusNotes').value+"\u0060,"
+        }
 
     if (document.getElementById('censusDisc').value) {
         document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value+"\u0060,"
@@ -620,25 +705,63 @@ function getMonthOLD (dateValue) {
 
 <body>
 <div id="out">
-  <div id="banner">
-    <div id="pagetitle">Event record entry<br>
-    </div>
-  </div>
-  <div id="subbanner">
-    <div><a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
-  </div>
-  <div id="subsubbanner">
-    <div>
-      <!--button onClick="dump()">Go</button-->&nbsp;
-    <strong>Id:</strong> 
-<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
-onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-onChange="autoPropagate(this.value);"/> <span class="redo" onClick=" 
-autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+<div id="banner">
+<div id="pagetitle">Event record entry<br>
+</div>
+</div>
+<div id="subbanner">
+<div><a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
+</div>
 
     
+    <div id="subsubbanner">
+    <div style="text-align: bottom;">
+    <!--button onClick="dump()">Go</button-->&nbsp;
+    
+    <strong>Id:</strong> 
+    <input type="text" id="idIn" style="width:200px;" 
+        placeholder="Add ID, then click [LOAD]."
+        onClick="this.select()"
+        onChange="document.location=`evententry.html?project=${ project }&person=${ this.value }` }">
+
+    <input type="text" id="timestampIn"  
+            placeholder="Timestamp: YYYY-MM-DD"
+            onInput="draftResult()">
+
+    <button id="load" title="Load from database">Load</button>
+    
+    <!--<span class="redo" id="clearAll" style="margin-inline-start:3rem; font-weight: bold; color: red;">X</span>-->   <button id="new" style="margin-inline-start:3rem;">Clear the form ❌</button>
+
+    <script> // set the events
+    document.getElementById('load').onclick = function () { document.location=`evententry.html?project=${ project }&person=${ document.getElementById('idIn').value }` }
+    
+    document.getElementById('new').onclick = function () { document.location=`evententry.html?project=${ project }` }
+    </script>
+    </div>
+    </div>
+
+
+  <!--div id="subsubbanner"> autoPropagate(document.getElementById('idIn').value)
+    <div>
+      <!--button onClick="dump()">Go</button-->&nbsp;
+    <!--strong>Id:</strong> 
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+onChange="autoPropagate(this.value);"/> 
+<!--<span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span>
+-->
+<!--button class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">Load</button>
+
+<span class="redo" id="clearAll" style="margin-inline-start:3rem; font-weight: bold; color: red;">X</span>   <button id="new">Clear the form</button>
+
+<script> // set the events
+document.getElementById('load').onclick = function () { document.location=`evententry.html?project=${ project }&person=${ document.getElementById('idIn').value }` }
+document.getElementById('new').onclick = function () { document.location=`evententry.html?project=${ project }` }
+</script>
+
+   
 </div>
-</div>
+</div-->
 <div id="main">
 
 <div id="references">
@@ -653,7 +776,7 @@ autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="
 
 
 <details open>
-<summary class="heading">Type &amp; timestamp</summary>
+<summary class="heading">Type</summary>
 <table style="width:65%;">
 <tr>
 <td>
@@ -663,182 +786,18 @@ autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="
     <option value="census">Census</option>
     </select>
 
-<input type="text" id="timestampIn"  style="width: 50%; font-size: 120%;"
+<!--input type="text" id="timestampIn"  style="width: 50%; font-size: 120%;"
             placeholder="Timestamp: YYYY-MM-DD"
             onInput="draftResult()">
-<!--textarea id="readIn" placeholder="Drop existing code here to read it in." style="width:98%;"></textarea><br-->
-<button onClick="autoPropagate(document.getElementById('idIn').value)">Read in existing event</button>
+<textarea id="readIn" placeholder="Drop existing code here to read it in." style="width:98%;"></textarea><br>
+<button onClick="autoPropagate(document.getElementById('idIn').value)">Read in existing event</button-->
     </td>
 </tr>
 </table>
 </details>
-
-
 
 
 <details open>
-<summary class="heading">Title</summary>
-<table>
-<tr>
-<td><input type="text" id="titleTitleIn" class="sourceBox" style="width: 34rem; font-size: 120%;"
-    placeholder="Short title for note events"
-    onInput="draftResult()">
-    </td>
-</tr>
-</table>
-</details>
-
-
-
-
-
-
-<details open>
-<summary class="heading">Notes</summary>
-<p style="margin: 0 1rem; font-style: italic; font-size: 85%;">Type one line per paragraph.  Begin a line with <span style="color:brown;font-weight: bold;">quote:</span> for quoted text.</p>
-<table>
-<tr>
-<td colspan="2"><textarea id="notesTextIn" class="noteTextBox" 
-    placeholder="Copy-paste or write a note here."
-    onInput="draftResult()"></textarea>
-</td>
-</tr>
-</table>
-</details>
-
-
-
-
-
-
-<table style="margin-inline-start: 2rem; color: teal;">
-      <tr>
-        <td colspan="4" class="heading">Data for building the page:</td></tr>
- 
-     <tr style="opacity: 50%">
-        <td>Year:</td>
-        <td colspan="3"><input type="text" id="notesYearIn"
-            placeholder="YYYY"
-            >
-            <span class="instructions" id="bCheck" style="color:red;"></span></td>
-      </tr>
-     <tr style="opacity: 50%">
-        <td>Date:</td>
-        <td colspan="3"><input type="text" id="notesDateIn"
-            placeholder="DD MMM or MMM-MMM, etc.">
-            <span class="instructions" id="bdateCheck" style="color:red;"></span>
-<script>
-function makeTimestamp () {
-    daymonth = document.getElementById('notesDateIn').value.trim()
-    year = document.getElementById('notesYearIn').value.trim()   
-    if (daymonth.match('-')) {
-        switch (daymonth) {
-            case 'Jan-Mar': out = "02-15"; break
-            case 'Apr-Jun': out = "05-15"; break
-            case 'Jul-Sep': out = "08-15"; break
-            case 'Oct-Dec': out = "11-15"; break
-            default: out = daymonth
-            }
-        document.getElementById('timestampIn').value = year+'-'+out
-        } 
-    else if (daymonth.match('~')) {
-        daymonth = daymonth.replace(/~/,'')+' 15'
-        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
-        }
-    else {
-        components = daymonth.split(' ')
-        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
-        }
-    }
-</script>
-    <span class="copy" title="Add timestamp." onClick="makeTimestamp()    ">✚</span>
-     </td>
-</tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr id="censusRow">
-<td>Census link:</td>
-<td colspan="3"><input type="text" id="censusLinkIn"
-    placeholder="The ID of the census record in census.js." class="wideInputBox"
-    onInput="draftResult()">
-    </td>
-</tr>
-<tr id="placeRow">
-<td>Place:</td>
-<td colspan="3"><input type="text" id="notesPlaceIn"
-    placeholder="Place where this event occurred." class="wideInputBox"
-    onInput="draftResult()">
-    </td>
-</tr>
-<tr id="relationRow">
-<td>Relation:</td>
-<td colspan="3"><input type="text" id="censusRelationIn"
-placeholder="For census events: one of head, wife, child, other, or serv." class="wideInputBox"
-onInput="draftResult()">
-</td>
-</tr>
-<tr id="occupationRow">
-<td>Occupation:</td>
-<td colspan="3"><input type="text" id="notesOcc"
-    placeholder="Occupation of the principal person." class="wideInputBox"
-    onInput="draftResult()"></td>
-</tr>
-<tr id="imageRow">
-<td>Image:</td>
-<td colspan="3"><input type="text" id="figureImgIn"
-    placeholder="The relative path & filename." class="wideInputBox"
-    onInput="draftResult()"></td>
-</tr>
-<tr id="captionRow">
-<td>Caption:</td>
-<td colspan="3"><input type="text" id="figureCaptionIn"
-    placeholder="The caption (one paragraph only)." class="wideInputBox"
-    onInput="draftResult()"></td>
-</tr>
-<tr id="linksRow">
-<td>Links:</td>
-<td colspan="3"><textarea id="linksIn" placeholder="One link per line: link_text url (The url may start with url: or be a full URL for an external page.)" onInput="draftResult()"></textarea></td>
-</tr>
-
-<tr id="informantRow">
-<td>Informant:</td>
-<td colspan="3"><input type="text" id="informantIn"  
-    placeholder="ID/name, relationship." class="wideInputBox"
-    onInput="draftResult()"></td>
-</tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr>
-<td>GPS:</td>
-<td><select id="gpsList" onChange="
-    newline = ''
-    if (document.getElementById('gpsIn').value === '') {}
-    else newline = '\n'
-    document.getElementById('gpsIn').value += newline+this.value
-    draftResult()
-    "></select></td>
-</tr>
-
-
-
-    <tr>
-        <td>GPS:</td>
-        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
-      </tr>
-
-    <tr>
-      <td>FNotes:</td>
-      <td colspan="3"><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
-    </tr>
-      <tr>
-        <td>Discussion:</td>
-        <td colspan="3"><textarea id="censusDisc" onInput="draftResult()"></textarea></td>
-      </tr>
-   </table>
-
-
-
-
-
-<details>
 <summary class="heading">Record scans</summary>
 <table>
 <tr>
@@ -1025,6 +984,171 @@ function removeBrackets (node) {
 </details>
 
 
+<details open>
+<summary class="heading">Title</summary>
+<table>
+<tr>
+<td><input type="text" id="titleTitleIn" class="sourceBox" style="width: 34rem; font-size: 120%;"
+    placeholder="Short title for note events"
+    onInput="draftResult()">
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+<details open>
+<summary class="heading">Notes</summary>
+<p style="margin: 0 1rem; font-style: italic; font-size: 85%;">Type one line per paragraph.  Begin a line with <span style="color:brown;font-weight: bold;">quote:</span> for quoted text.</p>
+<table>
+<tr>
+<td colspan="2"><textarea id="notesTextIn" class="noteTextBox" 
+    placeholder="Copy-paste or write a note here."
+    onInput="draftResult()"></textarea>
+</td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
+<table style="margin-inline-start: 2rem; color: teal;">
+      <tr>
+        <td colspan="4" class="heading">Data for building the page:</td></tr>
+ 
+     <tr style="opacity: 50%">
+        <td>Year:</td>
+        <td colspan="3"><input type="text" id="notesYearIn"
+            placeholder="YYYY"
+            >
+            <span class="instructions" id="bCheck" style="color:red;"></span></td>
+      </tr>
+     <tr style="opacity: 50%">
+        <td>Date:</td>
+        <td colspan="3"><input type="text" id="notesDateIn"
+            placeholder="DD MMM or MMM-MMM, etc.">
+            <span class="instructions" id="bdateCheck" style="color:red;"></span>
+<script>
+function makeTimestamp () {
+    daymonth = document.getElementById('notesDateIn').value.trim()
+    year = document.getElementById('notesYearIn').value.trim()   
+    if (daymonth.match('-')) {
+        switch (daymonth) {
+            case 'Jan-Mar': out = "02-15"; break
+            case 'Apr-Jun': out = "05-15"; break
+            case 'Jul-Sep': out = "08-15"; break
+            case 'Oct-Dec': out = "11-15"; break
+            default: out = daymonth
+            }
+        document.getElementById('timestampIn').value = year+'-'+out
+        } 
+    else if (daymonth.match('~')) {
+        daymonth = daymonth.replace(/~/,'')+' 15'
+        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
+        }
+    else {
+        components = daymonth.split(' ')
+        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
+        }
+    }
+</script>
+    <span class="copy" title="Add timestamp." onClick="makeTimestamp()    ">✚</span>
+     </td>
+</tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr id="censusRow">
+<td>Census link:</td>
+<td colspan="3"><input type="text" id="censusLinkIn"
+    placeholder="The ID of the census record in census.js." class="wideInputBox"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr id="placeRow">
+<td>Place:</td>
+<td colspan="3"><input type="text" id="notesPlaceIn"
+    placeholder="Place where this event occurred." class="wideInputBox"
+    onInput="draftResult()">
+    </td>
+</tr>
+<tr id="relationRow">
+<td>Relation:</td>
+<td colspan="3"><input type="text" id="censusRelationIn"
+placeholder="For census events: one of head, wife, child, other, or serv." class="wideInputBox"
+onInput="draftResult()">
+</td>
+</tr>
+<tr id="occupationRow">
+<td>Occupation:</td>
+<td colspan="3"><input type="text" id="notesOcc"
+    placeholder="Occupation of the principal person." class="wideInputBox"
+    onInput="draftResult()"></td>
+</tr>
+<tr id="imageRow">
+<td>Image:</td>
+<td colspan="3"><input type="text" id="figureImgIn"
+    placeholder="The relative path & filename." class="wideInputBox"
+    onInput="draftResult()"></td>
+</tr>
+<tr id="captionRow">
+<td>Caption:</td>
+<td colspan="3"><input type="text" id="figureCaptionIn"
+    placeholder="The caption (one paragraph only)." class="wideInputBox"
+    onInput="draftResult()"></td>
+</tr>
+<tr id="linksRow">
+<td>Links:</td>
+<td colspan="3"><textarea id="linksIn" placeholder="One link per line: link_text url (The url may start with url: or be a full URL for an external page.)" onInput="draftResult()"></textarea></td>
+</tr>
+
+<tr id="informantRow">
+<td>Informant:</td>
+<td colspan="3"><input type="text" id="informantIn"  
+    placeholder="ID/name, relationship." class="wideInputBox"
+    onInput="draftResult()"></td>
+</tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+
+
+<tr>
+<td>GPS:</td>
+<td><select id="gpsList" onChange="
+    newline = ''
+    if (document.getElementById('gpsIn').value === '') {}
+    else newline = '\n'
+    document.getElementById('gpsIn').value += newline+this.value
+    draftResult()
+    this.value = ''
+    "></select></td>
+</tr>
+<tr>
+<td>GPS:</td>
+<td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+</tr>
+
+<tr>
+<td>FNotes:</td>
+<td colspan="3"><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+</tr>
+<tr>
+<td>Discussion:</td>
+<td colspan="3"><textarea id="censusDisc" onInput="draftResult()"></textarea></td>
+</tr>
+
+</table>
+
+
+
+
+
+
+
 
 
 <!-- items that get filled in by autoPropagate, but that are no longer used.
@@ -1039,7 +1163,7 @@ Need to fix this properly at some point. -->
 
    
    
-<p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="Converter"></textarea> <button onClick="doConversion()">GO</button></p>
+<!--p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="Converter"></textarea> <button onClick="doConversion()">GO</button></p-->
    
    <script>
    // drop OLD data into the textarea and click GO
@@ -1102,7 +1226,7 @@ Need to fix this properly at some point. -->
 <div id="fnote"></div>
 <div id="discussion" style="white-space: pre;"></div>
 
-<div style="white-space:pre-line">sources: `</div>
+<div id="sourcesStart" style="white-space:pre-line"></div>
 
 <!-- first -->
 <div id="firstSource" style="white-space: pre;"></div>
@@ -1139,7 +1263,7 @@ Need to fix this properly at some point. -->
 <div id="thirdPasted" style="white-space:pre-line"></div>
 <div id="thirdText" style="white-space:pre-line"></div>
 
-<div id="end">`</div>
+<div id="sourcesEnd"></div>
 <div id="end2">},</div>
 <div id="father" style="display:none;"></div>
 <div id="fatherId" style="display:none;"></div>
@@ -1177,8 +1301,13 @@ function prepCopy () {
 
 
 <script>
-document.getElementById('clearAll').href = document.location
-document.getElementById('idIn').value = theperson
+//document.getElementById('new').href = document.location
+if (theperson) {
+    document.getElementById('idIn').value = theperson
+    }
+if (timestamp) {
+    document.getElementById('timestampIn').value = timestamp
+    }
 </script>
 </body>
 </html>

@@ -21,7 +21,14 @@ for (var p=0;p<parameters.length;p++) {
 	}
 
 // load the appropriate db file	
-if (! project) alert('Specify the project name in the URL, using ?project=...')
+if (! project || project.match(/\.\./)) {
+    project = ''
+    while (project === '') project = prompt('What project do you want to work with?')
+    window.location += '?project='+project
+    }
+
+// load the appropriate db file	
+//if (! project) alert('Specify the project name in the URL, using ?project=...')
 var database = document.createElement('script')
 database.id = 'database'
 database.src = '../../'+project+'/db.js'
@@ -30,6 +37,7 @@ document.head.appendChild(database)
 
 if (theperson) {
     setTimeout(() => autoPropagate(theperson), 1000)
+    setTimeout(() => document.getElementById('idIn').value = theperson, 1000)
     }
 </script>
 
@@ -71,6 +79,30 @@ function autoPropagate (person) {
         }
     
     var otherNames, otherNamesStr
+    
+    
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placesDB) {
+    out += `<option value="${ place }">${ place }`
+    if (placesDB[place].gps) out += ' G'
+    if (placesDB[place].desc) out += ' I'
+    out += `</option>,\n`
+    }
+    document.getElementById('gpsList').innerHTML = out
+
+
+    
+    
+    // check whether provisional
+    if (db[person].provisional) {
+        document.getElementById('prov').checked = true
+        if (db[person].warning) document.getElementById('warningIn').value = db[person].warning.trim()
+        }
+    else {
+        document.getElementById('prov').checked = false
+        document.getElementById('warningIn').value = ''
+        }
     
     // populate the summary
     document.getElementById('summaryGivenNames').value = db[person].g.trim()
@@ -122,17 +154,23 @@ function autoPropagate (person) {
                 fgOut += fgs[i][j].trim()
                 if (j<fgs[i].length-1) fgOut +=', '
                 }
-            fgOut += '\n'
+            if (i<fgs.length-1) fgOut += '\n'
             }
         document.getElementById('summaryFG').value = fgOut
         }
 
 
+    if (db[person].places) {
+        document.getElementById('gpsIn').value = db[person].places.trim().replace(/,\s*/g,'\n')
+        }
+
 
     if (db[person].birth) {
-        out = 'birth: {\n'
+        //out = 'birth: {\n'
 
-        out += `timestamp: "${ db[person].birth.timestamp }",\n`
+        if (typeof db[person].birth.timestamp !== 'undefined') out = `timestamp: "${ db[person].birth.timestamp }",\n`
+        else out = `// data\n`
+        //out += `timestamp: "${ db[person].birth.timestamp }",\n`
 
         if (db[person].birth.images) {
             out += 'images: ['
@@ -166,16 +204,18 @@ function autoPropagate (person) {
 
         if (db[person].birth.sources) out += 'sources: `'+ db[person].birth.sources+'`'
         
-        out += '},'
+        //out += '},//b'
 
         document.getElementById('birthIn').value = out
         }
         
 
     if (db[person].death) {
-        out = 'death: {\n'
+        //out = 'death: {\n'
 
-        out += `timestamp: "${ db[person].death.timestamp }",\n`
+        if (typeof db[person].death.timestamp !== 'undefined') out = `timestamp: "${ db[person].death.timestamp }",\n`
+        else out = `// data\n`
+        //out += `timestamp: "${ db[person].death.timestamp }",\n`
 
         if (db[person].death.images) {
             out += 'images: ['
@@ -219,7 +259,7 @@ function autoPropagate (person) {
 
         if (db[person].death.sources) out += 'sources: `'+ db[person].death.sources+'`'
         
-        out += '},'
+        //out += '},//d'
 
         document.getElementById('deathIn').value = out
         }
@@ -390,6 +430,16 @@ function draftResult () {
 
 var otherNames, otherNamesStr
 
+// check whether this is provisional data
+if (document.getElementById('prov').checked) {
+    document.getElementById('provOut').textContent = `\u00A0\u00A0\u00A0 provisional: true,`
+    document.getElementById('warningOut').textContent = `warning: "${document.getElementById('warningIn').value.trim()}",`
+    }
+else {
+    document.getElementById('provOut').textContent = ''
+    document.getElementById('warningOut').textContent = ''
+    }
+
 // do the summary section
 document.getElementById('idOut').textContent = document.getElementById('idIn').value.trim()
 
@@ -445,7 +495,7 @@ if (document.getElementById('summaryCStatus').value.trim()) document.getElementB
 
 
 if (document.getElementById('summaryFG').value.trim() !== '') {
-    fgOut = ''
+    fgOut = 'fg: ['
     fgs = document.getElementById('summaryFG').value.split('\n')
     for (fg=0;fg<fgs.length;fg++) {
         if (fgs[fg].trim() !== '') {
@@ -456,22 +506,54 @@ if (document.getElementById('summaryFG').value.trim() !== '') {
                 if (i<fgItems.length-1) fgOut += ', '
                 }
             fgOut += ']'
-            if (fg < fgs.length-1) fgOut += '<br>'
+            if (fg < fgs.length-1) fgOut += ',\n<br>&nbsp;&nbsp;&nbsp;&nbsp;'
             }
         }
+    fgOut += '],'
     document.getElementById('summaryFGOut').innerHTML = fgOut
+    }
+else document.getElementById('summaryFG').value = ''
+
+
+
+if (document.getElementById('gpsIn').value.trim()) {
+    temp = document.getElementById('gpsIn').value.split('\n')
+    plOut = ''
+    for (p=0;p<temp.length;p++) {
+        plOut += temp[p].trim()
+        if (p<temp.length-1) plOut += ', '
+        }
+    document.getElementById('placesOut').textContent = `places:"${ plOut }",`
     }
 
 
-if (document.getElementById('birthIn').value.trim() !== '') document.getElementById('birthOut').textContent = '\n'+document.getElementById('birthIn').value.trim()
 
-//if (document.getElementById('marriageIn').value.trim() !== '') document.getElementById('marriageOut').textContent = '\n'+document.getElementById('marriageIn').value.trim()
 
-if (document.getElementById('marriageIn').value.trim() !== '') document.getElementById('marriageOut').textContent = `\nmarriages: {\n${ document.getElementById('marriageIn').value.trim() }\n},`
 
-if (document.getElementById('deathIn').value.trim() !== '') document.getElementById('deathOut').textContent = '\n'+document.getElementById('deathIn').value.trim()
+if (document.getElementById('introIn').value.trim() !== '') document.getElementById('introOut').textContent = `\nintro: \u0060${ document.getElementById('introIn').value.trim() }\u0060,\n`
 
-if (document.getElementById('eventsIn').value.trim() !== '') document.getElementById('eventsOut').textContent = `\nevents:{\n${ document.getElementById('eventsIn').value.trim() }\n}`
+
+document.getElementById('birthOut').textContent = `\nbirth: {`
+if (document.getElementById('birthIn').value.trim() !== '') document.getElementById('birthOut').textContent += '\n'+document.getElementById('birthIn').value.trim()
+else document.getElementById('birthOut').textContent += `\n// data`
+document.getElementById('birthOut').textContent += `\n},//b`
+
+document.getElementById('marriageOut').textContent = `\nmarriages: {\n`
+if (document.getElementById('marriageIn').value.trim() !== '') document.getElementById('marriageOut').textContent += `${ document.getElementById('marriageIn').value.trim() }`
+else document.getElementById('marriageOut').textContent += `// data`
+document.getElementById('marriageOut').textContent += `\n},//m`
+
+document.getElementById('deathOut').textContent = `\ndeath: {`
+if (document.getElementById('deathIn').value.trim() !== '') document.getElementById('deathOut').textContent += '\n'+document.getElementById('deathIn').value.trim()
+else document.getElementById('deathOut').textContent += `\n// data`
+document.getElementById('deathOut').textContent += `\n},//d`
+
+document.getElementById('eventsOut').textContent = `\nevents: {\n`
+if (document.getElementById('eventsIn').value.trim() !== '') document.getElementById('eventsOut').textContent += `${ document.getElementById('eventsIn').value.trim() }`
+else document.getElementById('eventsOut').textContent += `// data`
+document.getElementById('eventsOut').textContent += `\n},//e`
+
+
 
 
 
@@ -562,26 +644,40 @@ function getMonthOLD (dateValue) {
 
 
 <body>
-<div id="out">
-  <div id="banner">
+    <div id="out">
+    <div id="banner">
     <div id="pagetitle">Person record entry<br>
     </div>
-  </div>
-  <div id="subbanner">
-    <div><a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
-  </div>
-  <div id="subsubbanner">
-    <div>
-      <!--button onClick="dump()">Go</button-->&nbsp;
-    <strong>Id:</strong> 
-<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
-onInput="document.getElementById('idIn').textContent = '&quot;id: '+this.value+'&quot;,';"
-onChange="autoPropagate(this.value);"/> <span class="redo" onClick=" 
-autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
-
+    </div>
     
-</div>
-</div>
+    <div id="subbanner">
+    <div><a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>
+    </div>
+    
+    <div id="subsubbanner">
+    <div style="text-align: bottom;">
+    <!--button onClick="dump()">Go</button-->&nbsp;
+    
+    <strong>Id:</strong> 
+    <!--input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+    onInput="document.getElementById('idIn').textContent = '&quot;id: '+this.value+'&quot;,';"
+    onChange="autoPropagate(this.value);"-->
+    <!--span class="redo" title="Load from database" onClick=" 
+    autoPropagate(document.getElementById('idIn').value);">🔁</span-->
+    <input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click [LOAD]."
+    onClick="this.select()"
+    onChange="document.location=`personentry.html?project=${ project }&person=${ this.value }` }">
+    <button id="load" title="Load from database">Load</button>
+    
+    <!--<span class="redo" id="clearAll" style="margin-inline-start:3rem; font-weight: bold; color: red;">X</span>-->
+    <button id="new" style="margin-inline-start:3rem;">❌&nbsp; Clear the form</button>
+    <script> // set the events
+    document.getElementById('load').onclick = function () { document.location=`personentry.html?project=${ project }&person=${ document.getElementById('idIn').value }` }
+    document.getElementById('new').onclick = function () { document.location=`personentry.html?project=${ project }` }
+    </script>
+    </div>
+    </div>
+
 <div id="main">
 
 <div id="references">
@@ -598,56 +694,25 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 -->
 <table style="margin-inline-start: 2rem; color: teal;">
       <tr>
-        <td colspan="4" class="heading">Overview:</td></tr>
+        <td colspan="1" class="heading">Overview:</td>
+        <td colspan="3" style="vertical-align: bottom; font-size: 80%;"><input id="prov" type="checkbox" onClick="prov = document.getElementById('warningIn'); if (prov.value == '') prov.value = 'XXXX’s data has not yet been researched. only been partially researched. See the Notes & Research section below for more leads. For census forms see his her parents./More work is needed to verify this person and/or the information given.'; else prov.value = ''"> provisional</td>
+        </tr>
  
      <tr>
-        <td>Given names:</td>
-        <td colspan="3"><input type="text" id="summaryGivenNames"  
-            class="wideInputBox"
-            placeholder=""  
+        <td>Names:</td>
+        <td colspan="1"><input type="text" id="summaryGivenNames"  
+            class=""
+            placeholder="Given"  
             onInput="draftResult()">
-            </td>
-      </tr>
-     <tr>
-        <td>Known as:</td>
-        <td colspan="3"><input type="text" id="summaryKnownAs"
-            class="wideInputBox"
-            placeholder="DD MMM or MMM-MMM, etc."
-            onInput="checkDB('birthDateIn', 'bdate', 'bdateCheck')">
-            <span class="instructions" id="bdateCheck" style="color:red;"></span>
-<script>
-function makeTimestamp () {
-    daymonth = document.getElementById('birthDateIn').value.trim()
-    year = document.getElementById('birthYearIn').value.trim()   
-    if (daymonth.match('-')) {
-        switch (daymonth) {
-            case 'Jan-Mar': out = "02-15"; break
-            case 'Apr-Jun': out = "05-15"; break
-            case 'Jul-Sep': out = "08-15"; break
-            case 'Oct-Dec': out = "11-15"; break
-            default: out = daymonth
-            }
-        document.getElementById('timestampIn').value = year+'-'+out
-        } 
-    else if (daymonth.match('~')) {
-        daymonth = daymonth.replace(/~/,'')+' 15'
-        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
-        }
-    else {
-        components = daymonth.split(' ')
-        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
-        }
-    }
-</script>
-    <span class="copy" title="Add timestamp." onClick="makeTimestamp()    ">✚</span>
-     </td>
-</tr>
-<tr>
-<td>Family name:</td>
-<td colspan="3"><input type="text" id="summaryFamilyName"
-    placeholder="Place where they lived." class="wideInputBox"
-    onInput="draftResult(); checkDB('birthPlaceIn', 'bplace', 'bplaceCheck')">
-    <span class="instructions" id="bplaceCheck" style="color:red;"></span></td>
+           
+           <input type="text" id="summaryKnownAs"
+            class="shortField"
+            placeholder="Known as">
+     
+         <input type="text" id="summaryFamilyName"
+    placeholder="Family name" class=""
+    onInput="draftResult()">
+    </td>
 </tr>
 <tr>
 <td>Other names:</td>
@@ -655,22 +720,26 @@ function makeTimestamp () {
     placeholder="A comma-separated list of later family names from marriage, etc." class="wideInputBox"
     onInput="draftResult()"></td>
 </tr>
+
+<style>
+.dateField { width: 5rem; }
+.shortField { width: 6rem; }
+</style>
 <tr>
 <td>Birth date:</td>
 <td colspan="3"><input type="text" id="summaryBirthDate"
-    placeholder="Name" class="wideInputBox"
-    onInput="draftResult()"></td>
-</tr>
-<tr>
-<td>Birth year:</td>
-<td colspan="3"><input type="text" id="summaryBirthYear"  
-    placeholder="ID/name, relationship." class="wideInputBox"
-    onInput="draftResult()"></td>
+    placeholder="DD-MMM" class="dateField"
+    onInput="draftResult()">
+    
+    <label style="margin-inline-start:1rem;">Year: <input type="text" id="summaryBirthYear"  
+    placeholder="YYYY" class="dateField"
+    onInput="draftResult()"></label>
+    </td>
 </tr>
 <tr>
 <td>Birth place:</td>
 <td><input type="text" id="summaryBirthPlace"
-    placeholder="DD MMM" class="wideInputBox"
+    placeholder="" class="wideInputBox"
     onInput="draftResult()">
     </td>
 </tr>
@@ -678,23 +747,22 @@ function makeTimestamp () {
 <tr>
 <td>Death date:</td>
 <td><input type="text" id="summaryDeathDate" 
-    placeholder="Church, town, county." class="wideInputBox"
+    placeholder="DD-MMM" class="dateField"
     onInput="draftResult()">
-</td>
-</tr>
-<tr>
-<td>Death year:</td>
-<td><input type="text" id="summaryDeathYear" 
-    placeholder="YYYY" style="width:200px;"
-    onInput="draftResult()"> <label style="margin-inline-start:4rem;">Up to: <input type="text" id="summaryUptoIn" 
-    placeholder="YYYY" style="width:100px;"
+    
+    <label style="margin-inline-start:1rem;">Year: <input type="text" id="summaryDeathYear" 
+    placeholder="YYYY" class="dateField"
+    onInput="draftResult()"></label>
+    
+    <label style="margin-inline-start:1rem;">Up to: <input type="text" id="summaryUptoIn" 
+    placeholder="YYYY" class="dateField"
     onInput="draftResult()"></label></td>
 </tr>
 
 <tr>
 <td>Death place:</td>
 <td><input type="text" id="summaryDeathPlace"  
-    placeholder="Religion" class="wideInputBox"
+    placeholder="" class="wideInputBox"
     onInput="draftResult()">
     </td>
 </tr>
@@ -734,7 +802,7 @@ function makeTimestamp () {
 <tr>
 <td>Occupation:</td>
 <td><input type="text" id="summaryOcc"  
-    placeholder="" class="wideInputBox"
+    placeholder="Comma-separated list of occupations" class="wideInputBox"
     onInput="draftResult()">
     </td>
 </tr>
@@ -752,10 +820,35 @@ function makeTimestamp () {
 <td>Family group(s):</td>
 <td colspan="3"><textarea id="summaryFG"
     placeholder="One family per line. Use IDs wherever available, but if not available use name. Make a comma-separated list, where the 1st item is the year of marriage, the 2nd is the id (or name) of the spouse, and then a list of ids (or names) for children in age order (oldest to youngest)."
-    onInput="makeNotes(this.value,'fnote')
-    "></textarea></td>
+    onInput="draftResult()"
+    ></textarea></td>
 </tr>
+
+
+      <!--tr>
+        <td>Places:</td>
+        <td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select>
+            </td>
+      </tr>
+
+
+    <tr>
+        <td>&nbsp;</td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+      </tr-->
 </table>
+
+
+    <!--onInput="makeNotes(this.value,'fnote')-->
+
+
+
 
 
 
@@ -763,49 +856,105 @@ function makeTimestamp () {
 
 <table style="margin-inline-start: 2rem; color: teal;">
       <tr>
-        <td colspan="4" class="heading">Vital records:</td></tr>
- 
+        <td colspan="4" class="heading">Metadata:</td></tr>
 
-
-
-
-      <!--tr>
-        <td>GPS:</td>
+      <tr>
+        <td>Places:</td>
         <td><select id="gpsList" onChange="
             newline = ''
             if (document.getElementById('gpsIn').value === '') {}
             else newline = '\n'
             document.getElementById('gpsIn').value += newline+this.value
             draftResult()
-            "></select></td>
-      </tr-->
+            "></select>
+            </td>
+      </tr>
 
 
     <tr>
-        <td>Birth:<br><button onClick="openWindow('birthentry.html?project='+project+'&person='+document.getElementById('idIn').value)">Edit</button></td>
-        <td colspan="3"><textarea id="birthIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
+        <td>&nbsp;</td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+      </tr>
+    <tr>
+        <td>Intro:</td>
+        <td colspan="3"><textarea id="introIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
       </tr>
 
       <tr>
-        <td>Death:<br><button onClick="openWindow('dthentry.html?project='+project+'&person='+document.getElementById('idIn').value)">Edit</button></td>
-        <td colspan="3"><textarea id="deathIn" class="wideInputBox" onInput="draftResult()"></textarea></td>
-      </tr>
-
-    <tr>
-        <td>Marriage:<br><button onClick="openWindow('marriageentry.html?project='+project+'&person='+document.getElementById('idIn').value)">Edit</button></td>
-        <td colspan="3"><textarea id="marriageIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
-      </tr>
-
-    <tr>
-        <td>Events:<br><button 
-            onClick="openWindow('evententry.html?project='+project+'&person='+document.getElementById('idIn').value)"
-            >Edit event</button><br><button 
-            onClick="openWindow('censusentry.html?project='+project+'&person='+document.getElementById('idIn').value)"
-            >New census</button></td>
-        <td colspan="3"><textarea id="eventsIn" onInput="draftResult()" class="wideInputBox" style="height: 15rem;" placeholder="Edit one event at a time by copying the event timestamp, then click on Edit Event, add the timestamp to the new page and click the button Read In Existing Event. —— To create a new census record for census.js, click on New Census, and copy the lower part of the output (the event code) back here."></textarea></td>
+        <td>Warnings:</td>
+        <td colspan="3"><textarea id="warningIn" class="wideInputBox" onInput="draftResult()" placeholder="If this is a provisional record, add details here, with any source references." style="color:brown; font-size: 120%;"></textarea></td>
       </tr>
 </table>
-   
+
+
+
+
+
+
+
+<!--details><summary style="font-weight: bold; padding-top: 1em; font-size: 110%; color: teal;">BMD etc records</summary-->
+<table style="margin-inline-start: 2rem; color: teal;">
+      <tr>
+        <td colspan="4" class="heading">Records:</td></tr>
+
+<!--    <tr>
+        <td>Create/edit data:</td>
+        <td colspan="3">Existing data:</td>
+        <td>&nbsp;</td>
+      </tr>
+-->
+    <tr>
+        <td style="font-size:2em;">Birth</td>
+        <td><textarea id="birthIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
+        <td><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="openWindow('birthentry.html?project='+project+'&person='+document.getElementById('idIn').value)" alt="Edit" title="Edit the birth data."></td>
+      </tr>
+
+    <tr>
+        <td style="font-size:2em;">Death</td>
+        <td><textarea id="deathIn" class="wideInputBox" onInput="draftResult()"></textarea></td>
+        <td><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="openWindow('dthentry.html?project='+project+'&person='+document.getElementById('idIn').value)" alt="Edit" title="Edit the death data."></td>
+      </tr>
+
+    <tr>
+        <td style="font-size:2em;">Marriage</td>
+        <td><textarea id="marriageIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
+        <td><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="openWindow('marriageentry.html?project='+project+'&person='+document.getElementById('idIn').value)" alt="Edit" title="Edit the marriage data."></td>
+      </tr>
+
+    <tr>
+        <td style="font-size:2em;">Events</td>
+        <td><textarea id="eventsIn" onInput="draftResult()" class="wideInputBox" style="height: 15rem;" placeholder="Edit one event at a time. Add a time stamp for an existing or new event to the text area, then click on the edit icon. —— To create a new census record for census.js click on New Census."></textarea></td>
+        <td><input id="eventTimestamp" placeholder="Time stamp" style="font-size:1.5em; cursor:pointer;"><br><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="
+                if (document.getElementById('eventTimestamp').value.trim() !== '')
+                    openWindow('evententry.html?project='+project+'&person='+document.getElementById('idIn').value+'&timestamp='+document.getElementById('eventTimestamp').value.trim())
+                else alert('Add a time stamp value.')
+        " alt="Edit" title="Edit the event data."><br><br>
+        <button 
+        onClick="openWindow('censusentry.html?project='+project+'&person='+document.getElementById('idIn').value)"
+         style="font-size:2em; cursor:pointer;">New census</button></td>
+      </tr>
+
+    <!--tr>
+        <td><input id="eventTimestamp" placeholder="Time stamp" style="font-size:1.5em; cursor:pointer;"><br>
+        <button 
+            onClick="
+                if (document.getElementById('eventTimestamp').value.trim() !== '')
+                    openWindow('evententry.html?project='+project+'&person='+document.getElementById('idIn').value+'&timestamp='+document.getElementById('eventTimestamp').value.trim())
+                else alert('Add a time stamp value.')
+                "
+             style="font-size:2em; cursor:pointer;">Event</button><br>
+            <br><br>
+            
+            <button 
+            onClick="openWindow('censusentry.html?project='+project+'&person='+document.getElementById('idIn').value)"
+             style="font-size:2em; cursor:pointer;">New census</button></td>
+        <td><textarea id="eventsIn" onInput="draftResult()" class="wideInputBox" style="height: 15rem;" placeholder="Edit one event at a time by copying the event timestamp, then click on Edit Event, add the timestamp to the new page and click the button Read In Existing Event. —— To create a new census record for census.js, click on New Census, and copy the lower part of the output (the event code) back here."></textarea></td>
+      </tr-->
+
+
+</table>
+<!--</details>-->
+
    
    
    
@@ -873,12 +1022,16 @@ Need to fix this properly at some point. -->
    
 <div id="draft" style="margin:2rem; color: brown;" contenteditable="true">
 <!--summary info - NOTE: the layout of the code is important for copying-->
-<div><span id="idOut"></span>:{</div>
+<div><span id="idOut"></span>:{ <span id="provOut"></span></div>
+<div id="warningOut"></div>
 <div>g:"<span id="summaryGivenNamesOut"></span>", k:"<span id="summaryKnownAsOut"></span>", f:"<span id="summaryFamilyNameOut"></span>", <span id="summaryOtherNamesOut"></span> bdate:"<span id="summaryBirthDateOut"></span>", b:"<span id="summaryBirthYearOut"></span>", ddate:"<span id="summaryDeathDateOut"></span>", d:"<span id="summaryDeathYearOut"></span>", <span id="summaryUpto"></span></div>
 <div>bplace:"<span id="summaryBirthPlaceOut"></span>", dplace:"<span id="summaryDeathPlaceOut"></span>", thumb:<span id="summaryThumbOut"></span>, male:<span id="summaryGenderOut"></span>, p:<span id="summaryDetailsPageOut"></span>,</div>
 <div>father:"<span id="summaryFatherOut"></span>", mother:"<span id="summaryMotherOut"></span>", occ:"<span id="summaryOccOut"></span>",</div>
 <div id="summaryCStatusOut"></div>
-<div>fg:[<span id="summaryFGOut"></span>],</div>
+<div><span id="summaryFGOut"></span></div>
+<div><span id="placesOut"></span></div>
+
+<div id="introOut" style="white-space:pre-line"></div>
 
 <div id="birthOut" style="white-space:pre-line"></div>
 
@@ -886,7 +1039,8 @@ Need to fix this properly at some point. -->
 
 <div id="marriageOut" style="white-space:pre-line"></div>
 
-<div><span id="eventsOut" style="white-space:pre-line"></span><span id="end">},</span></div>
+<div><span id="eventsOut" style="white-space:pre-line"></span></div>
+<div><span id="end" style="white-space:pre-line"></span>},//p</div>
 
 
 
@@ -925,9 +1079,6 @@ function prepCopy () {
 
 <script>
 document.getElementById('clearAll').href = document.location
-if (theperson) {
-    document.getElementById('idIn').value = theperson
-    }
 </script>
 </body>
 </html>

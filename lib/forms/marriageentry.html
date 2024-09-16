@@ -11,18 +11,54 @@ details { margin-left: 2em; }
 <script src="formentrylookup.js"></script>
 <script>
 trace = false
+
 // read in project
-var project
+var project = ''
+var theperson = ''
+
+// get any parameter info
+console.log(location.search)
+const params = new URLSearchParams(location.search)
+console.log(params)
+console.log('proj',params.get('project'))
+console.log('proj',params.get('theperson'))
+project = params.get('project')
+theperson = params.get('person')
+spouse = params.get('spouse')
+
+if (project === null) project = prompt('What project do you want to work with?')
+if (theperson === null) theperson = prompt('Provide the id of the first person.')
+
+
+/*
+?project=all&person=keam_peter_1816&spouse=tank_jane_1821
+
+
+
 parameters = location.search.split('&');
 parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
 	pairs = parameters[p].split('=');
-	if (pairs[0] == 'project') { if (pairs[1]) { var project = pairs[1] } }
-	if (pairs[0] == 'person' && pairs[1]) { var theperson = pairs[1] }
+	if (pairs[0] == 'project') { if (pairs[1]) { project = pairs[1] } }
+	if (pairs[0] == 'person' && pairs[1]) { theperson = pairs[1] }
 	}
 
+console.log(project, theperson)
+
+// get project & ids	
+if (project === '' || project.match(/\.\./)) {
+    project = prompt('What project do you want to work with?')
+    }
+if (theperson == '') {
+    theperson = prompt('Provide the id of the first person.')
+    }
+
+window.location += '?project='+project+'&person='+theperson
+*/
+
+
 // load the appropriate db file	
-if (! project) alert('Specify the project name in the URL, using ?project=...')
+//if (! project) alert('Specify the project name in the URL, using ?project=...')
 var db = document.createElement('script')
 db.id = 'database'
 db.src = '../../'+project+'/db.js'
@@ -34,6 +70,10 @@ if (theperson) {
     setTimeout(() => autoPropagate(theperson), 1000)
     }
 </script>
+
+
+
+
 <script>
 
 function openWindow (locn) {
@@ -72,12 +112,24 @@ function autoPropagate (person) {
     // add id for parameter driven use
     document.getElementById('idIn').value = person
 
-    // populate the places pulldown
+    /*/ populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placeIndex) {
 	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
 	}
+    document.getElementById('gpsList').innerHTML = out*/
+
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placesDB) {
+	out += `<option value="${ placesDB[place].p }, ${ placesDB[place].c } ${ placesDB[place].gps }">${ place }`
+    if (placesDB[place].gps) out += ' G'
+    if (placesDB[place].desc) out += ' I'
+    out += `</option>,\n`
+	}
     document.getElementById('gpsList').innerHTML = out
+
+
 
     // make a list of relatives to the right
 	listRelations(person)
@@ -86,11 +138,22 @@ function autoPropagate (person) {
 
     // first find the marriage data
     var spouse = document.getElementById('spouseIdIn').value
-    if (spouse === '') {
+    /*if (spouse === '') {
         alert('Spouse id needed to autopropate data.')
         return
+        }*/
+    if (spouse === '') {
+        // get any known spouses
+        if (db[person] && db[person].fg) {
+            fgArray = db[person].fg
+            listOfSpouses = ''
+            for (s=0;s<fgArray.length;s++) listOfSpouses += fgArray[s][1]+'\n'
+            if (fgArray.length > 0) listOfSpouses = 'Known spouses:\n'+listOfSpouses+'\n'
+            }
+        spouse = prompt(listOfSpouses+'Provide the id of the spouse.')
+        document.getElementById('spouseIdIn').value = spouse
         }
-    
+
     var dataItems
     if (db[person] && db[person].marriages && db[person].marriages[spouse]) dataItems = db[person].marriages[spouse]
     else if (db[spouse] && db[spouse].marriages && db[spouse].marriages[person]) dataItems = db[spouse].marriages[person]
@@ -444,10 +507,13 @@ function draftResult () {
         }
     else document.getElementById('timestamp').textContent = ''
 
-    /*if (document.getElementById('dateIn').value.trim())
-        document.getElementById('marriageDate').textContent = `date: "${ document.getElementById('dateIn').value.trim() }",`
-    else document.getElementById('marriageDate').textContent = ''
-    */
+    if (document.getElementById('yearIn').value.trim())
+        document.getElementById('year').textContent = `year: "${ document.getElementById('yearIn').value.trim() }",`
+    else document.getElementById('year').textContent = ''
+
+    if (document.getElementById('dateIn').value.trim())
+        document.getElementById('date').textContent = `date: "${ document.getElementById('dateIn').value.trim() }",`
+    else document.getElementById('date').textContent = ''
 
     if (document.getElementById('marrPlaceIn').value.trim()) document.getElementById('place').textContent = `place: "${ document.getElementById('marrPlaceIn').value.trim() }",` 
     else document.getElementById('place').textContent = ''
@@ -518,6 +584,10 @@ function draftResult () {
 
 
 
+    if (document.getElementById('censusNotes').value) {
+        document.getElementById('note').textContent = "notes: \u0060"+document.getElementById('censusNotes').value+"\u0060,"
+        }
+
 
     if (document.getElementById('censusDisc').value) {
         document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value+"\u0060,"
@@ -535,7 +605,7 @@ function draftResult () {
 
 
 
-    if (document.getElementById('gpsIn').value.trim()) {
+    /*if (document.getElementById('gpsIn').value.trim()) {
         lines = document.getElementById('gpsIn').value.split('\n')
         output = ''
         for (o=0;o<lines.length;o++) {
@@ -547,8 +617,22 @@ function draftResult () {
             }
         document.getElementById('gps').textContent = `gps: [${ output }],`
         }
+    else document.getElementById('gps').textContent = ''*/
+
+
+    if (document.getElementById('gpsIn').value.trim()) {
+        lines = document.getElementById('gpsIn').value.split('\n')
+        output = ''
+        for (o=0;o<lines.length;o++) {
+            if (lines[o].trim() === '') continue
+            console.log('lines',lines[o])
+            output += `"${ lines[o] }"`
+            if (o<lines.length-1) output += ', '
+            }
+        document.getElementById('gps').textContent = `gps: [${ output }],`
+        }
     else document.getElementById('gps').textContent = ''
-    
+
     
     if (document.getElementById('recordsIn').value.trim()) {
         var imagesArray = []
@@ -651,12 +735,22 @@ console.log(dateValue)
       <!--button onClick="dump()">Go</button-->&nbsp;
     <strong>Id:</strong> 
     
-<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
-onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
+<!--input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+onInput="document.getElementById('id').textContent = 'id: &quot;'+this.value+'&quot;,';"
 onChange="autoPropagate(this.value);"/>
 
 <input type="text" id="spouseIdIn" placeholder="Add ID of spouse."
-        	onInput="draftResult()">
+        	onInput="draftResult()"-->
+
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click [LOAD]." onClick="this.select()">
+<input type="text" id="spouseIdIn" placeholder="Add ID of spouse." onClick="this.select()">
+
+<button id="load"
+    title="Load from database"
+    onClick="document.location=`marriageentry.html?project=${ project }&person=${ document.getElementById('idIn').value }&spouse=${ document.getElementById('spouseIdIn').value }`"
+    >Load</button>
+
+
 
 <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value)">🔁</span>
 <span class="redo"><a id="clearAll" href="">❌</a></span>
@@ -690,7 +784,7 @@ Other:</textarea>
 
 <div id="parishTemplate" style="min-width: 10rem;">
 <h3>Parish record</h3>
-<textarea onClick="this.select()">Parish:
+<textarea onClick="this.select()">
 Parish: 
 Groom: 
 Groom details: 
@@ -704,12 +798,13 @@ Witnesses:
 </div>
 
 
-<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">The  fields in the expanding headings allow for capture of the available source information, and on the person summary page that information can be revealed using a toggle switch. The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
+<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">If you have scans of certificates or parish records, etc. point to them in the section "Record scans". • The "Source #1" and other numbered fields with expanding headings allow you to capture the information from a single source. (On a person summary page that information is revealed by clicking on a black triangle to the right.) • The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
 
 
+<p style="margin: 0 4rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="Converter" style="width: 36rem; height: 4rem;"></textarea> <button onClick="doConversion()">GO</button></p>
 
 
-<details>
+<details open>
 <summary class="heading">Record scans</summary>
 <table>
 <tr>
@@ -735,7 +830,7 @@ Witnesses:
 
 
 
-<details id="index">
+<details id="index" open>
 <summary class="heading">Source #1</summary>
 <table>
     <tr>
@@ -753,7 +848,8 @@ Witnesses:
     </tr>
     
     <tr>
-    <td>Key-value<br>pairs:</td>
+    <td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button></td>
     <td><textarea id="indexPastedIn"  class="tallPasteBox"
         placeholder="Copy-paste lists here from transcript pages. (Each line should be [type: value]. Only lines with a colon are captured.)"
         onInput="draftResult()"></textarea></td>
@@ -795,7 +891,8 @@ Witnesses:
 </tr>
 
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('bapPastedIn').value = tabs2colons(document.getElementById('bapPastedIn').value)">Add colons</button></td>
 <td><textarea id="bapPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -845,7 +942,8 @@ function removeBrackets (node) {
 </tr>
 
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button></td>
 <td><textarea id="secondPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -885,7 +983,8 @@ function removeBrackets (node) {
 </tr>
 
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('thirdPastedIn').value = tabs2colons(document.getElementById('thirdPastedIn').value)">Add colons</button></td>
 <td><textarea id="thirdPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -925,16 +1024,16 @@ Need to fix this properly at some point. -->
             </td>
       </tr>
      <tr>
-        <td>Year:</td>
-        <td colspan="3"><input type="text" id="yearIn"
-            placeholder="YYYY"
+        <td>Date:</td>
+        <td colspan="3"><input type="text" id="dateIn"
+            placeholder="DD MMM or MMM-MMM, etc."
             >
             </td>
       </tr>
      <tr>
-        <td>Date:</td>
-        <td colspan="3"><input type="text" id="dateIn"
-            placeholder="DD MMM or MMM-MMM, etc."
+        <td>Year:</td>
+        <td colspan="3"><input type="text" id="yearIn"
+            placeholder="YYYY"
             >
 <script>
 function makeTimestamp () {
@@ -960,7 +1059,8 @@ function makeTimestamp () {
         }
     }
 </script>
-    <span class="copy" title="Add timestamp." onClick="makeTimestamp()    ">✚</span>
+    <!--<span class="copy" title="Add timestamp." onClick="makeTimestamp()    ">✚</span>-->
+    <button class="copy" title="Add timestamp based on the marriage date." onClick="makeTimestamp()">Create time stamp</button>
             </td>
       </tr>
 <tr>
@@ -1106,7 +1206,7 @@ onInput="draftResult()">
 
     <tr>
         <td>GPS:</td>
-        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the selection control above or type directly to add locations here, one per line. The end result should look like this: Blakemore Gate https://www.google.com/maps?q=52.6040598,-2.9199274"></textarea></td>
       </tr>
 
     <tr>
@@ -1128,7 +1228,7 @@ onInput="draftResult()">
    </table>
    
    
-<p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="Converter"></textarea> <button onClick="doConversion()">GO</button></p>
+<!--p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="Converter"></textarea> <button onClick="doConversion()">GO</button></p-->
    
    <script>
    // drop OLD data into the textarea and click GO
@@ -1227,7 +1327,7 @@ onInput="draftResult()">
    
    
 <div id="draft" style="margin:2rem; color: brown;">
-<div id="start">marriages: {</div>
+<!--div id="start">marriages: {</div-->
       <div id="spouseId">: {</div>
 
       <div id="timestamp"></div>
@@ -1309,7 +1409,7 @@ onInput="draftResult()">
 <div id="thirdText" style="white-space:pre-line"></div>
 
 <div id="arrayEnd">`},</div>
-<div id="end">},</div>
+<!--div id="end">},</div-->
 
 
 
@@ -1320,6 +1420,11 @@ onInput="draftResult()">
 
 
 <script>
+document.getElementById('idIn').value = theperson
+document.getElementById('spouseIdIn').value = spouse
+console.log(document.getElementById('idIn').value)
+
+
 function prepCopy () {
     draft = document.getElementById('draft')
     copied = document.getElementById('draftCopy')

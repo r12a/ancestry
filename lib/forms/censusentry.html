@@ -13,6 +13,7 @@ parameters[0] = parameters[0].substring(1);
 for (var p=0;p<parameters.length;p++) {  
 	pairs = parameters[p].split('=');
 	if (pairs[0] == 'project' && pairs[1]) project = pairs[1] 
+	if (pairs[0] == 'person' && pairs[1]) { var theperson = pairs[1] }
 	}
 
 // load the appropriate db file	
@@ -34,7 +35,7 @@ function draftNotes () {
     var headId = document.getElementById('headId').value
     var wifeId = document.getElementById('wifeId').value
     
-    if (headId) out += `{${ headId }:kx}`
+    if (headId) out += `{${ headId }:kx0}`
     else out +=  `${ document.getElementById('censusHeadName').value }, document.getElementById('censusHeadAge').value,`
     //if (document.getElementById('censusHeadAge').value) out += `, ${ document.getElementById('censusHeadAge').value }`
     if (document.getElementById('censusOcc').value) out += ` was a ${ document.getElementById('censusOcc').value }`
@@ -43,7 +44,7 @@ function draftNotes () {
     
     if (document.getElementById('censusWifeName').value 
         && document.getElementById('censusWifeOcc').value) {
-        if (wifeId) out += `His wife {${ wifeId }:kx}`
+        if (wifeId) out += `His wife {${ wifeId }:kx0}`
         else out +=  `His wife ${ document.getElementById('censusWifeName').value }, ${ document.getElementById('censusWifeAge').value },`
         if (document.getElementById('censusWifeOcc').value) out += ` was a ${ document.getElementById('censusWifeOcc').value }`
         out += '.'
@@ -97,11 +98,24 @@ function draftNotes () {
     node.value = out
     }
 
-function fillPlacesPulldown () {
+function fillPlacesPulldownOLD () {
     // populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placeIndex) {
 	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
+	}
+    document.getElementById('gpsList').innerHTML = out
+    }
+
+
+function fillPlacesPulldown () {
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placesDB) {
+	out += `<option value="${ placesDB[place].p }, ${ placesDB[place].c } ${ placesDB[place].gps }">${ place }`
+    if (placesDB[place].gps) out += ' G'
+    if (placesDB[place].desc) out += ' I'
+    out += `</option>,\n`
 	}
     document.getElementById('gpsList').innerHTML = out
     }
@@ -113,7 +127,7 @@ function getDate (year) {
 		case '1841': date = '1841-06-06'; break
 		case '1851': date = '1851-03-03'; break
 		case '1861': date = '1861-04-07'; break
-		case '1871': date = '1871-040-02'; break
+		case '1871': date = '1871-04-02'; break
 		case '1881': date = '1881-04-03'; break
 		case '1891': date = '1891-04-05'; break
 		case '1901': date = '1901-03-31'; break
@@ -331,7 +345,7 @@ function draftResult () {
     if (document.getElementById('censusPlace').value.trim()) document.getElementById('place').textContent = `place: "${ document.getElementById('censusPlace').value.trim() }",` 
     else document.getElementById('place').textContent = ''
     
-    if (document.getElementById('roomsIn').value.trim()) document.getElementById('rooms').textContent = `rooms: ${ document.getElementById('roomsIn').value.trim() }` 
+    if (document.getElementById('roomsIn').value.trim()) document.getElementById('rooms').textContent = `rooms: "${ document.getElementById('roomsIn').value.trim() }",` 
     else document.getElementById('rooms').textContent = ''
     
     
@@ -484,7 +498,7 @@ function draftResult () {
 
 
 
-    if (document.getElementById('marriedIn').value.trim()) document.getElementById('married').textContent = `married: ${ document.getElementById('marriedIn').value.trim() }` 
+    if (document.getElementById('marriedIn').value.trim()) document.getElementById('married').textContent = `married: "${ document.getElementById('marriedIn').value.trim() }",`
     else document.getElementById('married').textContent = ''
     
     if (document.getElementById('censusOcc').value.trim()) document.getElementById('occ').textContent = `occ: "${ document.getElementById('censusOcc').value.trim() }",` 
@@ -492,15 +506,28 @@ function draftResult () {
 
     
 
-    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
+    /*if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
         document.getElementById('gps').textContent = `gps: ["${ document.getElementById('gpsPlace').value.trim() }` 
         if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim().replace(/ /g,'') }"]` 
         document.getElementById('gps').textContent += `,`
         }
-    else document.getElementById('gps').textContent = ''
+    else document.getElementById('gps').textContent = ''*/
     
 
+     if (document.getElementById('gpsIn').value.trim()) {
+        lines = document.getElementById('gpsIn').value.split('\n')
+        output = ''
+        for (o=0;o<lines.length;o++) {
+            if (lines[o].trim() === '') continue
+            console.log('lines',lines[o])
+            output += `"${ lines[o] }"`
+            if (o<lines.length-1) output += ', '
+            }
+        document.getElementById('gps').textContent = `gps: [${ output }],`
+        }
+    else document.getElementById('gps').textContent = ''
     
+   
     if (document.getElementById('censusNotes').value.trim())  document.getElementById('note').textContent = `notes: \u0060${ document.getElementById('censusNotes').value.trim() }\u0060,`
     //makeNotes(document.getElementById('censusNotes').value.trim(),'note') 
     else document.getElementById('note').textContent = ''
@@ -535,6 +562,10 @@ function draftResult () {
 .redo { font-size:120%; margin-left: 1em; cursor: pointer; }
 </style>
 </head>
+
+
+
+
 <body>
 <div id="out">
   <div id="banner">
@@ -548,7 +579,11 @@ function draftResult () {
     <div>
       <!--textarea placeholder="Drop existing code here to partially complete the page."></textarea> <button onClick="dump()">Go</button-->
     <strong>Id:</strong> 
-<input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+<input type="text" style="width:20rem;" id="censusId" placeholder="Add id of head or main person, then click on [Load].">
+<button id="load" title="Load relations & places" onclick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">Load</button>
+<!--<span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span>-->
+<button id="clearAll" onClick="document.location=`censusentry.html?project=${ project }`" style="margin-inline-start:3rem;">❌&nbsp; Clear the form</button>
+<!--<span class="redo"><a id="clearAll" href="">❌</a></span>-->
     </div>
   </div>
   <div id="main">
@@ -619,11 +654,7 @@ function draftResult () {
         <input type="text" id="censusSourceDetails" onInput="draftResult()" placeholder="Copy here the detailed info for Reg. District, etc." style="width:40em;">
         </td>
       </tr>
-      <tr>
-        <td>Scans:</td>
-        <td><input type="text" id="censusRecordURL" style="width:40em;" onInput="draftResult()" placeholder="A comma-separated list of filenames (no extension)"></td>
-      </tr>
-       <tr>
+        <tr>
         <td>CParish</td>
         <td>
           <input type="text" id="censusCParish" onInput="draftResult()"/>
@@ -631,6 +662,10 @@ function draftResult () {
           <input type="text" id="censusSRD" onInput="draftResult()"/>
           RD
           <input type="text" id="censusRD" onInput="draftResult()"/--></td>
+      </tr>
+     <tr>
+        <td>Scans:</td>
+        <td><input type="text" id="censusRecordURL" style="width:40em;" onInput="draftResult()" placeholder="A comma-separated list of filenames (no extension)"></td>
       </tr>
      <tr>
         <td>Place:</td>
@@ -673,51 +708,65 @@ function draftResult () {
  
 
 
-      <tr>
+      <!--tr>
         <td>GPS:</td>
         <td><select id="gpsList" onChange="
             document.getElementById('gpsPlace').value=this.value.split(':')[0]
             document.getElementById('gpsCoords').value=this.value.split(':')[1]
             "></select></td>
-        </tr>
-
+        </tr-->
 
       <tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select></td>
+      </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the selection control above or type directly to add locations here, one per line. The end result should look like this: Blakemore Gate https://www.google.com/maps?q=52.6040598, -2.9199274"></textarea></td>
+      </tr>
+
+
+      <!--tr>
         <td>&nbsp;</td>
         <td>
             <input type="text" id="gpsPlace" placeholder="Name of location" onInput="draftResult()" onChange="draftResult()">
             <input type="text" id="gpsCoords" placeholder="Comma-separated coordinates" onInput="draftResult()" onChange="draftResult()">
             </td>
-      </tr>
-
-
-     <!--tr>
-        <td>GPS:</td>
-        <td><input type="text" id="gpsPlace" onInput="document.getElementById('gps').innerHTML = 'gps: '+ this.value+' https://maps.google.com/maps?q='+formatGPS(document.getElementById('gpsCoords').value)"/>
-          <input type="text" id="gpsCoords"  onInput="document.getElementById('gps').innerHTML = 'gps: '+ document.getElementById('gpsPlace').value+' https://maps.google.com/maps?q='+formatGPS(this.value)"/></td>
       </tr-->
+
+
       <tr style="visibility:hidden;">
         <td>Record title:</td>
         <td><input type="text" id="censusTitle" style="width:400px;" onInput="document.getElementById('title').textContent = this.value;"/></td>
       </tr>
       <tr>
         <td style="vertical-align: top;">Notes:<br><button onClick="draftNotes()">Draft</button></td>
-        <!--td><textarea id="censusNotes" onInput="makeNotes(this.value,'note')" style="padding: 1rem; font-size: 100%; height: 15rem;"></textarea></td-->
-        <td><textarea id="censusNotes" onInput="draftResult(this.value)" style="padding: 1rem; font-size: 100%; height: 15rem;"></textarea><br>
+
+
+        <td><textarea id="censusNotes" onInput="draftResult(this.value)" style="padding: 1rem; font-size: 100%; height: 15rem;"
+            placeholder="Click on the DRAFT button to get started. This should briefly summarise the situation. It will appear in the person summary page. Use {xxxx:kx} for people's names."></textarea><br>
         <span style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">Use this to indicate ages of people not in the db: <input value='&lt;sup class="ageTag"&gt;XX&lt;/sup&gt;' onClick="this.select()" style="width:15rem; border:0;"></span>
         </td>
       </tr>
       <tr>
         <td>FNotes:</td>
-        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')" placeholder="Each paragraph here will be listed below the entry as footnotes.  As for the notes field, used {xxxx:kx} for people's names."></textarea></td>
+        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')" placeholder="Each paragraph here will be listed below the entry as footnotes.  Like for the notes field, use {xxxx:kx} for people's names."></textarea></td>
       </tr>
       <tr>
         <td>Discussion:</td>
-        <td><textarea id="censusDisc" onInput="draftResult(this.value)"></textarea></td>
+        <td><textarea id="censusDisc" onInput="draftResult(this.value)" placeholder="This is for commentary on the entry, such as to justify choices made. Discussion text is not displayed on the general UI, but a speech bubble icon is added. Click on the icon or reveal the sources to see the text."></textarea></td>
       </tr>
       <tr>
         <td>Caution:</td>
-        <td><textarea id="cautionIn" onInput="draftResult(this.value)"></textarea></td>
+        <td><textarea id="cautionIn" onInput="draftResult(this.value)"
+            placeholder="Use to draw attention to guesswork or items needing further corroboration, etc. Text is displayed by clicking on a warning icon in the person summary page."></textarea></td>
       </tr>
    </table>
     
@@ -727,7 +776,7 @@ function draftResult () {
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
 
 
-    <div id="draft" style="margin:2em; color: brown;">
+    <div id="draft" style="margin:2em; color: brown;" contenteditable="true">
     <div id="title"></div>
       <!--div id="year"></div-->
       <div id="place"></div>
@@ -762,7 +811,7 @@ function draftResult () {
       <div id="fnote"></div>
       <div id="discussion" style="white-space: pre"></div>
       <div id="caution" style="white-space: pre"></div>
-      <div id="end">},</div>
+      <div id="end">},<br></div>
       </div>
       
 
@@ -792,6 +841,13 @@ function prepCopy () {
 
 <script>
 document.getElementById('clearAll').href = document.location
+
+
+if (theperson) {
+    document.getElementById('censusId').value = theperson
+    setTimeout(() => listRelations(theperson), 1000)
+    setTimeout(() => fillPlacesPulldown(), 1000)
+    }
 </script>
 </body>
 </html>

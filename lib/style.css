@@ -69,7 +69,7 @@ textarea { width: 90%; height: 100px; }
 .footnotes { font-size: 80%; margin-top: 1em; }
 .footnotes p { margin-top: 1em; }
 .footnotes ol { margin-top: 0; margin-bottom: 0; }
-.commentaryIcon { margin-top: 0; float: right; }
+.commentaryIcon { margin-top: 0; float: right; cursor: pointer; margin-inline-start: 1rem; margin-inline-end: .5rem; }
 a { color: rgba(183,117,0,1.00); color: #648200; text-decoration: none; }
 .descriptionText a {
       color: chocolate;
@@ -90,7 +90,7 @@ pre img { vertical-align: bottom; margin: 5px 5px 5px 0; }
 
 .figure { background-color: #f8f7f3; border: 0; }
 .figure details { display: none; }
-figure { text-align: center; margin:0; }
+figure { text-align: center; margin:0; margin-inline-start: -32%; }
 figure img { max-height: 400px; max-width: 100%; border: 3px solid gray; }
 figcaption { font-style: italic; text-align: center; }
 .treeLink { border-bottom: 2px dotted #ccc; }
@@ -106,6 +106,14 @@ figcaption { font-style: italic; text-align: center; }
 .keypoints .place {font-style:italic; }
 .floatedIcons {
     font-size: 1rem;
+    }
+.floatedIconText {
+    font-size: .7rem;
+    margin-block: .25rem;
+    margin-inline-start: 1.4rem;
+    text-indent: -1.4rem;
+    line-height: 1.4;
+    clear: both;
     }
 
 #links { display: none; }
@@ -145,6 +153,10 @@ article {
     }
 .tallPasteBox {
     height: 12rem;
+    width: 30rem;
+    }
+.mediumPasteBox {
+    height: 5rem;
     width: 30rem;
     }
 .wideInputBox {
@@ -294,6 +306,62 @@ article {
 .summaryClose {
     color:#ccc; background-color: transparent; font-size: 2em; border:0; float: right; cursor: pointer;
     }
+
+
+
+/* PLACES --------------- */
+#places {}
+#places details {
+    /*font-size:1.2em;
+    color: #648200;*/
+    text-transform:none;
+    margin-block:2rem;
+    }
+#places summary {
+    color:chocolate;
+    font-size:1rem;
+    text-transform: uppercase;
+    }
+.placesRecord {
+    margin-inline-end: 2rem; 
+    white-space:nowrap;
+    }
+#places img {
+    vertical-align:baseline;
+    height:.8em;
+    }
+
+
+
+#copyNotice, #characterMarkup {
+    position: fixed;
+    top: 40%;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 1rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

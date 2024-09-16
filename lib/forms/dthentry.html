@@ -76,11 +76,24 @@ function autoPropagate (person) {
     document.getElementById('idIn').value = person
 
     // populate the places pulldown
-    out = '<option value="">select one</option>\n'
+    /*out = '<option value="">select one</option>\n'
     for (place in placeIndex) {
 	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
 	}
+    document.getElementById('gpsList').innerHTML = out*/
+
+
+    // populate the places pulldown
+    out = '<option value="">select one</option>\n'
+    for (place in placesDB) {
+	out += `<option value="${ placesDB[place].p }, ${ placesDB[place].c } ${ placesDB[place].gps }">${ place }`
+    if (placesDB[place].gps) out += ' G'
+    if (placesDB[place].desc) out += ' I'
+    out += `</option>,\n`
+	}
     document.getElementById('gpsList').innerHTML = out
+
+
 
     // make a list of relatives to the right
 	listRelations(person)
@@ -169,6 +182,13 @@ function autoPropagate (person) {
 
         draftResult()
         }
+    
+    // set parameters for links at top of the page
+    document.getElementById('birthLink').href = `birthentry.html?project=${ project }&person=${ theperson }`
+    document.getElementById('marriageLink').href = `marriageentry.html?project=${ project }&person=${ theperson }`
+    document.getElementById('censusLink').href = `censusentry.html?project=${ project }&person=${ theperson }`
+    document.getElementById('eventLink').href = `evententry.html?project=${ project }&person=${ theperson }`
+
 	}
 
 
@@ -434,19 +454,20 @@ function draftResult () {
     else document.getElementById('denomination').textContent = ''
 
 
-
-/*
-    if (document.getElementById('gpsPlace').value.trim() || document.getElementById('gpsCoords').value.trim()) {
-        document.getElementById('gps').textContent = `"gps: ${ document.getElementById('gpsPlace').value.trim() }` 
-        if (document.getElementById('gpsCoords').value.trim()) document.getElementById('gps').textContent += ` https:\u002F/maps.google.com/maps?q=${ document.getElementById('gpsCoords').value.trim() }` 
-        document.getElementById('gps').textContent += `",`
+    if (document.getElementById('censusNotes').value) {
+        document.getElementById('note').textContent = "notes: \u0060"+document.getElementById('censusNotes').value+"\u0060,"
         }
-    else document.getElementById('gps').textContent = ''
-    */
+
+    if (document.getElementById('censusDisc').value) {
+        document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value+"\u0060,"
+        }
+
+    if (document.getElementById('cautionIn').value) {
+        document.getElementById('caution').textContent = "caution: \u0060"+document.getElementById('cautionIn').value+"\u0060,"
+        }
 
 
-
-    if (document.getElementById('gpsIn').value.trim()) {
+    /*if (document.getElementById('gpsIn').value.trim()) {
         lines = document.getElementById('gpsIn').value.split('\n')
         output = ''
         for (o=0;o<lines.length;o++) {
@@ -457,7 +478,24 @@ function draftResult () {
             }
         document.getElementById('gps').textContent = `gps: [${ output }],`
         }
+    else document.getElementById('gps').textContent = ''*/
+    
+
+    if (document.getElementById('gpsIn').value.trim()) {
+        lines = document.getElementById('gpsIn').value.split('\n')
+        output = ''
+        for (o=0;o<lines.length;o++) {
+            if (lines[o].trim() === '') continue
+            console.log('lines',lines[o])
+            output += `"${ lines[o] }"`
+            if (o<lines.length-1) output += ', '
+            }
+        document.getElementById('gps').textContent = `gps: [${ output }],`
+        }
     else document.getElementById('gps').textContent = ''
+    
+    
+
     
     
     if (document.getElementById('recordsIn').value.trim()) {
@@ -468,7 +506,7 @@ function draftResult () {
         for (i=0;i<imagesArray.length;i++) {
             if (imagesArray[i].trim() === '') continue
             parts = imagesArray[i].split(' ')
-            parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            if (! imagesArray[i].includes('url:records')) parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
             imagesOut += '"'+parts.join(' ').trim()+'"'
             if (i<imagesArray.length-1) imagesOut += ', '
             }
@@ -583,7 +621,6 @@ function getMonthOLD (dateValue) {
 </script>
 </head>
 
-
 <body>
 <div id="out">
   <div id="banner">
@@ -591,13 +628,18 @@ function getMonthOLD (dateValue) {
     </div>
   </div>
   <div id="subbanner">
-    <div><a href="birthentry.html">Birth</a> • <a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a></div>
+    <div><a id="birthLink" href="birthentry.html" target="_blank">Birth</a> • <a id="marriageLink" href="marriageentry.html" target="_blank">Marriage</a> • <a id="censusLink" href="censusentry.html" target="_blank">Census</a> • <a id="eventLink" href="evententry.html" target="_blank">Event</a></div>
+    <!--<div><a href="birthentry.html">Birth</a> • <a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a></div>-->
   </div>
   <div id="subsubbanner">
     <div>
-<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
+<!--<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on 🔁."
 onInput="document.getElementById('idIn').textContent = '&quot;id: '+this.value+'&quot;,';"
-onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>
+onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagate(document.getElementById('idIn').value);">🔁</span> <span class="redo"><a id="clearAll" href="">❌</a></span>-->
+
+<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on [Load].">
+<button id="load" title="Load data for this person" onclick="document.location=`dthentry.html?project=${ project }&person=${ document.getElementById('idIn').value }`">Load</button>
+<button id="clearAll" onClick="document.location=`dthentry.html?project=${ project }`" style="margin-inline-start:3rem;">❌&nbsp; Clear the form</button>
     </div>
   </div>
   <div id="main">
@@ -610,6 +652,10 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
 
 
 <div id="certificateTemplate" style="min-width: 10rem;">
+
+<p style="font-style: italic;">Use these templates to<br>
+speed up data entry.</p>
+
 <h3>Certificate</h3>
 <textarea onClick="this.select()">When:
 Where:
@@ -635,10 +681,16 @@ Father occ:</textarea>
 
 
 
-<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">The  fields in the expanding headings allow for capture of the available source information, and on the person summary page that information can be revealed using a toggle switch. The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
+<p style="margin: 0 4rem; font-style: italic; font-size: 85%;">If you have scans of certificates or parish records, etc. point to them in the section "Record scans".<br>
+The "Source #1" and other numbered headings allow you to capture the information from a single source. (On a person summary page that information is revealed by clicking on a black triangle to the right.)<br>
+The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. (The data should be extracted from the sources, and is structured in a way that it can be successfully inserted into the person's summary page.)</p>
+
+   
+<summary style="margin-block:1rem; font-style: italic;">Converter</summary>
+   <p style="margin: 0 4rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="This is a temporary field. Drop OLD data into the textarea and click GO. This function finds stuff to put in the page building data list." style="width: 36rem; height: 4rem;"></textarea> <button onClick="doConversion()">GO</button></p>
 
 
-<details>
+<details open>
 <summary class="heading">Record scans</summary>
 <table>
 <tr>
@@ -676,7 +728,8 @@ Father occ:</textarea>
     </td>
 </tr>
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button></td>
 <td><textarea id="indexPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -730,7 +783,8 @@ Father occ:</textarea>
     </td>
 </tr-->
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button></td>
 <td><textarea id="secondPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -781,7 +835,8 @@ Father occ:</textarea>
     </td>
 </tr-->
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('burPastedIn').value = tabs2colons(document.getElementById('burPastedIn').value)">Add colons</button></td>
 <td><textarea id="burPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -832,7 +887,8 @@ Father occ:</textarea>
 </td>
 </tr-->
 <tr>
-<td>Key-value<br>pairs:</td>
+<td>Key-value<br>pairs:<br><button 
+        onClick="document.getElementById('fourthPastedIn').value = tabs2colons(document.getElementById('fourthPastedIn').value)">Add colons</button></td>
 <td><textarea id="fourthPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -911,19 +967,43 @@ function removeBrackets (node) {
             onInput="draftResult()">
             </td>
       </tr>
-     <tr>
-        <td>Year of death:</td>
-        <td colspan="3"><input type="text" id="deathYearIn"
-            placeholder="YYYY"
-            onInput="checkDB('deathYearIn', 'd', 'dCheck')">
-            <span class="instructions" id="dCheck" style="color:red;"></span></td>
+<tr>
+<td>Abode:</td>
+<td><input type="text" id="ofIn" 
+    placeholder="Place where they lived." class="wideInputBox"
+    onFocus="checkDB('deathPlaceIn', 'dplace', 'dplaceCheck')"
+    onInput="draftResult()">
+    <span class="instructions" id="dplaceCheck" style="color:red;"></span>
+    </td>
+</tr>
+<tr>
+<td>Place of death:</td>
+<td><input type="text" id="deathPlaceIn"  
+    placeholder="Place where they died (if different)." class="wideInputBox"
+    onInput="draftResult();">
+    </td>
+</tr>
+      <tr>
+        <td>Burial place:</td>
+        <td><input type="text" id="burPlaceIn"  
+            placeholder="Cemetery, town, county, etc." class="wideInputBox"
+            onInput="draftResult()"> 
+            <!--<span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span>--></td>
       </tr>
      <tr>
         <td>Date of death:</td>
         <td colspan="3"><input type="text" id="deathDateIn"
             placeholder="DD MMM or MMM-MMM, etc."
-            onInput="checkDB('deathDateIn', 'ddate', 'ddateCheck')">
-            <span class="instructions" id="ddateCheck" style="color:red;"></span>
+            onFocus="checkDB('deathDateIn', 'ddate', 'ddateCheck')">
+            <span class="instructions" id="ddateCheck" style="color:red;"></span>      
+            </td>
+      </tr>
+     <tr>
+        <td>Year of death:</td>
+        <td colspan="3"><input type="text" id="deathYearIn"
+            placeholder="YYYY"
+            onFocus="checkDB('deathYearIn', 'd', 'dCheck')">
+            <span class="instructions" id="dCheck" style="color:red;"></span>
 <script>
 function makeTimestamp () {
     daymonth = document.getElementById('deathDateIn').value.trim()
@@ -948,23 +1028,30 @@ function makeTimestamp () {
         }
     }
 </script>
-    <span class="copy" title="Add timestamp." onClick="makeTimestamp()    ">✚</span>
-            
+    <button class="copy" title="Add timestamp." onClick="makeTimestamp()">Make time stamp</button></td>
+    </tr>
+      <tr>
+        <td>Burial date:</td>
+        <td><input type="text" id="burDateIn"  
+            placeholder="DD MMM"
+        onInput="draftResult()">
+        </td>
+      </tr>
+      <tr>
+        <td>Burial year:</td>
+        <td><input type="text" id="burYearIn"  
+            placeholder="YYYY"
+            onInput="draftResult()">
+            <button class="copy" title="Add timestamp & approx birth." onClick="
+            daymonth = document.getElementById('burDateIn').value.trim()
+            year = document.getElementById('burYearIn').value.trim()
+            document.getElementById('deathYearIn').value = year
+            document.getElementById('deathDateIn').value = '~'+daymonth
+            components = daymonth.split(' ')
+            document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
+            ">Make time stamp</button>
             </td>
       </tr>
-<tr>
-<td>Of:</td>
-<td><input type="text" id="ofIn" 
-    placeholder="Place where they lived." class="wideInputBox"
-    onInput="draftResult()"></td>
-</tr>
-<tr>
-<td>Place of death:</td>
-<td><input type="text" id="deathPlaceIn"  
-    placeholder="Place where they died (if different)." class="wideInputBox"
-    onInput="draftResult(); checkDB('deathPlaceIn', 'dplace', 'dplaceCheck')">
-    <span class="instructions" id="dplaceCheck" style="color:red;"></span></td>
-</tr>
 <tr>
 <td>Age:</td>
 <td><input type="text" id="ageIn"  
@@ -992,34 +1079,6 @@ function makeTimestamp () {
 
 
       <tr>
-        <td>Burial year:</td>
-        <td><input type="text" id="burYearIn"  
-            placeholder="YYYY"
-            onInput="draftResult()"></td>
-      </tr>
-      <tr>
-        <td>Burial date:</td>
-        <td><input type="text" id="burDateIn"  
-            placeholder="DD MMM"
-        onInput="draftResult()">
-    <span class="copy" title="Add timestamp & approx birth." onClick="
-        daymonth = document.getElementById('burDateIn').value.trim()
-        year = document.getElementById('burYearIn').value.trim()
-        document.getElementById('deathYearIn').value = year
-        document.getElementById('deathDateIn').value = '~'+daymonth
-        components = daymonth.split(' ')
-        document.getElementById('timestampIn').value = year+'-'+getMonth(daymonth)
-        ">✚</span>
-        </td>
-      </tr>
-      <tr>
-        <td>Burial place:</td>
-        <td><input type="text" id="burPlaceIn"  
-            placeholder="Cemetery, town, county, etc." class="wideInputBox"
-            onInput="draftResult()"> 
-            <span class="copy" title="Add to metadata." onClick="document.getElementById('burPlace').textContent = '&quot;burplace: '+document.getElementById('burPlaceIn').value+'&quot;,'; document.getElementById('deathPlaceIn').value = document.getElementById('burPlaceIn').value;">✚</span></td>
-      </tr>
-      <tr>
         <td>Denomination:</td>
         <td><input type="text" id="denominationIn"  
             placeholder="Religion" class="wideInputBox"
@@ -1037,7 +1096,18 @@ function makeTimestamp () {
 
 
 
-<tr>
+<!--tr>
+        <td>GPS:</td>
+        <td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select></td>
+      </tr-->
+
+      <tr>
         <td>GPS:</td>
         <td><select id="gpsList" onChange="
             newline = ''
@@ -1047,9 +1117,11 @@ function makeTimestamp () {
             draftResult()
             "></select></td>
       </tr>
-      <tr>
+
+
+<tr>
         <td>GPS:</td>
-        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the selection control above or type directly to add locations here, one per line. The end result should look like this: Blakemore Gate https://www.google.com/maps?q=52.6040598, -2.9199274"></textarea></td>
       </tr>
 
 
@@ -1057,25 +1129,31 @@ function makeTimestamp () {
 
       <tr>
         <td>Notes:</td>
-        <td><textarea id="censusNotes" onInput="draftResult()"></textarea></td>
+        <td><textarea id="censusNotes"
+            onInput="draftResult()"
+            placeholder="Can be multi-line. Each line can optionally begin with intro: or quote: (or note:, but that's the default). Intro lines are italicised, and should be used only to introduce the note. Quote lines receive quote marks and italicisation."></textarea></td>
       </tr>
       <tr>
         <td>FNotes:</td>
-        <td><textarea id="censusFNotes" onInput="makeNotes(this.value,'fnote')"></textarea></td>
+        <td><textarea id="censusFNotes"
+            onInput="makeNotes(this.value,'fnote')"
+            placeholder="Each paragraph here will be listed below the entry as footnotes.  Like for the notes field, use {xxxx:kx} for people's names."></textarea></td>
       </tr>
       <tr>
         <td>Discussion:</td>
-        <td><textarea id="censusDisc" onInput="draftResult()"></textarea></td>
+        <td><textarea id="censusDisc"
+            onInput="draftResult()"
+            placeholder="This is for commentary on the entry, such as to justify choices made. Discussion text is not displayed on the general UI, but a speech bubble icon is added. Click on the icon or reveal the sources to see the text."></textarea></td>
       </tr>
       <tr>
         <td>Caution:</td>
-        <td><textarea id="cautionIn" onInput="draftResult()"></textarea></td>
+        <td><textarea id="cautionIn"
+            onInput="draftResult()"
+            placeholder="Use to draw attention to guesswork or items needing further corroboration, etc. Text is displayed by clicking on a warning icon in the person summary page."></textarea></td>
       </tr>
    </table>
    
       
-   
-   <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="Converter"></textarea> <button onClick="doConversion()">GO</button></p>
    
    <script>
    // drop OLD data into the textarea and click GO
@@ -1128,7 +1206,7 @@ function makeTimestamp () {
    
    
     <div id="draft" style="margin:2rem; color: brown;">
-      <div id="start">death: {</div>
+      <!--<div id="start">death: {</div>-->
       <div id="timestamp"></div>
       <!--div id="id"></div-->
       <div id="name"></div>
@@ -1215,7 +1293,7 @@ function makeTimestamp () {
       <div id="probateImage"></div>
       <div id="probatePasted"></div>
 
-      <div id="end">`},</div>
+      <div id="end">`<!--},--></div>
       </div>
 
 
