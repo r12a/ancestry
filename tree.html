@@ -51,6 +51,15 @@ function getParent (id) {
         getParent(db[id].mother)
         }
     }
+
+
+function openWindow (locn) {
+    const windowFeatures = "left=50,top=50";
+	//var newwindow = window.open(locn, 'newwindow', windowFeatures) 
+	var newwindow = window.open(locn, '_blank') 
+	newwindow.focus()
+	}
+
 </script>
 </head>
 
@@ -65,6 +74,7 @@ function getParent (id) {
 	<a href="#top" onClick="this.href=`tree.html?person=${ mark }&project=${ window.project }`">Go to root</a>
 	<a id="detailSwitch" href="#top" onClick="if (localStorage.treeDetailed == 'yes') {localStorage.treeDetailed='no'; this.textContent='More detail';} else {localStorage.treeDetailed='yes'; this.textContent='Less detail';} console.log(localStorage.treeDetailed); location.reload(); return false;">More detail</a>
 	<!--a id="indexLink" href="index.html">Index</a-->
+    <button id="editLink" style="float: right; font-style: italic; margin-inline-end: 5rem; font-size: 90%; margin-block-start: .2rem;" onClick="openWindow(`lib/forms/personentry.html?project=${ project }&person=${ thisPerson }`)">Edit</button>
 	</div>
     
 <div id="floatingLinks">
@@ -85,6 +95,8 @@ function getParent (id) {
 <div id="children"></div>
 <div id="siblings"></div>
 </div>
+
+<dialog id="copyNotice">Copied !</dialog>
 
 <script>
 //localStorage.treeDetailed = 'yes'
@@ -141,6 +153,7 @@ function displayPerson (individual, project) {
 		}
 	document.getElementById('siblings').innerHTML = out
 
+    document.querySelector('title').textContent = `${ individual.replace(/_/g,' ') } hourglass`
 	}
 
 
@@ -184,7 +197,9 @@ function getPersonDetails (id, type, loc) {
 
 		out += '<div class="data">'
 		//out += '<div class="name"><a href="tree.html?person='+id+'&project='+window.project+'">'
-		out += `<div class="name"><a href="tree.html?person=${ id }&project=${ window.project }"`
+		if (loc === '') out += `<div class="name"><a href="person.html?person=${ id }&project=${ window.project }"`
+		else out += `<div class="name"><a href="tree.html?person=${ id }&project=${ window.project }"`
+		//out += `<div class="name"><a href="tree.html?person=${ id }&project=${ window.project }"`
         if (markList.has(id)) out += ` style="color: chocolate;"`
         out += `>`
 		//out += db[id].g+' '
@@ -192,6 +207,10 @@ function getPersonDetails (id, type, loc) {
 		else out += db[id].g+' '
 		out += db[id].f
 		out += '</a>'
+        
+        // add any warning icon
+        if (db[id].warning) out += `<img style="width: 1em; height: 1em; margin-inline-start:1rem;" src="lib/i/caution.png" alt="Caution" title="Cautionary notes." onclick="alert('${ person.warning }')">`
+        
 		out += '</div>'
 		out += '<div class="dates">'+db[id].b+'–'+db[id].d
 		if (localStorage.treeDetailed == 'yes' && db[id].b && db[id].d) out += '<span class="detaileddates" style="margin-left:2em;">'+ getAge(db[id].ddate,db[id].d,db[id].bdate,db[id].b) + '</span>'
@@ -231,6 +250,10 @@ function getPersonDetails (id, type, loc) {
         out += '<a href="ancestors.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:60%;" title="Show family tree">🌳</a> '
 		out += '<a href="precedents.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity:80%;" title="Show ancestors">⏫</a> '
 		if (! db[id].cstatus) out += '<a href="descendants.html?person='+id+'&project='+window.project+'" style="font-size:120%; opacity: 80%;" title="Show descendants">⏬</a> '
+	    out += `<a title="Copy id to clipboard" style="opacity:80%;" href="javascript:void(0)"><img 
+                src="lib/i/copytiny.svg" 
+                style="height:1em; width:1em; margin-inline:.25em;" onclick="navigator.clipboard.writeText('${ id }'); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"></a> `
+
 		out += '</div>'
 		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
 			out += '<div class="stop">'+db[id].cstatus+'</div>'
