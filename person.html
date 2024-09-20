@@ -60,6 +60,32 @@ tl.async = false
 document.head.appendChild(tl)
 
 
+// get the root, if any
+projectRoot= project+'root'
+window.markList = new Set([])
+if (localStorage[projectRoot] && localStorage[projectRoot] !== '') {
+    window.mark = localStorage[projectRoot]
+    window.markList.add(mark)
+    //setTimeout(() => { makeMarkList() }, '500')
+    }
+
+function makeMarkList () {
+    // make a list of ancestors for the person indicaed to be the 'mark'
+    // this is then used to highlight relatives    
+    getParent(window.mark)
+    }
+
+function getParent (id) {
+    if (db[id].father && db[db[id].father]) {
+        markList.add(db[id].father)
+        getParent(db[id].father)
+        }
+    if (db[id].mother && db[db[id].mother]) {
+        markList.add(db[id].mother)
+        getParent(db[id].mother)
+        }
+    }
+
 
 function openWindow (locn) {
     const windowFeatures = "left=50,top=50";
@@ -107,6 +133,8 @@ function openWindow (locn) {
 </div>
 </div>
 </div>
+
+<dialog id="copyNotice">Copied !</dialog>
 
 
 <script>
