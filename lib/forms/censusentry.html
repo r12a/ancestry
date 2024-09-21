@@ -132,6 +132,7 @@ function getDate (year) {
 		case '1891': date = '1891-04-05'; break
 		case '1901': date = '1901-03-31'; break
 		case '1911': date = '1911-04-02'; break
+		case '1921': date = '1921-06-19'; break
 		case '1939': date = '1939-09-29'; break		
 		}
 	//document.getElementById('year').textContent = year
@@ -287,16 +288,23 @@ function draftResult () {
     
     //document.getElementById('id').textContent = `"id: ${ document.getElementById('idIn').value.trim() }",`
     
-    
+    var otherCensusYear
     
     //draftNotes()
 
-    
-    document.getElementById('title').textContent = `"${ document.getElementById('yearList').elements['censusYear'].value }_${ document.getElementById('censusId').value }": {`
-    
-    document.getElementById('censusptr').textContent = `census: "${ document.getElementById('yearList').elements['censusYear'].value }_${ document.getElementById('censusId').value }",`
-    
-    getDate(document.getElementById('yearList').elements['censusYear'].value)
+    if (document.getElementById('otherCensus').value.trim() === '') {
+        document.getElementById('title').textContent = `"${ document.getElementById('yearList').elements['censusYear'].value }_${ document.getElementById('censusId').value }": {`
+
+        document.getElementById('censusptr').textContent = `census: "${ document.getElementById('yearList').elements['censusYear'].value }_${ document.getElementById('censusId').value }",`
+
+        getDate(document.getElementById('yearList').elements['censusYear'].value)
+        }
+    else {
+        otherCensusYear = document.getElementById('otherCensus').value.trim().split('-')[0]
+        document.getElementById('title').textContent = `"${ otherCensusYear }_${ document.getElementById('censusId').value }": {`
+
+        document.getElementById('censusptr').textContent = `census: "${ otherCensusYear }_${ document.getElementById('censusId').value.trim() }",`
+        }
 
     doRelation(document.getElementById('relationToHead').elements['censusRelation'].value)
 
@@ -598,8 +606,12 @@ function draftResult () {
         <td><input type="text" style="width:50%;" id="censusId" placeholder="Add id of target record, then click on 🔁."/>  <span class="redo" onClick="fillPlacesPulldown(); listRelations(document.getElementById('censusId').value);">🔁</span></td>
       </tr-->
       <tr>
-        <td>Year:</td>
-        <td><form id="yearList" onChange="getDate(this.elements['censusYear'].value)">
+        <td>Date:</td>
+        <td><input type="text" id="otherCensus" placeholder="yyyy-mm-dd" style="width:6em;" onInput="document.getElementById('date').textContent = '\u0022'+this.value+'\u0022: {'">
+        
+        &nbsp;&nbsp;&nbsp;UK:
+
+            <form id="yearList" onChange="getDate(this.elements['censusYear'].value)" style="display: inline-block; font-size: 80%;">
             <input type="radio" name="censusYear" value="1841" onClick="document.getElementById('censusSourceName').value = `1841 England Census`">
             1841 &nbsp;
             <input type="radio" name="censusYear" value="1851" onClick="document.getElementById('censusSourceName').value = `1851 England Census`">
@@ -623,9 +635,13 @@ function draftResult () {
             <input type="radio" name="censusYear" value="1911" onClick="document.getElementById('censusSourceName').value = `1911 England Census`">
             1911
             &nbsp;
+            <input type="radio" name="censusYear" value="1921" onClick="document.getElementById('censusSourceName').value = `1921 England Census`">
+            1921
+            &nbsp;
             <input type="radio" name="censusYear" value="1939" onClick="document.getElementById('censusSourceName').value = `1939 Register`">
             1939 &nbsp;
-          </form></td>
+          </form>
+          </td>
       </tr>
       <tr>
         <td>Relation:</td>
