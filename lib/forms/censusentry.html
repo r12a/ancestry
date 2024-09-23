@@ -315,7 +315,9 @@ function draftResult () {
         var scans = document.getElementById('censusRecordURL').value.split(',')
         var scanOut = ''
         for (i=0;i<scans.length;i++) {
-            scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
+            if (scans[i].match('http')) scanOut += `"${ recordType } record ${ scans[i] }"`
+            else scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
+            //scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
             if (i<scans.length-1) scanOut += ', '
             }
         document.getElementById('record').textContent = `images: [${ scanOut }],`
@@ -734,13 +736,39 @@ function draftResult () {
 
       <tr>
         <td>GPS:</td>
-        <td><select id="gpsList" onChange="
+        <!--td><select id="gpsList" onChange="
             newline = ''
             if (document.getElementById('gpsIn').value === '') {}
             else newline = '\n'
             document.getElementById('gpsIn').value += newline+this.value
             draftResult()
-            "></select></td>
+            "></select>
+            </td-->
+        <!--td>
+            <input id="findBlock" type="text" list="gpsList" placeholder="  Find a block name." title="Find blocks by typing." onchange="
+                newline = ''
+                if (document.getElementById('gpsIn').value === '') {}
+                else newline = '\n'
+                document.getElementById('gpsIn').value += newline+this.value
+                draftResult()
+                this.value = ''">
+            <datalist id="gpsList"></datalist>
+            </td-->
+        <td>
+        <button title="Add a template for a new place" onClick="newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
+            draftResult()">New</button> 
+        <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:26.5em" onchange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            this.value = ''">
+        <datalist id="gpsList"></datalist>
+        </td>
       </tr>
 
     <tr>

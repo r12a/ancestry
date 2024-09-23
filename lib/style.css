@@ -349,7 +349,20 @@ article {
 
 
 
-
+#allSiblings a {
+    font-size: .9rem;
+    text-transform: uppercase;
+    }
+#allSiblings ul {
+    margin: 0;
+    padding: 0;
+    margin-block-end: .9rem;
+    }
+#allSiblings li {
+    margin: 0;
+    margin-inline: 1rem;
+    padding: 0;
+    }
 
 
 

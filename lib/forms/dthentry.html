@@ -506,7 +506,9 @@ function draftResult () {
         for (i=0;i<imagesArray.length;i++) {
             if (imagesArray[i].trim() === '') continue
             parts = imagesArray[i].split(' ')
-            if (! imagesArray[i].includes('url:records')) parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            if (imagesArray[i].match('http')) {} //
+            else parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            //if (! imagesArray[i].includes('url:records')) parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
             imagesOut += '"'+parts.join(' ').trim()+'"'
             if (i<imagesArray.length-1) imagesOut += ', '
             }
@@ -1109,13 +1111,28 @@ function makeTimestamp () {
 
       <tr>
         <td>GPS:</td>
-        <td><select id="gpsList" onChange="
+        <td>
+        <button title="Add a template for a new place" onClick="newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
+            draftResult()">New</button>
+        <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:29em" onchange="
             newline = ''
             if (document.getElementById('gpsIn').value === '') {}
             else newline = '\n'
             document.getElementById('gpsIn').value += newline+this.value
             draftResult()
-            "></select></td>
+            this.value = ''">
+        <datalist id="gpsList"></datalist>
+        </td>
+        <!--td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select></td-->
       </tr>
 
 
@@ -1205,7 +1222,7 @@ function makeTimestamp () {
    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file.</p>
    
    
-    <div id="draft" style="margin:2rem; color: brown;">
+    <div id="draft" contenteditable style="margin:2rem; color: brown;">
       <!--<div id="start">death: {</div>-->
       <div id="timestamp"></div>
       <!--div id="id"></div-->

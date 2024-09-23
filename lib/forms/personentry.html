@@ -403,7 +403,8 @@ function formatGPS (str) {
 #references {
 	font-size: 80%;
 	float: right;
-    margin-block-start: 4rem;
+    margin-block-start: 3rem;
+    width: 20rem;
 	}
 #references p {
 	margin: 0;
@@ -533,27 +534,44 @@ if (document.getElementById('gpsIn').value.trim()) {
 if (document.getElementById('introIn').value.trim() !== '') document.getElementById('introOut').textContent = `\nintro: \u0060${ document.getElementById('introIn').value.trim() }\u0060,\n`
 
 
-document.getElementById('birthOut').textContent = `\nbirth: {`
-if (document.getElementById('birthIn').value.trim() !== '') document.getElementById('birthOut').textContent += '\n'+document.getElementById('birthIn').value.trim()
-else document.getElementById('birthOut').textContent += `\n// data`
-document.getElementById('birthOut').textContent += `\n},//b`
+if (document.getElementById('generateAll').checked) {
+    document.getElementById('birthOut').textContent = `\nbirth: {`
+    if (document.getElementById('birthIn').value.trim() !== '') document.getElementById('birthOut').textContent += '\n'+document.getElementById('birthIn').value.trim()
+    else document.getElementById('birthOut').textContent += `\n// data`
+    document.getElementById('birthOut').textContent += `\n},//b`
 
-document.getElementById('marriageOut').textContent = `\nmarriages: {\n`
-if (document.getElementById('marriageIn').value.trim() !== '') document.getElementById('marriageOut').textContent += `${ document.getElementById('marriageIn').value.trim() }`
-else document.getElementById('marriageOut').textContent += `// data`
-document.getElementById('marriageOut').textContent += `\n},//m`
+    document.getElementById('marriageOut').textContent = `\nmarriages: {\n`
+    if (document.getElementById('marriageIn').value.trim() !== '') document.getElementById('marriageOut').textContent += `${ document.getElementById('marriageIn').value.trim() }`
+    else document.getElementById('marriageOut').textContent += `// data`
+    document.getElementById('marriageOut').textContent += `\n},//m`
 
-document.getElementById('deathOut').textContent = `\ndeath: {`
-if (document.getElementById('deathIn').value.trim() !== '') document.getElementById('deathOut').textContent += '\n'+document.getElementById('deathIn').value.trim()
-else document.getElementById('deathOut').textContent += `\n// data`
-document.getElementById('deathOut').textContent += `\n},//d`
+    document.getElementById('deathOut').textContent = `\ndeath: {`
+    if (document.getElementById('deathIn').value.trim() !== '') document.getElementById('deathOut').textContent += '\n'+document.getElementById('deathIn').value.trim()
+    else document.getElementById('deathOut').textContent += `\n// data`
+    document.getElementById('deathOut').textContent += `\n},//d`
 
-document.getElementById('eventsOut').textContent = `\nevents: {\n`
-if (document.getElementById('eventsIn').value.trim() !== '') document.getElementById('eventsOut').textContent += `${ document.getElementById('eventsIn').value.trim() }`
-else document.getElementById('eventsOut').textContent += `// data`
-document.getElementById('eventsOut').textContent += `\n},//e`
+    document.getElementById('eventsOut').textContent = `\nevents: {\n`
+    if (document.getElementById('eventsIn').value.trim() !== '') document.getElementById('eventsOut').textContent += `${ document.getElementById('eventsIn').value.trim() }`
+    else document.getElementById('eventsOut').textContent += `// data`
+    document.getElementById('eventsOut').textContent += `\n},//e`
+    }
+else {
+    document.getElementById('birthOut').textContent = `\nbirth: {`
+    document.getElementById('birthOut').textContent += `\n// data`
+    document.getElementById('birthOut').textContent += `\n},//b`
 
+    document.getElementById('marriageOut').textContent = `\nmarriages: {\n`
+    document.getElementById('marriageOut').textContent += `// data`
+    document.getElementById('marriageOut').textContent += `\n},//m`
 
+    document.getElementById('deathOut').textContent = `\ndeath: {`
+    document.getElementById('deathOut').textContent += `\n// data`
+    document.getElementById('deathOut').textContent += `\n},//d`
+
+    document.getElementById('eventsOut').textContent = `\nevents: {\n`
+    document.getElementById('eventsOut').textContent += `// data`
+    document.getElementById('eventsOut').textContent += `\n},//e`
+    }
 
 
 
@@ -680,8 +698,6 @@ function getMonthOLD (dateValue) {
 
 <div id="main">
 
-<div id="references">
-</div>
 
 
 <p style="margin: 0 4rem; font-style: italic; font-size: 85%;">The  fields in the expanding headings allow for capture of the available source information, and on the person summary page that information can be revealed using a toggle switch. The fields under "Data for building the page"  contain text snippets that will be used to build the person's summary page. The data is derived from the sources, but written so that it flows well when inserted into the person's summary page.</p>
@@ -692,6 +708,10 @@ bplace:"Pontesbury", dplace:"Pontesbury", thumb:false, p:true,
 father:"jones_john_edward_1863", mother:"Elizabeth Jane", occ:"",
 fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 -->
+
+
+<table id="layout">
+<tr><td>
 <table style="margin-inline-start: 2rem; color: teal;">
       <tr>
         <td colspan="1" class="heading">Overview:</td>
@@ -844,6 +864,7 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
       </tr-->
 </table>
 
+</td>
 
     <!--onInput="makeNotes(this.value,'fnote')-->
 
@@ -852,7 +873,7 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 
 
 
-
+<td>
 
 <table style="margin-inline-start: 2rem; color: teal;">
       <tr>
@@ -860,14 +881,29 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 
       <tr>
         <td>Places:</td>
-        <td><select id="gpsList" onChange="
+            <td>
+            <button title="Add a template for a new place" onClick="newline = ''
+                if (document.getElementById('gpsIn').value === '') {}
+                else newline = '\n'
+                document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
+                draftResult()">New</button>
+            <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:30em" onchange="
+                newline = ''
+                if (document.getElementById('gpsIn').value === '') {}
+                else newline = '\n'
+                document.getElementById('gpsIn').value += newline+this.value
+                draftResult()
+                this.value = ''">
+            <datalist id="gpsList"></datalist>
+            </td>
+        <!--td><select id="gpsList" onChange="
             newline = ''
             if (document.getElementById('gpsIn').value === '') {}
             else newline = '\n'
             document.getElementById('gpsIn').value += newline+this.value
             draftResult()
             "></select>
-            </td>
+            </td-->
       </tr>
 
 
@@ -886,10 +922,14 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
       </tr>
 </table>
 
+</td>
+</tr>
+</table>
 
 
 
-
+<div id="references">
+</div>
 
 
 <!--details><summary style="font-weight: bold; padding-top: 1em; font-size: 110%; color: teal;">BMD etc records</summary-->
@@ -905,33 +945,34 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 -->
     <tr>
         <td style="font-size:2em;">Birth</td>
-        <td><textarea id="birthIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
         <td><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="openWindow('birthentry.html?project='+project+'&person='+document.getElementById('idIn').value)" alt="Edit" title="Edit the birth data."></td>
+        <td><textarea id="birthIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
       </tr>
 
     <tr>
         <td style="font-size:2em;">Death</td>
-        <td><textarea id="deathIn" class="wideInputBox" onInput="draftResult()"></textarea></td>
         <td><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="openWindow('dthentry.html?project='+project+'&person='+document.getElementById('idIn').value)" alt="Edit" title="Edit the death data."></td>
+        <td><textarea id="deathIn" class="wideInputBox" onInput="draftResult()"></textarea></td>
       </tr>
 
     <tr>
         <td style="font-size:2em;">Marriage</td>
-        <td><textarea id="marriageIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
         <td><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="openWindow('marriageentry.html?project='+project+'&person='+document.getElementById('idIn').value)" alt="Edit" title="Edit the marriage data."></td>
+        <td><textarea id="marriageIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
       </tr>
 
     <tr>
         <td style="font-size:2em;">Events</td>
-        <td><textarea id="eventsIn" onInput="draftResult()" class="wideInputBox" style="height: 15rem;" placeholder="Edit one event at a time. Add a time stamp for an existing or new event to the text area, then click on the edit icon. —— To create a new census record for census.js click on New Census."></textarea></td>
-        <td><input id="eventTimestamp" placeholder="Time stamp" style="font-size:1.5em; cursor:pointer;"><br><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="
+        <td><input id="eventTimestamp" placeholder="Time stamp" style="font-size:1.1em; cursor:pointer;"><br><img src="../i/edit.svg" style="height:4rem; cursor: pointer;" onClick="
                 if (document.getElementById('eventTimestamp').value.trim() !== '')
                     openWindow('evententry.html?project='+project+'&person='+document.getElementById('idIn').value+'&timestamp='+document.getElementById('eventTimestamp').value.trim())
                 else alert('Add a time stamp value.')
         " alt="Edit" title="Edit the event data."><br><br>
         <button 
         onClick="openWindow('censusentry.html?project='+project+'&person='+document.getElementById('idIn').value)"
-         style="font-size:2em; cursor:pointer;">New census</button></td>
+         style="font-size:2em; cursor:pointer;">New census</button>
+         </td>
+        <td><textarea id="eventsIn" onInput="draftResult()" class="wideInputBox" style="height: 15rem;" placeholder="Edit one event at a time. Add a time stamp for an existing or new event to the text area, then click on the edit icon. —— To create a new census record for census.js click on New Census."></textarea></td>
       </tr>
 
     <!--tr>
@@ -1015,7 +1056,7 @@ Need to fix this properly at some point. -->
    </script>
     
     
-    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="draftResult();">Generate data</button></p>
+    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="draftResult();">Generate data</button>  <label style="margin-inline-start:6rem">Include BMDC? <input type="checkbox" id="generateAll"></label></p>
 
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>
    
@@ -1029,7 +1070,6 @@ Need to fix this properly at some point. -->
 <div>father:"<span id="summaryFatherOut"></span>", mother:"<span id="summaryMotherOut"></span>", occ:"<span id="summaryOccOut"></span>",</div>
 <div id="summaryCStatusOut"></div>
 <div><span id="summaryFGOut"></span></div>
-<div><span id="placesOut"></span></div>
 
 <div id="introOut" style="white-space:pre-line"></div>
 
@@ -1040,6 +1080,8 @@ Need to fix this properly at some point. -->
 <div id="marriageOut" style="white-space:pre-line"></div>
 
 <div><span id="eventsOut" style="white-space:pre-line"></span></div>
+
+<div><br><span id="placesOut"></span></div>
 <div><span id="end" style="white-space:pre-line"></span>},//p</div>
 
 
