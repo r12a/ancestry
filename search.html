@@ -80,7 +80,7 @@ function filter (str) {
                 found = ''
                 if (db[name].marriages[mRec].place && db[name].marriages[mRec].place.toLowerCase().includes(str)) found +="m"
                 if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].gparish.toLowerCase().includes(str)) found += "g"
-                if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) found += 'b'
+                if (db[name].marriages[mRec].bparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) found += 'b'
                 
                 if (found.includes('mgb')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & bride and groom residence'+'§'+db[name].marriages[mRec].place)
                 else if (found.includes('mb')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & bride residence'+'§'+db[name].marriages[mRec].place)
