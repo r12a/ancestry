@@ -692,29 +692,6 @@ The fields under "Data for building the page"  contain text snippets that will b
    <p style="margin: 0 4rem; font-style:italic; color: teal;"><textarea id="copyIn" placeholder="This is a temporary field. Drop OLD data into the textarea and click GO. This function finds stuff to put in the page building data list." style="width: 36rem; height: 4rem;"></textarea> <button onClick="doConversion()">GO</button></p>
 
 
-<details open>
-<summary class="heading">Record scans</summary>
-<table>
-<tr>
-<td>Data:</td>
-<td><textarea id="recordsIn" class="mediumPasteBox"
-    placeholder="Add the link text you want, followed by the filename+ext. One link per line."
-    onInput="draftResult()"></textarea>
-</td>
-</tr>
-<tr>
-<td>Test box:</td>
-<td><input type="text" id="recordTester" class="imageBox" 
-    placeholder="Copy filename here & press GO to see the record.">
-    <input type="text" id="recordTesterExtIn" class="extBox" value=".jpg" 
-    placeholder="Extension">
-    <button onClick="openRecord(document.getElementById('recordTester').value, document.getElementById('recordTesterExtIn').value)">GO</button>
-    </td>
-</tr>
-</table>
-</details>
-
-
 <details id="index" open>
 <summary class="heading">Source #1</summary>
 <table>
@@ -952,13 +929,39 @@ function removeBrackets (node) {
 
 
 
+<details open>
+<summary class="heading">Record scans</summary>
+<table>
+<tr>
+<td>Data:</td>
+<td><textarea id="recordsIn" class="mediumPasteBox"
+    placeholder="Add the link text you want, followed by the filename+ext. One link per line."
+    onInput="draftResult()"></textarea>
+</td>
+</tr>
+<tr>
+<td>Test box:</td>
+<td><input type="text" id="recordTester" class="imageBox" 
+    placeholder="Copy filename here & press GO to see the record.">
+    <input type="text" id="recordTesterExtIn" class="extBox" value=".jpg" 
+    placeholder="Extension">
+    <button onClick="openRecord(document.getElementById('recordTester').value, document.getElementById('recordTesterExtIn').value)">GO</button>
+    </td>
+</tr>
+</table>
+</details>
 
 
 
 
 
 
-<table style="margin-inline-start: 2rem; color: teal;">
+
+
+
+
+
+<table style="margin-inline-start: 2rem; margin-block-start: 4rem; color: teal;">
 <tr>
 <td colspan="2" class="heading">Data for building the page</td></tr>
  

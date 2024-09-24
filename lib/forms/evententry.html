@@ -156,10 +156,12 @@ function autoPropagate (person) {
     // make a list of relatives to the right
 	listRelations(person)
     
+    /*
     console.log(document.getElementById('timestampIn').value.trim())
     console.log(db[person].events)
     console.log()
     console.log('Looking for',db[person].events[document.getElementById('timestampIn').value.trim()])
+    */
     
     if (db[person] && db[person].events && db[person].events[document.getElementById('timestampIn').value.trim()]) {
         document.getElementById('notesYearIn').value = db[person].b.trim()
@@ -246,7 +248,7 @@ function autoPropagate (person) {
 
 function formatSource (sources, discussion) {
     // wrap source lines in link markup
-    if (trace) console.log(enter, 'formatSource(',sources,')')
+    // console.log(enter, 'formatSource(',sources,')')
 
     if (typeof sources === 'undefined') return ''
     
@@ -299,7 +301,7 @@ function formatSource (sources, discussion) {
     //console.log(sources)
     //if (discussion) sources += '\n<img src="lib/i/discn.png" alt="Commentary" title="Commentary">'+discussion
     
-    if (trace) console.log(exit,'formatSource:',sources)
+    // console.log(exit,'formatSource:',sources)
     return sources
     }
 
@@ -556,9 +558,11 @@ hideShowFields()
     else document.getElementById('informant').textContent = ''
 
 
+    /*
     if (document.getElementById('censusNotes').value) {
         document.getElementById('note').textContent = "notes: \u0060"+document.getElementById('censusNotes').value+"\u0060,"
         }
+    */
 
     if (document.getElementById('censusDisc').value) {
         document.getElementById('discussion').textContent = "discussion: \u0060"+document.getElementById('censusDisc').value+"\u0060,"
@@ -797,33 +801,10 @@ document.getElementById('new').onclick = function () { document.location=`evente
 </details>
 
 
-<details open>
-<summary class="heading">Record scans</summary>
-<table>
-<tr>
-<td>Data:</td>
-<td><textarea id="recordsIn" class="mediumPasteBox"
-    placeholder="Add the link text you want, followed by the filename+ext. One link per line."
-    onInput="draftResult()"></textarea>
-</td>
-</tr>
-<tr>
-<td>Test box:</td>
-<td><input type="text" id="recordTester" class="imageBox" 
-    placeholder="Copy filename here & press GO to see the record.">
-    <input type="text" id="recordTesterExtIn" class="extBox" value=".jpg" 
-    placeholder="Extension">
-    <button onClick="openRecord(document.getElementById('recordTester').value, document.getElementById('recordTesterExtIn').value)">GO</button>
-    </td>
-</tr>
-</table>
-</details>
 
 
 
-
-
-<details id="first">
+<details id="first" open>
 <summary class="heading">Source #1</summary>
 <table>
     <tr>
@@ -984,6 +965,35 @@ function removeBrackets (node) {
 </details>
 
 
+
+
+<details open>
+<summary class="heading">Record scans</summary>
+<table>
+<tr>
+<td>Data:</td>
+<td><textarea id="recordsIn" class="mediumPasteBox"
+    placeholder="Add the link text you want, followed by the filename+ext. One link per line."
+    onInput="draftResult()"></textarea>
+</td>
+</tr>
+<tr>
+<td>Test box:</td>
+<td><input type="text" id="recordTester" class="imageBox" 
+    placeholder="Copy filename here & press GO to see the record.">
+    <input type="text" id="recordTesterExtIn" class="extBox" value=".jpg" 
+    placeholder="Extension">
+    <button onClick="openRecord(document.getElementById('recordTester').value, document.getElementById('recordTesterExtIn').value)">GO</button>
+    </td>
+</tr>
+</table>
+</details>
+
+
+
+
+
+
 <details open>
 <summary class="heading">Title</summary>
 <table>
@@ -1002,7 +1012,7 @@ function removeBrackets (node) {
 
 
 <details open>
-<summary class="heading">Notes</summary>
+<summary class="heading">Event text</summary>
 <p style="margin: 0 1rem; font-style: italic; font-size: 85%;">Type one line per paragraph.  Begin a line with <span style="color:brown;font-weight: bold;">quote:</span> for quoted text.</p>
 <table>
 <tr>
@@ -1118,18 +1128,25 @@ onInput="draftResult()">
 
 <tr>
 <td>GPS:</td>
-<td><select id="gpsList" onChange="
-    newline = ''
-    if (document.getElementById('gpsIn').value === '') {}
-    else newline = '\n'
-    document.getElementById('gpsIn').value += newline+this.value
-    draftResult()
-    this.value = ''
-    "></select></td>
+        <td>
+        <button title="Add a template for a new place" onClick="newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
+            draftResult()">New</button>
+        <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:29em" onchange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            this.value = ''">
+        <datalist id="gpsList"></datalist>
+        </td>
 </tr>
 <tr>
 <td>GPS:</td>
-<td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the selection controls above or type directly to add locations here, one per line. The end result should look like this: Blakemore Gate https://www.google.com/maps?q=52.6040598, -2.9199274"></textarea></td>
 </tr>
 
 <tr>
@@ -1265,6 +1282,7 @@ Need to fix this properly at some point. -->
 
 <div id="sourcesEnd"></div>
 <div id="end2">},</div>
+
 <div id="father" style="display:none;"></div>
 <div id="fatherId" style="display:none;"></div>
 <div id="mother" style="display:none;"></div>
