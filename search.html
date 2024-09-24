@@ -55,8 +55,10 @@ document.head.appendChild(census)
 
 
 <script>
-function filter (str) {
+function filterPlaces (str) {
     // searches for 'place' fields in BMDC
+    
+    var year, head, wife, child
     
 	str = str.toLowerCase()
 	//str = str.replace(/ /,'.*')
@@ -84,11 +86,18 @@ function filter (str) {
                 if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].gparish.toLowerCase().includes(str)) found += "g"
                 if (db[name].marriages[mRec].bparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) found += 'b'
                 
+                if (found.includes('m')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place)
+                if (found.includes('g')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].gid+'§'+'Residence at marriage'+'§'+db[name].marriages[mRec].gparish)
+                if (found.includes('b')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].bid+'§'+'Residence at marriage'+'§'+db[name].marriages[mRec].bparish)
+          
+                
+                /*
                 if (found.includes('mgb')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & bride and groom residence'+'§'+db[name].marriages[mRec].place)
                 else if (found.includes('mb')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & bride residence'+'§'+db[name].marriages[mRec].place)
                 else if (found.includes('mg')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place & groom residence'+'§'+db[name].marriages[mRec].place)
                 else if (found.includes('m')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place)
-
+                */
+                
                 //if (db[name].marriages[mRec].place && db[name].marriages[mRec].place.toLowerCase().includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place)
                 //if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].gparish.toLowerCase().includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'Residence at time of marriage'+'§'+db[name].marriages[mRec].gparish)
                 //if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'Residence at time of marriage'+'§'+db[name].marriages[mRec].bparish)
@@ -111,17 +120,39 @@ function filter (str) {
     
     for (name in censi) {
         if (censi[name].place && censi[name].place.toLowerCase().includes(str)) {
-            var head = censi[name].head
-            head = head.split(';')[0]
+            head = censi[name].head
+            if (head.includes(';')) head = head.split(';')[0]
             
-            var year = name.split('_')[0]
+            year = name.split('_')[0]
             lines.push(year+'§'+head+'§'+'Census location'+'§'+censi[name].place)
+            
+            
+            if (censi[name].wife) {
+                wife = censi[name].wife
+                if (wife.includes(';')) {
+                    wife = wife.split(';')[0]
+                    year = name.split('_')[0]
+                    lines.push(year+'§'+wife+'§'+'Census location'+'§'+censi[name].place)
+                    }
+                }
+            
+            
+            if (censi[name].children) {
+                for (c=0;c<censi[name].children.length;c++) {
+                    child = censi[name].children[c]
+                    if (child.includes(';')) {
+                        child = child.split(';')[0]
+                        year = name.split('_')[0]
+                        lines.push(year+'§'+child+'§'+'Census location'+'§'+censi[name].place)
+                        }
+                    }
+                }
             }
         }
         
         
 
-	document.getElementById('total').textContent = total
+	document.getElementById('total').textContent = window.lines.length
 	}
 
 
@@ -278,13 +309,13 @@ function drawLines () {
   <div id="subbanner">
     <div>Filter <input id="filter" type="text" onChange="
         document.getElementById('listrecord').innerHTML = ''
-        filter(document.getElementById('filter').value.trim().toLowerCase())
+        filterPlaces(document.getElementById('filter').value.trim().toLowerCase())
         drawLines()
     "> 
     
     <button onclick="
         document.getElementById('listrecord').innerHTML = ''
-        filter(document.getElementById('filter').value.trim().toLowerCase())
+        filterPlaces(document.getElementById('filter').value.trim().toLowerCase())
         drawLines()
     ">Find a place</button> 
     
