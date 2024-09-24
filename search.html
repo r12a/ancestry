@@ -56,6 +56,8 @@ document.head.appendChild(census)
 
 <script>
 function filter (str) {
+    // searches for 'place' fields in BMDC
+    
 	str = str.toLowerCase()
 	//str = str.replace(/ /,'.*')
 	var total = 0
@@ -96,10 +98,12 @@ function filter (str) {
         found = ''
         if (db[name].death && db[name].death.place && db[name].death.place.toLowerCase().includes(str)) found += 'd'
         if (db[name].death && db[name].death.burplace && db[name].death.burplace.toLowerCase().includes(str))  found += 'b'
+        if (db[name].death && db[name].death.of && db[name].death.of.toLowerCase().includes(str))  found += 'o'
 
         if (found.includes('db')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death & burial place'+'§'+db[name].death.place)
         else if (found.includes('d')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death place'+'§'+db[name].death.place)
         else if (found.includes('b')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace)
+        if (found.includes('o')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Abode at death'+'§'+db[name].death.of)
         //if (db[name].death && db[name].death.place && db[name].death.place.toLowerCase().includes(str)) lines.push(db[name].death.timestamp+'§'+name+'§'+'Death place'+'§'+db[name].death.place)
         //if (db[name].death && db[name].death.burplace && db[name].death.burplace.toLowerCase().includes(str)) lines.push(db[name].death.timestamp+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace)
         }
@@ -119,6 +123,86 @@ function filter (str) {
 
 	document.getElementById('total').textContent = total
 	}
+
+
+
+
+
+
+
+function filterOccupations (str) {
+    // searches for 'occ' fields in BMDC
+    
+	str = str.toLowerCase()
+	//str = str.replace(/ /,'.*')
+	var total = 0
+    window.lines = []
+    
+    for (name in dbOrdered) {
+        found = ''
+        if (db[name].birth && db[name].birth.focc && db[name].birth.focc.toLowerCase().includes(str)) found += 'birth'
+        
+        if (found.includes('birth') && db[name].father && db[db[name].father]) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+db[name].father+'§'+'At childs birth'+'§'+db[name].birth.focc)
+        
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                found = ''
+                if (db[name].marriages[mRec].gocc && db[name].marriages[mRec].gocc.toLowerCase().includes(str)) found +="g"
+                if (db[name].marriages[mRec].bocc && db[name].marriages[mRec].bocc.toLowerCase().includes(str)) found += "b"
+                if (db[name].marriages[mRec].gfocc && db[name].marriages[mRec].gfocc.toLowerCase().includes(str)) found += 'G'
+                if (db[name].marriages[mRec].bfocc && db[name].marriages[mRec].bfocc.toLowerCase().includes(str)) found += 'B'
+                
+                if (found.includes('g')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].gid+'§'+'At marriage'+'§'+db[name].marriages[mRec].gocc)
+                
+                if (found.includes('b')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].bid+'§'+'At marriage'+'§'+db[name].marriages[mRec].bocc)
+                
+                if (found.includes('G') && db[name].father) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].father+'§'+'At child marriage'+'§'+db[name].marriages[mRec].gfocc)
+                
+                if (found.includes('B') && db[name].marriages[mRec].bfid) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].bfid+'§'+'At child marriage'+'§'+db[name].marriages[mRec].bfocc)
+                }
+            }
+
+
+        found = ''
+        if (db[name].death && db[name].death.occ && db[name].death.occ.toLowerCase().includes(str)) found += 'd'
+
+        if (found.includes('d')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'At death'+'§'+db[name].death.occ)
+
+
+        found = ''
+        if (db[name].events) {
+            for (eRec in db[name].events) {
+                if (db[name].events[eRec].occ && db[name].events[eRec].occ.toLowerCase().includes(str)) {
+                    if (db[name].events[eRec].type === 'census') lines.push(eRec.split('-')[0]+'§'+name+'§'+'In census'+'§'+db[name].events[eRec].occ)
+                    else lines.push(eRec.split('-')[0]+'§'+name+'§'+'In event'+'§'+db[name].events[eRec].occ)
+                    }
+                }
+            }
+        }
+    
+    
+    for (name in censi) {
+        if (censi[name].occ && censi[name].occ.toLowerCase().includes(str)) {
+            var head = censi[name].head
+            head = head.split(';')[0]
+            
+            var year = name.split('_')[0]
+            lines.push(year+'§'+head+'§'+'In census'+'§'+censi[name].occ)
+            }
+        }
+        
+        
+
+	document.getElementById('total').textContent = window.lines.length
+	}
+
+
+
+
+
+
+
 
 
 function drawLines () {
@@ -196,11 +280,20 @@ function drawLines () {
         document.getElementById('listrecord').innerHTML = ''
         filter(document.getElementById('filter').value.trim().toLowerCase())
         drawLines()
-    "> <button onclick="
+    "> 
+    
+    <button onclick="
         document.getElementById('listrecord').innerHTML = ''
         filter(document.getElementById('filter').value.trim().toLowerCase())
         drawLines()
     ">Find a place</button> 
+    
+    <button onclick="
+        document.getElementById('listrecord').innerHTML = ''
+        filterOccupations(document.getElementById('filter').value.trim().toLowerCase())
+        drawLines()
+    ">Find an occupation</button> 
+    
     <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
     </div>
   </div>
@@ -208,7 +301,7 @@ function drawLines () {
     <div><a href="#explanations">Total <span id="total"></span></a></div>
   </div>
   <div id="subsubsubbanner" style="text-transform: none;">
-    <div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>
+    <!--<div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>-->
   </div>
   <article>
     <section id="listrecord">
