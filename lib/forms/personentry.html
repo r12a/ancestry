@@ -35,6 +35,14 @@ database.src = '../../'+project+'/db.js'
 database.async = false
 document.head.appendChild(database)
 
+
+// load the appropriate census file	
+var db = document.createElement('script')
+db.src = '../../'+project+'/census.js'
+db.async = false
+document.head.appendChild(db)
+
+
 if (theperson) {
     setTimeout(() => autoPropagate(theperson), 1000)
     setTimeout(() => document.getElementById('idIn').value = theperson, 1000)
@@ -68,6 +76,69 @@ function makeNotes (content, target) {
 
 
 
+// TEMPORARY
+placesDB = {}
+
+
+
+
+function findallplaces () {
+    // makes a list of all 'place' fields in BMDC
+    
+    var uniqueSet, name, line
+    
+    window.lines = []
+    
+    for (name in db) {
+        if (db[name].birth && db[name].birth.place) lines.push(db[name].birth.place)
+        if (db[name].birth && db[name].birth.bapplace) lines.push(db[name].birth.bapplace)        
+        if (db[name].birth && db[name].birth.gps) for (i=0;i<db[name].birth.gps.length;i++) lines.push(db[name].birth.gps[i])
+        
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                if (db[name].marriages[mRec].place) lines.push(db[name].marriages[mRec].place)
+                if (db[name].marriages[mRec].gparish) lines.push(db[name].marriages[mRec].gparish)
+                if (db[name].marriages[mRec].bparish) lines.push(db[name].marriages[mRec].bparish)
+                if (db[name].marriages[mRec].gps) for (i=0;i<db[name].marriages[mRec].gps.length;i++) lines.push(db[name].marriages[mRec].gps[i])
+                }
+            }
+
+
+        if (db[name].death && db[name].death.place) lines.push(db[name].death.place)
+        if (db[name].death && db[name].death.of) lines.push(db[name].death.of)
+        if (db[name].death && db[name].death.gps) for (i=0;i<db[name].death.gps.length;i++) lines.push(db[name].death.gps[i])
+         
+        
+        if (db[name].events) {
+            for (eRec in db[name].events) {
+                if (db[name].events[eRec].place) lines.push(db[name].events[eRec].place)
+                if (db[name].events[eRec].gps) for (i=0;i<db[name].events[eRec].gps.length;i++) lines.push(db[name].events[eRec].gps[i])
+                }
+            }
+        }
+   
+    
+    for (name in censi) {
+        if (censi[name].place) {
+            line = censi[name].place
+            if (censi[name].gps) {
+                gpsparts = censi[name].gps[0].split(' ')
+                gps = gpsparts[gpsparts.length-1]
+                line += " "+gps
+                lines.push(line)
+                }
+            }
+        }
+
+
+    uniqueSet = new Set(window.lines)
+    window.lines = [...uniqueSet]
+    
+    window.lines.sort()
+    
+    console.log('Places: ', window.lines.length)
+	}
 
 
 
@@ -80,8 +151,18 @@ function autoPropagate (person) {
     
     var otherNames, otherNamesStr
     
-    
-    // populate the places pulldown
+
+
+    // populate the places datalist
+    findallplaces()
+    out = ''
+    for (p=0;p<window.lines.length;p++) {
+        out += `<option value="${ window.lines[p] }">${ window.lines[p] }`
+        out += `</option>,\n`
+        }
+    document.getElementById('gpsList').innerHTML = out
+
+    /* // populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placesDB) {
     out += `<option value="${ place }">${ place }`
@@ -90,7 +171,7 @@ function autoPropagate (person) {
     out += `</option>,\n`
     }
     document.getElementById('gpsList').innerHTML = out
-
+    */
 
     
     
@@ -136,6 +217,9 @@ function autoPropagate (person) {
 
     if (db[person].p) document.getElementById('summaryDetailsPage').checked = true
     else document.getElementById('summaryDetailsPage').checked = false
+
+    if (db[person].marked) document.getElementById('summaryMarked').checked = true
+    else document.getElementById('summaryMarked').checked = false
 
     document.getElementById('summaryFather').value = db[person].father.trim()
 
@@ -485,6 +569,9 @@ else document.getElementById('summaryGenderOut').textContent = `false`
 if (document.getElementById('summaryDetailsPage').checked) document.getElementById('summaryDetailsPageOut').textContent = 'true'
 else document.getElementById('summaryDetailsPageOut').textContent = `false`
     
+if (document.getElementById('summaryMarked').checked) document.getElementById('summaryMarkedOut').textContent = 'true'
+else document.getElementById('summaryMarkedOut').textContent = `false`
+    
 document.getElementById('summaryFatherOut').textContent = document.getElementById('summaryFather').value.trim()
 
 document.getElementById('summaryMotherOut').textContent = document.getElementById('summaryMother').value.trim()
@@ -799,6 +886,9 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
     <label>Details page?<input type="checkbox" id="summaryDetailsPage" 
     onChange="draftResult()
     "></label>
+    <label>Marked<input type="checkbox" id="summaryMarked" 
+    onChange="draftResult()
+    "></label>
     &nbsp;
     </td>
 </tr>
@@ -886,14 +976,14 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
                 if (document.getElementById('gpsIn').value === '') {}
                 else newline = '\n'
                 document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
-                draftResult()">New</button>
+                /*draftResult()*/">New</button>
             <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:30em" onchange="
                 newline = ''
                 if (document.getElementById('gpsIn').value === '') {}
                 else newline = '\n'
                 document.getElementById('gpsIn').value += newline+this.value
-                draftResult()
-                this.value = ''">
+                /*draftResult()
+                this.value = ''*/">
             <datalist id="gpsList"></datalist>
             </td>
         <!--td><select id="gpsList" onChange="
@@ -909,7 +999,7 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 
     <tr>
         <td>&nbsp;</td>
-        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()"></textarea></td>
+        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the above controls to create or find place names. Follow each placename with a link to Google maps."></textarea></td>
       </tr>
     <tr>
         <td>Intro:</td>
@@ -1066,7 +1156,7 @@ Need to fix this properly at some point. -->
 <div><span id="idOut"></span>:{ <span id="provOut"></span></div>
 <div id="warningOut"></div>
 <div>g:"<span id="summaryGivenNamesOut"></span>", k:"<span id="summaryKnownAsOut"></span>", f:"<span id="summaryFamilyNameOut"></span>", <span id="summaryOtherNamesOut"></span> bdate:"<span id="summaryBirthDateOut"></span>", b:"<span id="summaryBirthYearOut"></span>", ddate:"<span id="summaryDeathDateOut"></span>", d:"<span id="summaryDeathYearOut"></span>", <span id="summaryUpto"></span></div>
-<div>bplace:"<span id="summaryBirthPlaceOut"></span>", dplace:"<span id="summaryDeathPlaceOut"></span>", thumb:<span id="summaryThumbOut"></span>, male:<span id="summaryGenderOut"></span>, p:<span id="summaryDetailsPageOut"></span>,</div>
+<div>bplace:"<span id="summaryBirthPlaceOut"></span>", dplace:"<span id="summaryDeathPlaceOut"></span>", thumb:<span id="summaryThumbOut"></span>, male:<span id="summaryGenderOut"></span>, p:<span id="summaryDetailsPageOut"></span>, tagged:<span id="summaryMarkedOut"></span>,</div>
 <div>father:"<span id="summaryFatherOut"></span>", mother:"<span id="summaryMotherOut"></span>", occ:"<span id="summaryOccOut"></span>",</div>
 <div id="summaryCStatusOut"></div>
 <div><span id="summaryFGOut"></span></div>
