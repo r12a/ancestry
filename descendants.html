@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <title>Descendants chart</title>
 <script>
+currentYear = new Date().getFullYear()
+
 // read in thisPerson
 thisPerson = ''
 project = 'data'
@@ -119,11 +121,20 @@ function findFamily (id) {
         if (person.cstatus) out += ' <strong>&bull;</strong>'
         //out += ' <a href="tree.html?project='+window.project+'&person='+id+'" title="Go to Relationships page.">⏳</a>'
         out += ' <span class="spacer">&nbsp;</span>'
+        out += ` <a href="javascript:void(0)" 
+            title="Copy id to clipboard" 
+            style="margin-inline:.1rem; opacity:80%; cursor:pointer;"><img 
+                src="lib/i/copytiny.svg" 
+                style="height:1em; width:1em; margin-inline-start:.5em;" onclick="navigator.clipboard.writeText('${ id }'); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"></a>`
+        out += ` <a href="ancestors.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
         out += ` <a href="precedents.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏫</a>`
         out += ` <a href="descendants.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏬</a>`
-        out += ` <a href="ancestors.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
         out += ` <a href="tree.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏳</a>`
         out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">📄</a>`
+
+        // add a flag for persons born less than 100 years ago 
+        if (person.b > window.currentYear-100) out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">🚩</a>`
+
         out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
         out += ' <span class="bplace">'+person.bplace+'</span>'
         out += ' <span class="occ">'+person.occ+'</span>'
@@ -137,11 +148,19 @@ function findFamily (id) {
 				out += `<p class="spouse"><span class="spousen"><input type="checkbox" checked title="${ person.fg[g][1] }"> ${ db[person.fg[g][1]].g } ${ db[person.fg[g][1]].f }`
                 //out += `<a href="tree.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Go to Relationships page.">⏳</a></span>`
                 out += ' <span class="spacer">&nbsp;</span>'
+                out += ` <a href="javascript:void(0)" 
+                    title="Copy id to clipboard" 
+                    style="margin-inline:.1rem; opacity:80%; cursor:pointer;"><img 
+                        src="lib/i/copytiny.svg" 
+                        style="height:1em; width:1em; margin-inline-start:.5em;" onclick="navigator.clipboard.writeText('${ id }'); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"></a>`
+                out += ` <a href="ancestors.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show family tree" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
                 out += ` <a href="precedents.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show ancestors" style="margin-inline:.1rem; opacity:80%;">⏫</a>`
                 out += ` <a href="descendants.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show descendants" style="margin-inline:.1rem; opacity:80%;">⏬</a>`
-                out += ` <a href="ancestors.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show family tree" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
                 out += ` <a href="tree.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏳</a>`
                 out += ` <a href="person.html?project=${ window.project }&person=${ person.fg[g][1] }" title="Show details" style="margin-inline:.1rem; opacity:80%;">📄</a>`
+
+                // add a flag for persons born less than 100 years ago 
+                if (db[person.fg[g][1]].b > window.currentYear-100) out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">🚩</a>`
 
                 out += ' <span class="dates">'+db[person.fg[g][1]].b+'–'+db[person.fg[g][1]].d+', &nbsp; marr '+person.fg[g][0]+'</span>'
                 out += ' <span class="bplace">'+db[person.fg[g][1]].bplace+'</span>'
@@ -168,11 +187,19 @@ function findFamily (id) {
 //        else out += '...'
         //out += ' <a href="tree.html?project='+window.project+'&person='+id+'" title="Go to Relationships page.">⏳</a>'
         out += ' <span class="spacer">&nbsp;</span>'
+        out += ` <a href="javascript:void(0)" 
+            title="Copy id to clipboard" 
+            style="margin-inline:.1rem; opacity:80%; cursor:pointer;"><img 
+                src="lib/i/copytiny.svg" 
+                style="height:1em; width:1em; margin-inline-start:.5em;" onclick="navigator.clipboard.writeText('${ id }'); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"></a>`
+        out += ` <a href="ancestors.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
         out += ` <a href="precedents.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏫</a>`
         out += ` <a href="descendants.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏬</a>`
-        out += ` <a href="ancestors.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">🌳</a>`
         out += ` <a href="tree.html?project=${ window.project }&person=${ id }" title="Show relationships" style="margin-inline:.1rem; opacity:80%;">⏳</a>`
         out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">📄</a>`
+
+        // add a flag for persons born less than 100 years ago 
+        if (person.b > window.currentYear-100) out += ` <a href="person.html?project=${ window.project }&person=${ id }" title="Show details" style="margin-inline:.1rem; opacity:80%;">🚩</a>`
 
         out += ' <span class="dates">'+person.b+'–'+person.d+'</span>'
         out += ' <span class="occ">'+person.occ+'</span>'
@@ -290,8 +317,8 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 	<a id="closeAll" href="#" onClick="closeAll(); return false">Close all</a>
 	<a id="removeChecks" href="#" onClick="uncheckAll(); return false">Remove checks</a>
 	<a href="#top" onClick="uncheck100()">&lt;100 years</a>
-	<a id="captureNames" href="#" onClick="listChecked(); return false">List FROM checked</a>
-	<a id="listNames" href="#" onClick="checkFromList(); return false">Check from list</a>
+	<a id="captureNames" href="#" onClick="listChecked(); return false">Checks &gt; list</a>
+	<a id="listNames" href="#" onClick="checkFromList(); return false">List &gt checks</a>
 	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
     
@@ -313,15 +340,31 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
     </div>
   </div>
   <div id="subsubbanner">
-  <div><a href="#explanations" onClick="if (document.getElementById('listOfCheckedNames').style.display == 'block') document.getElementById('listOfCheckedNames').style.display = 'none'; else document.getElementById('listOfCheckedNames').style.display = 'block'">Lists <span id="total"></span></a></div>
-  <textarea id="listOfCheckedNames" style="display:none;" placeholder="Add a list of ids here, one per line, and click on CHECK FROM LIST. Only those people will be checked below. Alternatively, clicking on LIST FROM CHECKED will add a list here."></textarea>
+  <div><a href="#explanations" onClick="if (document.getElementById('listOfCheckedNamesDiv').style.display == 'block') document.getElementById('listOfCheckedNamesDiv').style.display = 'none'; else document.getElementById('listOfCheckedNamesDiv').style.display = 'block'">Lists <span id="total"></span></a></div>
+  <!--<div><a href="#explanations" onClick="if (document.getElementById('listOfCheckedNames').style.display == 'block') document.getElementById('listOfCheckedNames').style.display = 'none'; else document.getElementById('listOfCheckedNames').style.display = 'block'">Lists <span id="total"></span></a></div>
+  <textarea id="listOfCheckedNames" style="display:none;" placeholder="Add a list of ids here, one per line, and click on CHECK FROM LIST. Only those people will be checked below. Alternatively, clicking on LIST FROM CHECKED will add a list here."></textarea>-->
+  <div id="listOfCheckedNamesDiv" style="display:none; width: 100%;">
+  <textarea id="listOfCheckedNames" placeholder="Add a list of ids here, one per line, and click on CHECK FROM LIST. Only those people will be checked below. Alternatively, clicking on LIST FROM CHECKED will add a list here."></textarea><br>
+  <button onClick="localStorage.ancestryflags = document.getElementById('listOfCheckedNames').value">Save list</button>
+  <button onClick="document.getElementById('listOfCheckedNames').value = localStorage.ancestryflags">Retrieve list</button>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('listOfCheckedNames').value); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy list</button>
+  </div>
   </div>
   <article>
       <div id="outTable"></div>
   </article>
 </div>
 
+<dialog id="copyNotice">Copied !</dialog>
+
 <script>
+function applyFlags () {
+    // add all the people in the list box to localstorage, so that pages show flagged people
+    
+    }
+
+
+
 function start () {
 	if (thisPerson && db[thisPerson]) { 
 		//var tableHead = '<tr><th style="font-size:70%">Born /<br/>Married</th><th>Given name</th><th>Family name</th><th>Birth place</th><th style="font-size:70%">Jump to<br/>marr/birth</th><th>Died</th><th>Death place</th><th>Occupation</th><th>Links</th></tr>'
@@ -330,7 +373,7 @@ function start () {
         var first = document.querySelector('details')
         first.open = true
         first.style.marginLeft = '0'
-        openAll()
+        closeAll()
         
         /*
 		families.sort()

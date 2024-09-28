@@ -106,6 +106,8 @@ function openWindow (locn) {
 if (localStorage.treeDetailed != 'no') localStorage.treeDetailed = 'yes'
 if (localStorage.treeDetailed == 'yes') document.getElementById('detailSwitch').textContent = 'Less detail'
 
+
+
 function displayPerson (individual, project) {
 	person = db[individual]
 	var out
@@ -253,6 +255,8 @@ function getPersonDetails (id, type, loc) {
 	    out += `<a title="Copy id to clipboard" style="opacity:80%;" href="javascript:void(0)"><img 
                 src="lib/i/copytiny.svg" 
                 style="height:1em; width:1em; margin-inline:.25em;" onclick="navigator.clipboard.writeText('${ id }'); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"></a> `
+        
+        if (db[id].tagged) out += `<span style="font-size: 140%; color:gray; margin-block-start: .25rem;" title="This person has been tagged.">✓</span>`
 
 		out += '</div>'
 		if (db[id].cstatus && (type==='child' || type === 'spouse')) {
@@ -386,6 +390,14 @@ function getSiblings (group, individual) {
 	}
 
 
+
+
+function loadFlags () {
+    for (i=0;i<flagList.length;i++) db[flagList[i]].tagged = true 
+    console.log('DB',db.length)
+    }
+
+
 function start () {
     //window.mark = 'brant_charles_noel_1902'
    // window.markList = new Set([mark])
@@ -400,6 +412,11 @@ function start () {
         }
     //console.log("mark",mark,"marklist",markList)
 
+    // set tagged flags from localstorage
+    if (localStorage.ancestryflags) {
+        flagList = localStorage.ancestryflags.split('\n')
+        for (i=0;i<flagList.length;i++) db[flagList[i]].tagged = true 
+        }
 	
 	if (window.thisPerson) displayPerson(thisPerson, project)
 	document.getElementById('indexLink').href = 'index.html?project='+project
