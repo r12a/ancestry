@@ -58,12 +58,23 @@ window.location += '?project='+project+'&person='+theperson
 
 
 // load the appropriate db file	
-//if (! project) alert('Specify the project name in the URL, using ?project=...')
 var db = document.createElement('script')
 db.id = 'database'
 db.src = '../../'+project+'/db.js'
 db.async = false
 document.head.appendChild(db);
+
+
+// load the appropriate census file	
+var db = document.createElement('script')
+db.src = '../../'+project+'/census.js'
+db.async = false
+document.head.appendChild(db)
+
+
+
+
+
 
 
 if (theperson) {
@@ -101,6 +112,70 @@ function makeNotes (content, target) {
 
 
 
+function findallplaces () {
+    // makes a list of all 'place' fields in BMDC
+    
+    var uniqueSet, name, line
+    
+    window.lines = []
+    
+    for (name in db) {
+        if (db[name].birth && db[name].birth.place) lines.push(db[name].birth.place)
+        if (db[name].birth && db[name].birth.bapplace) lines.push(db[name].birth.bapplace)        
+        if (db[name].birth && db[name].birth.gps) for (i=0;i<db[name].birth.gps.length;i++) lines.push(db[name].birth.gps[i])
+        
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                if (db[name].marriages[mRec].place) lines.push(db[name].marriages[mRec].place)
+                if (db[name].marriages[mRec].gparish) lines.push(db[name].marriages[mRec].gparish)
+                if (db[name].marriages[mRec].bparish) lines.push(db[name].marriages[mRec].bparish)
+                if (db[name].marriages[mRec].gps) for (i=0;i<db[name].marriages[mRec].gps.length;i++) lines.push(db[name].marriages[mRec].gps[i])
+                }
+            }
+
+
+        if (db[name].death && db[name].death.place) lines.push(db[name].death.place)
+        if (db[name].death && db[name].death.of) lines.push(db[name].death.of)
+        if (db[name].death && db[name].death.gps) for (i=0;i<db[name].death.gps.length;i++) lines.push(db[name].death.gps[i])
+         
+        
+        if (db[name].events) {
+            for (eRec in db[name].events) {
+                if (db[name].events[eRec].place) lines.push(db[name].events[eRec].place)
+                if (db[name].events[eRec].gps) for (i=0;i<db[name].events[eRec].gps.length;i++) lines.push(db[name].events[eRec].gps[i])
+                }
+            }
+        }
+   
+    
+    for (name in censi) {
+        if (censi[name].place) {
+            line = censi[name].place
+            if (censi[name].gps) {
+                gpsparts = censi[name].gps[0].split(' ')
+                gps = gpsparts[gpsparts.length-1]
+                line += " "+gps
+                lines.push(line)
+                }
+            }
+        }
+
+
+    uniqueSet = new Set(window.lines)
+    window.lines = [...uniqueSet]
+    
+    window.lines.sort()
+    
+    console.log('Places: ', window.lines.length)
+	}
+
+
+
+
+
+
+
 
 function autoPropagate (person) {
     // Pull up a list of ids for related people, and fill in some fields automatically
@@ -119,6 +194,19 @@ function autoPropagate (person) {
 	}
     document.getElementById('gpsList').innerHTML = out*/
 
+
+    // populate the places datalist
+    findallplaces()
+    out = ''
+    for (p=0;p<window.lines.length;p++) {
+        out += `<option value="${ window.lines[p] }">${ window.lines[p] }`
+        out += `</option>,\n`
+        }
+    document.getElementById('gpsList').innerHTML = out
+    
+
+/*
+
     // populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placesDB) {
@@ -128,7 +216,7 @@ function autoPropagate (person) {
     out += `</option>,\n`
 	}
     document.getElementById('gpsList').innerHTML = out
-
+*/
 
 
     // make a list of relatives to the right
@@ -1072,7 +1160,7 @@ function makeTimestamp () {
       </tr>
 <tr>
 <td>Place:</td>
-<td colspan="3"><input type="text" id="marrPlaceIn"
+<td colspan="3"><input type="text" id="marrPlaceIn" list="gpsList"
 placeholder="Place where they were married." class="wideInputBox"
 onInput="draftResult()">
 </td>

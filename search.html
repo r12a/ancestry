@@ -70,9 +70,9 @@ function filterPlaces (str) {
         if (db[name].birth && db[name].birth.place && db[name].birth.place.toLowerCase().includes(str)) found += 'birth'
         if (db[name].birth && db[name].birth.bapplace && db[name].birth.bapplace.toLowerCase().includes(str)) found += ' baptism'
         
-        if (found.includes('birth') && found.includes('baptism')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Birth & baptism place'+'§'+db[name].birth.place)
-        else if (found.includes('birth')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Birth place'+'§'+db[name].birth.place)
-        else if (found.includes('baptism')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Baptism place'+'§'+db[name].birth.place)
+        if (found.includes('birth') && found.includes('baptism')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Birth & baptism place'+'§'+db[name].birth.place.split('http')[0])
+        else if (found.includes('birth')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Birth place'+'§'+db[name].birth.place.split('http')[0])
+        else if (found.includes('baptism')) lines.push(db[name].birth.timestamp.split('-')[0]+'§'+name+'§'+'Baptism place'+'§'+db[name].birth.bapplace.split('http')[0])
         
         
         
@@ -86,9 +86,9 @@ function filterPlaces (str) {
                 if (db[name].marriages[mRec].gparish && db[name].marriages[mRec].gparish.toLowerCase().includes(str)) found += "g"
                 if (db[name].marriages[mRec].bparish && db[name].marriages[mRec].bparish.toLowerCase().includes(str)) found += 'b'
                 
-                if (found.includes('m')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place)
-                if (found.includes('g')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].gid+'§'+'Residence at marriage'+'§'+db[name].marriages[mRec].gparish)
-                if (found.includes('b')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].bid+'§'+'Residence at marriage'+'§'+db[name].marriages[mRec].bparish)
+                if (found.includes('m')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+name+'§'+'Marriage place'+'§'+db[name].marriages[mRec].place.split('http')[0])
+                if (found.includes('g')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].gid+'§'+'Residence at marriage'+'§'+db[name].marriages[mRec].gparish.split('http')[0])
+                if (found.includes('b')) lines.push(db[name].marriages[mRec].timestamp.split('-')[0]+'§'+db[name].marriages[mRec].bid+'§'+'Residence at marriage'+'§'+db[name].marriages[mRec].bparish.split('http')[0])
           
                 
                 /*
@@ -109,10 +109,10 @@ function filterPlaces (str) {
         if (db[name].death && db[name].death.burplace && db[name].death.burplace.toLowerCase().includes(str))  found += 'b'
         if (db[name].death && db[name].death.of && db[name].death.of.toLowerCase().includes(str))  found += 'o'
 
-        if (found.includes('db')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death & burial place'+'§'+db[name].death.place)
-        else if (found.includes('d')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death place'+'§'+db[name].death.place)
-        else if (found.includes('b')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace)
-        if (found.includes('o')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Abode at death'+'§'+db[name].death.of)
+        if (found.includes('db')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death & burial place'+'§'+db[name].death.place.split('http')[0])
+        else if (found.includes('d')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Death place'+'§'+db[name].death.place.split('http')[0])
+        else if (found.includes('b')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace.split('http')[0])
+        if (found.includes('o')) lines.push(db[name].death.timestamp.split('-')[0]+'§'+name+'§'+'Abode at death'+'§'+db[name].death.of.split('http')[0])
         //if (db[name].death && db[name].death.place && db[name].death.place.toLowerCase().includes(str)) lines.push(db[name].death.timestamp+'§'+name+'§'+'Death place'+'§'+db[name].death.place)
         //if (db[name].death && db[name].death.burplace && db[name].death.burplace.toLowerCase().includes(str)) lines.push(db[name].death.timestamp+'§'+name+'§'+'Burial place'+'§'+db[name].death.burplace)
         }
@@ -124,7 +124,7 @@ function filterPlaces (str) {
             if (head.includes(';')) head = head.split(';')[0]
             
             year = name.split('_')[0]
-            lines.push(year+'§'+head+'§'+'Census location'+'§'+censi[name].place)
+            lines.push(year+'§'+head+'§'+'Census location'+'§'+censi[name].place.split('http')[0])
             
             
             if (censi[name].wife) {
@@ -132,7 +132,7 @@ function filterPlaces (str) {
                 if (wife.includes(';')) {
                     wife = wife.split(';')[0]
                     year = name.split('_')[0]
-                    lines.push(year+'§'+wife+'§'+'Census location'+'§'+censi[name].place)
+                    lines.push(year+'§'+wife+'§'+'Census location'+'§'+censi[name].place.split('http')[0])
                     }
                 }
             
@@ -143,7 +143,7 @@ function filterPlaces (str) {
                     if (child.includes(';')) {
                         child = child.split(';')[0]
                         year = name.split('_')[0]
-                        lines.push(year+'§'+child+'§'+'Census location'+'§'+censi[name].place)
+                        lines.push(year+'§'+child+'§'+'Census location'+'§'+censi[name].place.split('http')[0])
                         }
                     }
                 }
@@ -387,6 +387,58 @@ for (var i=0;i<names.length;i++) {
 	names[i].innerHTML = anchor
 	}
 */
+
+
+function findallplaces () {
+    // makes a list of all 'place' fields in BMDC
+    
+    var uniqueSet, name, line
+    
+    window.lines = []
+    
+    for (name in db) {
+        if (db[name].birth && db[name].birth.place) lines.push(db[name].birth.place)
+        if (db[name].birth && db[name].birth.bapplace) lines.push(db[name].birth.bapplace)        
+        if (db[name].birth && db[name].birth.gps) for (i=0;i<db[name].birth.gps.length;i++) lines.push(db[name].birth.gps[i])
+        
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                if (db[name].marriages[mRec].place) lines.push(db[name].marriages[mRec].place)
+                if (db[name].marriages[mRec].gparish) lines.push(db[name].marriages[mRec].gparish)
+                if (db[name].marriages[mRec].bparish) lines.push(db[name].marriages[mRec].bparish)
+                if (db[name].marriages[mRec].gps) for (i=0;i<db[name].marriages[mRec].gps.length;i++) lines.push(db[name].marriages[mRec].gps[i])
+                }
+            }
+
+
+        if (db[name].death && db[name].death.place) lines.push(db[name].death.place)
+        if (db[name].death && db[name].death.of) lines.push(db[name].death.of)
+        if (db[name].death && db[name].death.gps) for (i=0;i<db[name].death.gps.length;i++) lines.push(db[name].death.gps[i])
+        }
+    
+    
+    for (name in censi) {
+        if (censi[name].place) {
+            line = censi[name].place
+            if (censi[name].gps) {
+                gpsparts = censi[name].gps[0].split(' ')
+                gps = gpsparts[gpsparts.length-1]
+                line += " "+gps
+                lines.push(line)
+                }
+            }
+        }
+
+
+    uniqueSet = new Set(window.lines)
+    window.lines = [...uniqueSet]
+    
+    window.lines.sort()
+    
+    console.log('Places: ', window.lines.length)
+	}
+
 </script>
 </body>
 </html>

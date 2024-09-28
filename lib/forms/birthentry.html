@@ -30,6 +30,15 @@ db.async = false
 document.head.appendChild(db);
 
 
+// load the appropriate census file	
+var db = document.createElement('script')
+db.src = '../../'+project+'/census.js'
+db.async = false
+document.head.appendChild(db)
+
+
+
+
 if (theperson) {
     setTimeout(() => autoPropagate(theperson), 1000)
     }
@@ -59,6 +68,64 @@ function makeNotes (content, target) {
 
 
 
+function findallplaces () {
+    // makes a list of all 'place' fields in BMDC
+    
+    var uniqueSet, name, line
+    
+    window.lines = []
+    
+    for (name in db) {
+        if (db[name].birth && db[name].birth.place) lines.push(db[name].birth.place)
+        if (db[name].birth && db[name].birth.bapplace) lines.push(db[name].birth.bapplace)        
+        if (db[name].birth && db[name].birth.gps) for (i=0;i<db[name].birth.gps.length;i++) lines.push(db[name].birth.gps[i])
+        
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                if (db[name].marriages[mRec].place) lines.push(db[name].marriages[mRec].place)
+                if (db[name].marriages[mRec].gparish) lines.push(db[name].marriages[mRec].gparish)
+                if (db[name].marriages[mRec].bparish) lines.push(db[name].marriages[mRec].bparish)
+                if (db[name].marriages[mRec].gps) for (i=0;i<db[name].marriages[mRec].gps.length;i++) lines.push(db[name].marriages[mRec].gps[i])
+                }
+            }
+
+
+        if (db[name].death && db[name].death.place) lines.push(db[name].death.place)
+        if (db[name].death && db[name].death.of) lines.push(db[name].death.of)
+        if (db[name].death && db[name].death.gps) for (i=0;i<db[name].death.gps.length;i++) lines.push(db[name].death.gps[i])
+         
+        
+        if (db[name].events) {
+            for (eRec in db[name].events) {
+                if (db[name].events[eRec].place) lines.push(db[name].events[eRec].place)
+                if (db[name].events[eRec].gps) for (i=0;i<db[name].events[eRec].gps.length;i++) lines.push(db[name].events[eRec].gps[i])
+                }
+            }
+        }
+   
+    
+    for (name in censi) {
+        if (censi[name].place) {
+            line = censi[name].place
+            if (censi[name].gps) {
+                gpsparts = censi[name].gps[0].split(' ')
+                gps = gpsparts[gpsparts.length-1]
+                line += " "+gps
+                lines.push(line)
+                }
+            }
+        }
+
+
+    uniqueSet = new Set(window.lines)
+    window.lines = [...uniqueSet]
+    
+    window.lines.sort()
+    
+    console.log('Places: ', window.lines.length)
+	}
+
 
 
 
@@ -80,6 +147,17 @@ function autoPropagate (person) {
     document.getElementById('gpsList').innerHTML = out
     */
 
+    // populate the places datalist
+    findallplaces()
+    out = ''
+    for (p=0;p<window.lines.length;p++) {
+        out += `<option value="${ window.lines[p] }">${ window.lines[p] }`
+        out += `</option>,\n`
+        }
+    document.getElementById('gpsList').innerHTML = out
+    
+
+/*
     // populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placesDB) {
@@ -89,7 +167,7 @@ function autoPropagate (person) {
     out += `</option>,\n`
 	}
     document.getElementById('gpsList').innerHTML = out
-
+*/
     // make a list of relatives to the right
 	listRelations(person)
     
@@ -319,59 +397,7 @@ function draftResult () {
     if (document.getElementById('indexTextIn').value.trim()) 
         document.getElementById('indexText').textContent = `text: ${ document.getElementById('indexTextIn').value.trim() }`
     else document.getElementById('indexText').textContent = ''
- 
 
-// certificate
-    // if (document.getElementById('certImageIn').value.trim()) 
-    //    document.getElementById('certImage').textContent = `"record: Birth certificate  url:records/${ document.getElementById('certImageIn').value.trim() }",`
-    //else document.getElementById('certImage').textContent = ''
-
-    //if (document.getElementById('certImageIn').value.trim()) 
-    //    document.getElementById('certImage').textContent = `"record: Birth certificate url:records/${ document.getElementById('certImageIn').value.trim() }${ document.getElementById('certImageExtIn').value.trim() }"`
-    //else document.getElementById('certImage').textContent = ''
-
-
-/*
-    if (document.getElementById('certSourceIn').value.trim() || document.getElementById('certSourceInURL').value.trim())
-        document.getElementById('certSource').textContent = `\nSOURCE: ${ document.getElementById('certSourceIn').value.trim() }  ${ document.getElementById('certSourceInURL').value.trim() }` 
-    else document.getElementById('certSource').textContent = ''
- 
-    if (document.getElementById('certWhenIn').value.trim()) 
-        document.getElementById('certWhen').textContent = `When: ${ document.getElementById('certWhenIn').value.trim() }`
-    else document.getElementById('certWhen').textContent = ''
- 
-    if (document.getElementById('certWhereIn').value.trim()) 
-        document.getElementById('certWhere').textContent = `Where: ${ document.getElementById('certWhereIn').value.trim() }`
-    else document.getElementById('certWhere').textContent = ''
- 
-    if (document.getElementById('certNameIn').value.trim()) 
-        document.getElementById('certName').textContent = `Name: ${ document.getElementById('certNameIn').value.trim() }`
-    else document.getElementById('certName').textContent = ''
- 
-    if (document.getElementById('certFNameIn').value.trim()) 
-        document.getElementById('certFName').textContent = `FatherName: ${ document.getElementById('certFNameIn').value.trim() }`
-    else document.getElementById('certFName').textContent = ''
- 
-    if (document.getElementById('certMNameIn').value.trim()) 
-        document.getElementById('certMName').textContent = `MotherName: ${ document.getElementById('certMNameIn').value.trim() }`
-    else document.getElementById('certMName').textContent = ''
- 
-    if (document.getElementById('certOccIn').value.trim()) 
-        document.getElementById('certOcc').textContent = `FatherOccupation: ${ document.getElementById('certOccIn').value.trim() }`
-    else document.getElementById('certOcc').textContent = ''
- 
-    if (document.getElementById('certInformantIn').value.trim()) 
-        document.getElementById('certInformant').textContent = `Informant: ${ document.getElementById('certInformantIn').value.trim() }`
-    else document.getElementById('certInformant').textContent = ''
- 
-    if (document.getElementById('certRegdIn').value.trim()) 
-        document.getElementById('certRegd').textContent = `Regd: ${ document.getElementById('certRegdIn').value.trim() }`
-    else document.getElementById('certRegd').textContent = ''
- 
-    if (document.getElementById('certOtherIn').value.trim()) 
-        document.getElementById('certOther').textContent = `Other: ${ document.getElementById('certOtherIn').value.trim() }`
-    else document.getElementById('certOther').textContent = ''
-*/
 
 
 
@@ -380,10 +406,6 @@ function draftResult () {
         document.getElementById('secondSource').textContent = `SOURCE: ${ document.getElementById('secondSourceIn').value.trim() }  ${ document.getElementById('secondSourceURLIn').value.trim() }` 
     else document.getElementById('secondSource').textContent = ''
  
-    //if (document.getElementById('secondImageIn').value.trim()) 
-    //    document.getElementById('secondImage').textContent = `"record: Birth url:records/${ document.getElementById('secondImageIn').value.trim() }${ document.getElementById('secondImageExtIn').value.trim() }",`
-    //else document.getElementById('secondImage').textContent = ''
-
     if (document.getElementById('secondPastedIn').value.trim()) 
         document.getElementById('secondPasted').textContent = addQuotesTo(document.getElementById('secondPastedIn').value.trim())
     else document.getElementById('secondPasted').textContent = ''
@@ -400,10 +422,6 @@ function draftResult () {
         document.getElementById('thirdSource').textContent = `\nSOURCE: ${ document.getElementById('thirdSourceIn').value.trim() }  ${ document.getElementById('thirdSourceURLIn').value.trim() }` 
     else document.getElementById('thirdSource').textContent = ''
  
-    //if (document.getElementById('thirdImageIn').value.trim()) 
-    //    document.getElementById('thirdImage').textContent = `"record: Birth url:records/${ document.getElementById('thirdImageIn').value.trim() }${ document.getElementById('thirdImageExtIn').value.trim() }",`
-    //else document.getElementById('thirdImage').textContent = ''
-
     if (document.getElementById('thirdPastedIn').value.trim()) 
         document.getElementById('thirdPasted').textContent = addQuotesTo(document.getElementById('thirdPastedIn').value.trim())
     else document.getElementById('thirdPasted').textContent = ''
@@ -421,10 +439,6 @@ function draftResult () {
         document.getElementById('bapSource').textContent = `\nSOURCE: ${ document.getElementById('bapSourceIn').value.trim() }  ${ document.getElementById('bapSourceURLIn').value.trim() }` 
     else document.getElementById('bapSource').textContent = ''
  
-    //if (document.getElementById('bapImageIn').value.trim()) 
-    //    document.getElementById('bapImage').textContent = `"record: Baptism url:records/${ document.getElementById('bapImageIn').value.trim() }${ document.getElementById('bapImageExtIn').value.trim() }",`
-    //else document.getElementById('bapImage').textContent = ''
-
     if (document.getElementById('bapPastedIn').value.trim()) 
         document.getElementById('bapPasted').textContent = addQuotesTo(document.getElementById('bapPastedIn').value.trim())
     else document.getElementById('bapPasted').textContent = ''
@@ -433,35 +447,6 @@ function draftResult () {
         document.getElementById('bapText').textContent = `text: ${ document.getElementById('bapTextIn').value.trim() }`
     else document.getElementById('bapText').textContent = ''
  
- /*
-    if (document.getElementById('bapParishIn').value.trim()) 
-        document.getElementById('bapParish').textContent = `Parish: ${ document.getElementById('bapParishIn').value.trim() }`
-    else document.getElementById('bapParish').textContent = ''
- 
-    if (document.getElementById('bapBornIn').value.trim()) 
-        document.getElementById('bapBorn').textContent = `WhenBaptised: ${ document.getElementById('bapBornIn').value.trim() }`
-    else document.getElementById('bapBorn').textContent = ''
- 
-    if (document.getElementById('bapNameIn').value.trim()) 
-        document.getElementById('bapName').textContent = `Name: ${ document.getElementById('bapNameIn').value.trim() }`
-    else document.getElementById('bapName').textContent = ''
- 
-    if (document.getElementById('bapFatherIn').value.trim()) 
-        document.getElementById('bapFather').textContent = `Father: ${ document.getElementById('bapFatherIn').value.trim() }`
-    else document.getElementById('bapFather').textContent = ''
- 
-    if (document.getElementById('bapMotherIn').value.trim()) 
-        document.getElementById('bapMother').textContent = `Mother: ${ document.getElementById('bapMotherIn').value.trim() }`
-    else document.getElementById('bapMother').textContent = ''
- 
-    if (document.getElementById('bapAbodeIn').value.trim()) 
-        document.getElementById('bapAbode').textContent = `Abode: ${ document.getElementById('bapAbodeIn').value.trim() }`
-    else document.getElementById('bapAbode').textContent = ''
-
-    if (document.getElementById('bapOccIn').value.trim()) 
-        document.getElementById('bapOcc').textContent = `Occupation: ${ document.getElementById('bapOccIn').value.trim() }`
-    else document.getElementById('bapOcc').textContent = ''
-*/
 
 
 // harvested data
@@ -471,12 +456,9 @@ function draftResult () {
         }
     else document.getElementById('timestamp').textContent = ''
 
-    /*if (document.getElementById('birthDateIn').value.trim())
-        document.getElementById('birthDate').textContent = `date: "${ document.getElementById('birthDateIn').value.trim() }",`
-    else document.getElementById('birthDate').textContent = ''
-    */
-    if (document.getElementById('birthPlaceIn').value.trim()) 
+    if (document.getElementById('birthPlaceIn').value.trim()) {
         document.getElementById('birthPlace').textContent = `place: "${ document.getElementById('birthPlaceIn').value.trim() }",`
+        }
     else document.getElementById('birthPlace').textContent = ''
 
     if (document.getElementById('foccIn').value.trim()) 
@@ -542,7 +524,7 @@ function draftResult () {
         output = ''
         for (o=0;o<lines.length;o++) {
             if (lines[o].trim() === '') continue
-            console.log('lines',lines[o])
+            //console.log('lines',lines[o])
             output += `"${ lines[o] }"`
             if (o<lines.length-1) output += ', '
             }
@@ -667,18 +649,11 @@ function getMonthOLD (dateValue) {
   </div>
   <div id="subbanner">
     <div><a id="marriageLink" href="marriageentry.html" target="_blank">Marriage</a> • <a id="deathLink" href="dthentry.html" target="_blank">Death</a> • <a id="censusLink" href="censusentry.html" target="_blank">Census</a> • <a id="eventLink" href="evententry.html" target="_blank">Event</a></div>
-    <!--<div><a href="marriageentry.html">Marriage</a> • <a href="censusentry.html">Census</a> • <a href="dthentry.html">Death</a></div>-->
   </div>
   <div id="subsubbanner">
     <div>
-      <!--button onClick="dump()">Go</button-->&nbsp;
+      &nbsp;
     <strong>Id:</strong> 
-<!--<input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on [Load]."
-onInput="document.getElementById('id').textContent = '&quot;id: '+this.value+'&quot;,';"
-onChange="autoPropagate(this.value);">
-<span class="redo" onClick=" 
-autoPropagate(document.getElementById('idIn').value);">🔁</span>
-<span class="redo"><a id="clearAll" href="">❌</a></span>-->
 
 <input type="text" id="idIn" style="width:200px;" placeholder="Add ID, then click on [Load].">
 <button id="load" title="Load data for this person" onclick="document.location=`birthentry.html?project=${ project }&person=${ document.getElementById('idIn').value }`">Load</button>
@@ -774,98 +749,6 @@ The fields under "Data for building the page"  contain text snippets that will b
 
 
 
-<!--details open>
-<summary class="heading">Birth certificate</summary>
-<table>
-<tr>
-  <td>Source:</td>
-  <td><input type="text" id="certSourceIn" class="sourceBox"
-        placeholder="Source name"
-        onInput="draftResult()"/>
-    <input type="text" id="certSourceInURL" class="sourceBox"
-        placeholder="Source URL"
-        onInput="draftResult()"/>
-    <button onClick="openWindow(document.getElementById('certSourceInURL').value)">GO</button>
-    </td>
-</tr>
-<tr>
-<td>Image:</td>
-<td><input type="text" id="certImageIn" class="imageBox" 
-    placeholder="File name of image in 'records' folder (no ext)"
-    onInput="draftResult()">
-    <input type="text" id="certImageExtIn" class="extBox" 
-    placeholder="Extension" value=".jpg"
-    onInput="draftResult()">
-    <button onClick="openRecord(document.getElementById('certImageIn').value, document.getElementById('certImageExtIn').value)">GO</button>
-    </td>
-</tr>
-<tr>
-  <td>When:</td>
-  <td><input type="text" id="certWhenIn" style="width:25rem;" placeholder="(D)D MMM YYYY"
-        onInput="draftResult()">
-        <span class="copy" title="Add to page building data." onClick="
-            components = document.getElementById('certWhenIn').value.split(' ')
-            year = components[2]
-            daymonth = components[0]+' '+components[1]
-            document.getElementById('birthYearIn').value = year
-            document.getElementById('birthDateIn').value = daymonth
-            document.getElementById('timestampIn').value = year+'-'+getMonth(components[1])+'-'+components[0]
-            ">✚</span></td>
-</tr>
-<tr>
-  <td>Where</td>
-  <td><input type="text" id="certWhereIn" style="width:25rem;"
-        onInput="draftResult()">
-        <span class="copy" title="Add to page building data." onClick="
-            document.getElementById('birthPlaceIn').value = document.getElementById('certWhereIn').value
-            ">✚</span></td>
-</tr>
-<tr>
-  <td>Name:</td>
-  <td><input type="text" id="certNameIn" style="width:25rem;"
-          onInput="document.getElementById('certName').textContent = '&quot;[Name: '+this.value+']&quot;,';"/></td>
-</tr>
-<tr>
-  <td>Father:</td>
-  <td><input type="text" id="certFNameIn" style="width:25rem;"
-          onInput="draftResult()">
-          <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certFName').textContent = '&quot;[Father: '+document.getElementById('certFNameIn').value+']&quot;,'">✔</span></td>
-</tr>
-<tr>
-  <td>Mother:</td>
-  <td><input type="text" id="certMNameIn" style="width:25rem;"
-          onInput="draftResult()">
-          <span class="accept" title="Add to birth certificate data." onClick="document.getElementById('certMName').textContent = '&quot;[Father: '+document.getElementById('certMNameIn').value+']&quot;,'">✔</span></td>
-</tr>
-<tr>
-  <td>Father occupation:</td>
-  <td><input type="text" id="certOccIn" style="width:25rem;"
-        onInput="draftResult()"/>
-        <span class="copy" title="Add to page building data." onClick="document.getElementById('foccIn').value = document.getElementById('certOccIn').value;">✚</span></td>
-</tr>
-<tr>
-  <td>Informant:</td>
-  <td><input type="text" id="certInformantIn" style="width:25rem;"
-        onInput="draftResult()">
-        <span class="copy" title="Add to page building data." onClick="document.getElementById('informantIn').value = document.getElementById('certInformantIn').value;">✚</span></td></tr>
-<tr>
-  <td>Reg. date:</td>
-  <td><input type="text" id="certRegdIn" style="width:25rem;"
-          onInput="draftResult()">
-          </td>
-</tr>
-<tr>
-  <td>Other:</td>
-  <td><textarea name="certOtherIn" id="certOtherIn" style="width:400px;"
-          onInput="draftResult()"></textarea></td>
-</tr>
-</table>
-</details-->
-
-
-
-
-
 
 
 
@@ -884,17 +767,6 @@ The fields under "Data for building the page"  contain text snippets that will b
     <button onClick="openWindow(document.getElementById('bapSourceURLIn').value)">GO</button>
     </td>
 </tr>
-<!--tr>
-<td>Image:</td>
-<td><input type="text" id="bapImageIn" class="imageBox" 
-    placeholder="File name of image in 'records' folder (no ext)"
-    onInput="draftResult()">
-    <input type="text" id="bapImageExtIn" value=".jpg" class="extBox" 
-    placeholder="Extension"
-    onInput="draftResult()">
-    <button onClick="openRecord(document.getElementById('bapImageIn').value, document.getElementById('bapImageExtIn').value)">GO</button>
-    </td>
-</tr-->
 <tr>
 <td>Key-value<br>pairs:<br><button 
         onClick="document.getElementById('bapPastedIn').value = tabs2colons(document.getElementById('bapPastedIn').value)">Add colons</button></td>
@@ -904,60 +776,6 @@ The fields under "Data for building the page"  contain text snippets that will b
     <span class="copy" title='Remove "[...]", when copying legacy.' onClick="removeBrackets(document.getElementById('bapPastedIn'))    ">✚</span>
     </td>
 </tr>
-<!--tr>
-  <td>Parish:</td>
-  <td><input type="text" id="bapParishIn" class="wideInputBox"
-          placeholder="[In the Parish of] ..."
-          onInput="draftResult()">
-        <span class="copy" title="Add to page building data." onClick="
-            document.getElementById('bapPlaceIn').value = document.getElementById('bapParishIn').value
-            ">✚</span></td>
-</tr>
-<tr>
-  <td>When baptised:</td>
-  <td><input type="text" id="bapBornIn" class="wideInputBox"
-          placeholder="DD MMM YYYY"
-          onInput="draftResult()">
-        <span class="copy" title="Add to page building data." onClick="
-            components = document.getElementById('bapBornIn').value.split(' ')
-            year = components[2]
-            daymonth = components[0]+' '+components[1]
-            document.getElementById('bapYearIn').value = year
-            document.getElementById('bapDateIn').value = daymonth
-            ">✚</span></td>
-</tr>
-<tr>
-  <td>Name:</td>
-  <td><input type="text" id="bapNameIn" class="wideInputBox"
-          placeholder="Child's christian name"
-          onInput="draftResult()"></td>
-</tr>
-<tr>
-  <td>Father:</td>
-  <td><input type="text" id="bapFatherIn" class="wideInputBox"
-          placeholder="Father's full name"
-          onInput="draftResult()"></td>
-</tr>
-<tr>
-  <td>Mother:</td>
-  <td><input type="text" id="bapMotherIn" class="wideInputBox"
-          placeholder="Mother's full name"
-          onInput="draftResult()"></td>
-</tr>
-<tr>
-  <td>Abode:</td>
-  <td><input type="text" id="bapAbodeIn" class="wideInputBox"
-          placeholder="Abode"
-          onInput="draftResult()">
-</td>
-</tr>
-<tr>
-  <td>Father occ:</td>
-  <td><input type="text" id="bapOccIn" class="wideInputBox"
-          placeholder="Quality, trade or profession"
-          onInput="draftResult()">
-</td>
-</tr-->
 <tr>
 <td>Text:</td>
 <td><textarea id="bapTextIn" class="textBox" 
@@ -1123,18 +941,19 @@ Need to fix this properly at some point. -->
       </tr>
        <tr>
         <td>Place of birth:</td>
-        <td colspan="3"><input type="text" id="birthPlaceIn"
+        <td colspan="3">
+            <input type="text" id="birthPlaceIn" list="gpsList"
             placeholder="Place where they lived." class="wideInputBox"
             onInput="draftResult();"
             onFocus="checkDB('birthPlaceIn', 'bplace', 'bplaceCheck')">
             <span class="instructions" id="bplaceCheck" style="color:red;"></span></td>
      </tr>
 <tr>
-<td>Baptism place:</td>
-<td><input type="text" id="bapPlaceIn" 
-    placeholder="Church, town, county." class="wideInputBox"
-    onInput="draftResult()">
-    </td>
+        <td>Baptism place:</td>
+        <td><input type="text" id="bapPlaceIn"  list="gpsList"
+            placeholder="Church, town, county." class="wideInputBox"
+            onInput="draftResult()">
+            </td>
 </tr>
     <tr>
         <td>Birth date:</td>
@@ -1240,7 +1059,7 @@ function makeTimestamp () {
       </tr-->
 
       <tr>
-        <td>GPS:</td>
+        <td>More GPS:</td>
         <td>
         <button title="Add a template for a new place" onClick="newline = ''
             if (document.getElementById('gpsIn').value === '') {}
@@ -1267,7 +1086,7 @@ function makeTimestamp () {
 
 
     <tr>
-        <td>GPS:</td>
+        <td>&nbsp;</td>
         <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the selection control above or type directly to add locations here, one per line. The end result should look like this: Blakemore Gate https://www.google.com/maps?q=52.6040598, -2.9199274"></textarea></td>
       </tr>
 
