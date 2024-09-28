@@ -124,7 +124,7 @@ code, samp { font-size: 80%; }
 .descriptionText { width: 70%; }
 .figure .descriptionText, .background .descriptionText { width: 100%; }
 details { padding-left: 0.5em; }
-details[open] { width: 100%; }
+details[open] { width: 100%; word-break: break-all; }
 summary { margin-right: 0; text-align: left;}
 
 
