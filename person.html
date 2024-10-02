@@ -72,7 +72,7 @@ if (localStorage[projectRoot] && localStorage[projectRoot] !== '') {
 function makeMarkList () {
     // make a list of ancestors for the person indicaed to be the 'mark'
     // this is then used to highlight relatives    
-    getParent(window.mark)
+    if (window.mark) getParent(window.mark)
     }
 
 function getParent (id) {
