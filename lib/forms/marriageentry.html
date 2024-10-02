@@ -537,7 +537,7 @@ function draftResult () {
  
     
     if (document.getElementById('spouseIdIn').value.trim()) document.getElementById('spouseId').textContent = `"${ document.getElementById('spouseIdIn').value.trim() }": {` 
-    else document.getElementById('spouseId').textContent = 'TBD: ['
+    else document.getElementById('spouseId').textContent = 'TBD: {'
 
 
 
@@ -874,15 +874,15 @@ Other:</textarea>
 <div id="parishTemplate" style="min-width: 10rem;">
 <h3>Parish record</h3>
 <textarea onClick="this.select()">
-Parish: 
-Groom: 
-Groom details: 
-Bride: 
-Bride details: 
-By: 
-When: 
-Signatures: 
-Witnesses: 
+Marriage Date:&nbsp;
+Marriage Place:&nbsp;
+Groom:&nbsp;
+Groom details:&nbsp;
+Bride:&nbsp;
+Bride details:&nbsp;
+By:&nbsp;
+Signatures:&nbsp;
+Witnesses:&nbsp;
 </textarea>
 </div>
 
@@ -1159,7 +1159,7 @@ function makeTimestamp () {
             </td>
       </tr>
 <tr>
-<td>Place:</td>
+<td>Marriage place:</td>
 <td colspan="3"><input type="text" id="marrPlaceIn" list="gpsList"
 placeholder="Place where they were married." class="wideInputBox"
 onInput="draftResult()">
@@ -1217,12 +1217,12 @@ onInput="draftResult()">
 
 <tr>
 <td>Groom residence:</td>
-<td><input type="text" id="gparishIn" class="wideInputBox" onInput="draftResult()"/></td>
+<td><input type="text" id="gparishIn" class="wideInputBox" onInput="draftResult()" list="gpsList"></td>
 </tr>
 
 <tr>
 <td>Bride residence:</td>
-<td><input type="text" id="bparishIn" class="wideInputBox" onInput="draftResult()"/></td>
+<td><input type="text" id="bparishIn" class="wideInputBox" onInput="draftResult()" list="gpsList"></td>
 </tr>
 
 <tr>
