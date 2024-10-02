@@ -204,6 +204,18 @@ function clearChecks (node) {
     }
 
 
+
+function checkFromList () {
+    // removes all checks, then checks people in a list at the top of the page
+    uncheckAll()
+    checkedNames = document.getElementById('listOfCheckedNames').value.split('\n')
+    const checkedNameSet = new Set(checkedNames)
+    
+    persons = document.querySelectorAll('input[type=checkbox]')
+    for (var i=0;i<persons.length;i++) if (checkedNameSet.has(persons[i].title)) persons[i].checked = true
+    }
+
+
 function listChecked () {
     // creates an array of ids for all checked names
     window.checkedNames = []
@@ -234,11 +246,12 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 <div id="topMenu">
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
-	<a href="#top">Top</a>
+	<!--<a href="#top">Top</a>-->
 	<a id="openAll" href="#" onClick="openAll(); return false">Open all</a>
 	<a id="closeAll" href="#" onClick="closeAll(); return false">Close all</a>
 	<a id="removeChecks" href="#" onClick="uncheckAll(); return false">Remove checks</a>
-	<a id="captureNames" href="#" onClick="listChecked(); return false">List checked</a>
+	<a id="captureNames" href="#" onClick="listChecked(); return false">Checks &gt; list</a>
+	<a id="listNames" href="#" onClick="checkFromList(); return false">List &gt; checks</a>
 	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
     
@@ -262,16 +275,32 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
   <div id="subbanner">
     <div><!--button onClick="openAll()">Open all</button> <button onClick="closeAll()">Close all</button-->
     Show: <button onClick="show('dates')">Dates</button> <button onClick="show('bplace')">Birth place</button> <button onClick="show('occ')">Occupation</button>
+    
+    &nbsp;&nbsp;&nbsp; Total: <span id="totalLines"></span>
     </div>
   </div>
   <div id="subsubbanner">
-  <div><a href="#explanations">Total <span id="total"></span></a></div>
-  <textarea id="listOfCheckedNames" style="display:none;"></textarea>
+  <div><a href="#explanations" onClick="if (document.getElementById('listOfCheckedNamesDiv').style.display == 'block') document.getElementById('listOfCheckedNamesDiv').style.display = 'none'; else document.getElementById('listOfCheckedNamesDiv').style.display = 'block'">Lists <span id="total"></span></a></div>
+
+  <div id="listOfCheckedNamesDiv" style="display:none; width: 100%;">
+  <textarea id="listOfCheckedNames" placeholder="Add a list of ids here, one per line, and click on CHECK FROM LIST. Only those people will be checked below. Alternatively, clicking on LIST FROM CHECKED will add a list here."></textarea><br>
+  <button onClick="localStorage.ancestryflags = document.getElementById('listOfCheckedNames').value">Save list</button>
+  <button onClick="document.getElementById('listOfCheckedNames').value = localStorage.ancestryflags">Retrieve list</button>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('listOfCheckedNames').value); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy list</button>
+  <button onClick="document.getElementById('listOfCheckedNames').value = ''">Clear list</button>
+  </div>
+
+  <!--<textarea id="listOfCheckedNames" style="display:none;"></textarea>-->
   </div>
   <article>
       <div id="outTable"></div>
   </article>
 </div>
+
+
+<dialog id="copyNotice">Copied !</dialog>
+
+
 
 <script>
 function start () {
@@ -283,6 +312,7 @@ function start () {
         first.style.marginLeft = '0'
 		closeAll()
         }
+    document.getElementById('totalLines').textContent = document.querySelectorAll(".n").length
 	}
 </script>
 </body>

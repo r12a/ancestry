@@ -318,7 +318,7 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
 	<a id="removeChecks" href="#" onClick="uncheckAll(); return false">Remove checks</a>
 	<a href="#top" onClick="uncheck100()">&lt;100 years</a>
 	<a id="captureNames" href="#" onClick="listChecked(); return false">Checks &gt; list</a>
-	<a id="listNames" href="#" onClick="checkFromList(); return false">List &gt checks</a>
+	<a id="listNames" href="#" onClick="checkFromList(); return false">List &gt; checks</a>
 	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
     
@@ -337,6 +337,8 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
   <div id="subbanner">
     <div><!--button onClick="openAll()">Open all</button> <button onClick="closeAll()">Close all</button-->
     Show: <button onClick="show('dates')">Dates</button> <button onClick="show('bplace')">Birth place</button> <button onClick="show('occ')">Occupation</button>
+    
+    &nbsp;&nbsp;&nbsp; Total: <span id="totalLines"></span>
     </div>
   </div>
   <div id="subsubbanner">
@@ -348,6 +350,7 @@ tr td:last-of-type { border-bottom-right-radius: 5px; border-top-right-radius: 5
   <button onClick="localStorage.ancestryflags = document.getElementById('listOfCheckedNames').value">Save list</button>
   <button onClick="document.getElementById('listOfCheckedNames').value = localStorage.ancestryflags">Retrieve list</button>
   <button onclick="navigator.clipboard.writeText(document.getElementById('listOfCheckedNames').value); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy list</button>
+  <button onClick="document.getElementById('listOfCheckedNames').value = ''">Clear list</button>
   </div>
   </div>
   <article>
@@ -392,6 +395,8 @@ function start () {
 			document.getElementById('fatherLink').textContent = 'Show father'
 			}
         */
+        
+        document.getElementById('totalLines').textContent = document.querySelectorAll(".lineHead, .spouse").length
 		} 
 	}
 </script>
