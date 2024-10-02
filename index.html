@@ -68,7 +68,18 @@ function secondFilter (str) {
 	}
 </script>
 </head>
+
+
+
+
 <body onLoad="init()">
+<div id="floatingLinks" style="margin-block: 3rem;">
+<a title="Go to the Search page." id="searchLink" href="">&#x1F50D;</a>
+</div>
+<script>document.getElementById('searchLink').href = `search.html?project=${ project }`</script>
+
+
+
 <div id="topMenu">
 	<a id="detailLink" href="#"></a>
 	<a id="fatherLink" href="#"></a>
@@ -81,6 +92,8 @@ function secondFilter (str) {
 	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
 
+
+
 <div id="out">
   <div id="banner">
     <div id="pageicon">📇</div>
@@ -91,12 +104,12 @@ function secondFilter (str) {
     <div>Filter <input id="filter" type="text" onInput="filter(this.value);" />  <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
     </div>
   </div>
-  <div id="subsubbanner">
+  <div id="subsubbanner" style="text-transform: none;">
+    <div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>
+  </div>
+  <div id="subsubsubbanner">
   <div><a href="#explanations" onClick="if (document.getElementById('listOfCheckedNames').style.display == 'block') document.getElementById('listOfCheckedNames').style.display = 'none'; else document.getElementById('listOfCheckedNames').style.display = 'block'">Lists <span id="totalX"></span></a></div>
   <textarea id="listOfCheckedNames" style="display:none; width:70%;" placeholder="Add a list of ids here, one per line, and click on CHECK FROM LIST. Only those people will be checked below. Alternatively, clicking on LIST FROM CHECKED will add a list here." onInput="listed=this.value.split('\n');document.getElementById('checkedTotal').textContent=listed.length"></textarea> <span style="width: 20%;">List length: <span id="checkedTotal">0</span></span>
-  </div>
-  <div id="subsubsubbanner" style="text-transform: none;">
-    <div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>
   </div>
   <article>
     <section id="listrecord">
