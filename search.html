@@ -234,6 +234,81 @@ function filterOccupations (str) {
 
 
 
+function filterDate (str) {
+    // searches for 'timestamp' fields in BMDC
+    
+    var year, head, wife, child
+    
+	str = str.trim()
+
+    var total = 0
+    window.lines = []
+    
+    for (name in dbOrdered) {        
+        found = ''
+        if (db[name].birth && db[name].birth.timestamp && db[name].birth.timestamp.includes(str)) lines.push(db[name].birth.timestamp+'§'+name+'§'+'born'+'§'+db[name].birth.place.split('http')[0])
+        
+        
+        if (db[name].marriages) {
+            for (mRec in db[name].marriages) {
+                found = ''
+                if (db[name].marriages[mRec].timestamp && db[name].marriages[mRec].timestamp.includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'married'+'§'+db[name].marriages[mRec].place.split('http')[0])
+                
+                if (db[name].marriages[mRec].timestamp && db[name].marriages[mRec].timestamp.includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+mRec+'§'+'married'+'§'+db[name].marriages[mRec].place.split('http')[0])
+                }
+            }
+        
+        found = ''
+        if (db[name].death && db[name].death.timestamp && db[name].death.timestamp.includes(str)) {
+            console.log('NAME', name)
+            if (db[name].death.of) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+db[name].death.of.split('http')[0])
+            else if (db[name].death.place) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+db[name].death.place.split('http')[0])
+            }
+        }
+    
+    
+    for (name in censi) {
+        if (censi[name].place && censi[name].place.toLowerCase().includes(str)) {
+            head = censi[name].head
+            if (head.includes(';')) head = head.split(';')[0]
+            
+            year = name.split('_')[0]
+            lines.push(year+'§'+head+'§'+'Census location'+'§'+censi[name].place.split('http')[0])
+            
+            
+            if (censi[name].wife) {
+                wife = censi[name].wife
+                if (wife.includes(';')) {
+                    wife = wife.split(';')[0]
+                    year = name.split('_')[0]
+                    lines.push(year+'§'+wife+'§'+'Census location'+'§'+censi[name].place.split('http')[0])
+                    }
+                }
+            
+            
+            if (censi[name].children) {
+                for (c=0;c<censi[name].children.length;c++) {
+                    child = censi[name].children[c]
+                    if (child.includes(';')) {
+                        child = child.split(';')[0]
+                        year = name.split('_')[0]
+                        lines.push(year+'§'+child+'§'+'Census location'+'§'+censi[name].place.split('http')[0])
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+
+	document.getElementById('total').textContent = window.lines.length
+	}
+
+
+
+
+
+
 
 
 function drawLines () {
@@ -286,6 +361,9 @@ function drawLines () {
                 }
             //if (db[person].p) out += '</a><a class="detaillink" href="person.html?project='+project+'&person='+person+'">[details]'
             out += '</a>'
+
+
+            if (timestamp) out += '<sup class="ageTag">'+getAgeTS('', timestamp, getTimestamp(db[person].bdate, db[person].b), '')+'</sup>'
             }
 
         out += ' <span class="desc">'+description+':</span> '+field
@@ -297,9 +375,90 @@ function drawLines () {
 	document.getElementById('listrecord').innerHTML = out    
 	//document.getElementById('listrecord').innerHTML = '<div>'+document.getElementById('listrecord').innerHTML+out+'</div>'    
     }
+
+
+
+
+
+
+
+
+function getAgeTS (phrase1, event, birth, phrase2) {
+    // get someone's age by comparing timestamps, with optional text around
+     console.log('getAgeTS(phrase1:'+phrase1, 'event:'+event, 'birth:'+birth, 'phrase2:'+phrase2,')')
+
+    if (typeof event === 'undefined' || typeof birth === 'undefined') {
+        alert('Event or birth undefined in getAgeTS')
+        return phrase1+'???'+phrase2
+        }
+    if (event.trim() === '' || birth.trim() === '?' || birth.trim() === '') return ''
+
+    var eTime = new Date( event )
+	var bTime = new Date( birth )
+    
+    // check whether the person is deceased, in which case we'll return 'dec'
+    //if ()
+    
+    // get a rough estimate from the year comparison
+    age = eTime.getFullYear() - bTime.getFullYear()
+	if (age < 0) return phrase1+age+phrase2
+    
+    // refine it to see whether a birthday was passed
+	var eDate = new Date( '2000-' + eval(eTime.getMonth()+1) + '-' + eTime.getDate() )
+	var bDate = new Date( '2000-' + eval(bTime.getMonth()+1) + '-' + bTime.getDate() )
+    if (eDate < bDate) age--
+	if (age < 0) age = 0
+	
+    console.log('getAgeTS >>>:',phrase1+age+phrase2)
+	return phrase1+age+phrase2
+	}
+
+
+
+
+
+function getTimestamp (date, year) {
+    console.log('getTimestamp(date:'+date, 'year:'+year,')')
+
+    if (year.trim() === '?' || year.trim() === '') return ''
+	
+	if (date === '?' || date === '') date = '1 Jul'
+    
+    switch (date) {
+        case 'Jan-Mar': date = '1 Feb'; break
+        case 'Apr-Jun': date = '1 May'; break
+        case 'Jul-Sep': date = '1 Aug'; break
+        case 'Oct-Dec': date = '1 Nov'; break
+        }
+
+	if (! date.match(/[0-9]/)) date = '1 '+date
+	
+	date = date.replace(/by|bef|aft|abt|onob|~|\*|\<|\>|,/, '')
+	year = year.replace(/by|bef|aft|abt|onob|~|\*|\<|\>|,/, '')
+	
+	date = date.replace(/\-.../, '')
+    
+    var dateObj = new Date(date.trim() +' '+ year.trim())
+
+    console.log('getTimestamp >>>:', dateObj.getFullYear()+'-'+eval(dateObj.getMonth()+1).toString().padStart(2, '0')+'-'+dateObj.getDate().toString().padStart(2, '0'))
+	return dateObj.getFullYear()+'-'+eval(dateObj.getMonth()+1).toString().padStart(2, '0')+'-'+dateObj.getDate().toString().padStart(2, '0')
+	}
+
+
+
 </script>
 </head>
+
+
+
+
+
 <body onLoad="init()">
+<div id="floatingLinks">
+<a title="Go to the Index." id="indexLink" href="">&#x1F4C7;</a>
+</div>
+<script>document.getElementById('indexLink').href = `index.html?project=${ project }`</script>
+
 <div id="out">
   <div id="banner">
     <div id="pageicon">🔍</div>
@@ -307,12 +466,19 @@ function drawLines () {
     </div>
   </div>
   <div id="subbanner">
-    <div>Filter <input id="filter" type="text" onChange="
+    <div>Filter <input id="filter" type="text"  onChange="
         document.getElementById('listrecord').innerHTML = ''
         filterPlaces(document.getElementById('filter').value.trim().toLowerCase())
         drawLines()
     "> 
+     <a href="#explanations" style="margin-inline:3rem;">Total <span id="total"></span></a>
+   
     
+    <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    </div>
+  </div>
+  <div id="subsubbanner">
+    <div>
     <button onclick="
         document.getElementById('listrecord').innerHTML = ''
         filterPlaces(document.getElementById('filter').value.trim().toLowerCase())
@@ -325,11 +491,12 @@ function drawLines () {
         drawLines()
     ">Find an occupation</button> 
     
-    <!--input id="filter2" type="text" onInput="secondFilter(this.value);" /-->
+    <button onclick="
+        document.getElementById('listrecord').innerHTML = ''
+        filterDate(document.getElementById('filter').value.trim().toLowerCase())
+        drawLines()
+    ">Events in a year</button>
     </div>
-  </div>
-  <div id="subsubbanner">
-    <div><a href="#explanations">Total <span id="total"></span></a></div>
   </div>
   <div id="subsubsubbanner" style="text-transform: none;">
     <!--<div>You can use space as a wildcard character when filtering.<br/>For example, '<code>lak ag</code>' will match '<samp>Lakelin (Higley), Elizabeth Agnes</samp>'.</div>-->
@@ -365,6 +532,36 @@ function init () {
             },{})
 
     //db.sort(compareByTimestamp)
+    
+    
+    // process any q parameter
+    parameters = location.search.split('&')
+    parameters[0] = parameters[0].substring(1)
+    for (var p=0;p<parameters.length;p++) {  
+        pairs = parameters[p].split('=');
+        if (pairs[0] == 'place' && pairs[1]) {
+            document.getElementById('listrecord').innerHTML = ''
+            filterPlaces(pairs[1].trim().toLowerCase())
+            drawLines()
+            document.getElementById('filter').value = pairs[1]
+            document.getElementById('total').textContent = window.lines.length
+            }
+        if (pairs[0] == 'occupation' && pairs[1]) {
+            document.getElementById('listrecord').innerHTML = ''
+            filterOccupations(pairs[1].trim().toLowerCase())
+            drawLines()
+            document.getElementById('filter').value = pairs[1]
+            document.getElementById('total').textContent = window.lines.length
+            }
+        if (pairs[0] == 'date' && pairs[1]) {
+            document.getElementById('listrecord').innerHTML = ''
+            filterDate(pairs[1].trim())
+            drawLines()
+            document.getElementById('filter').value = pairs[1]
+            document.getElementById('total').textContent = window.lines.length
+            }
+        }
+
 
 	document.getElementById('total').textContent = total
 	
