@@ -75,6 +75,7 @@ function secondFilter (str) {
 <body onLoad="init()">
 <div id="floatingLinks" style="margin-block: 3rem;">
 <a title="Go to the Search page." id="searchLink" href="">&#x1F50D;</a>
+<a href="#top" title="Go to root" onClick="this.href=`tree.html?person=${ mark }&project=${ window.project }`">&#x1F538;</a>
 </div>
 <script>document.getElementById('searchLink').href = `search.html?project=${ project }`</script>
 
@@ -178,6 +179,12 @@ function init () {
 	document.getElementById('listrecord').innerHTML = '<div>'+out+'</div>'
 	
 	document.getElementById('filter').focus()
+    
+    projectRoot= project+'root'
+    if (localStorage[projectRoot] && localStorage[projectRoot] !== '') {
+        mark = localStorage[projectRoot]
+        }
+
 	}
 /*
 var sortkeys = []
