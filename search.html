@@ -541,23 +541,23 @@ function init () {
         pairs = parameters[p].split('=');
         if (pairs[0] == 'place' && pairs[1]) {
             document.getElementById('listrecord').innerHTML = ''
-            filterPlaces(pairs[1].trim().toLowerCase())
+            filterPlaces(decodeURI(pairs[1]).trim().toLowerCase())
             drawLines()
-            document.getElementById('filter').value = pairs[1]
+            document.getElementById('filter').value = decodeURI(pairs[1])
             document.getElementById('total').textContent = window.lines.length
             }
         if (pairs[0] == 'occupation' && pairs[1]) {
             document.getElementById('listrecord').innerHTML = ''
-            filterOccupations(pairs[1].trim().toLowerCase())
+            filterOccupations(decodeURI(pairs[1]).trim().toLowerCase())
             drawLines()
-            document.getElementById('filter').value = pairs[1]
+            document.getElementById('filter').value = decodeURI(pairs[1])
             document.getElementById('total').textContent = window.lines.length
             }
         if (pairs[0] == 'date' && pairs[1]) {
             document.getElementById('listrecord').innerHTML = ''
-            filterDate(pairs[1].trim())
+            filterDate(decodeURI(pairs[1]).trim())
             drawLines()
-            document.getElementById('filter').value = pairs[1]
+            document.getElementById('filter').value = decodeURI(pairs[1])
             document.getElementById('total').textContent = window.lines.length
             }
         }
