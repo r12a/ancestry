@@ -218,8 +218,8 @@ function autoPropagate (person) {
     if (db[person].p) document.getElementById('summaryDetailsPage').checked = true
     else document.getElementById('summaryDetailsPage').checked = false
 
-    if (db[person].marked) document.getElementById('summaryMarked').checked = true
-    else document.getElementById('summaryMarked').checked = false
+    //if (db[person].marked) document.getElementById('summaryMarked').checked = true
+    //else document.getElementById('summaryMarked').checked = false
 
     document.getElementById('summaryFather').value = db[person].father.trim()
 
@@ -569,8 +569,8 @@ else document.getElementById('summaryGenderOut').textContent = `false`
 if (document.getElementById('summaryDetailsPage').checked) document.getElementById('summaryDetailsPageOut').textContent = 'true'
 else document.getElementById('summaryDetailsPageOut').textContent = `false`
     
-if (document.getElementById('summaryMarked').checked) document.getElementById('summaryMarkedOut').textContent = 'true'
-else document.getElementById('summaryMarkedOut').textContent = `false`
+//if (document.getElementById('summaryMarked').checked) document.getElementById('summaryMarkedOut').textContent = 'true'
+//else document.getElementById('summaryMarkedOut').textContent = `false`
     
 document.getElementById('summaryFatherOut').textContent = document.getElementById('summaryFather').value.trim()
 
@@ -796,9 +796,9 @@ father:"jones_john_edward_1863", mother:"Elizabeth Jane", occ:"",
 fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 -->
 
-
-<table id="layout">
-<tr><td>
+<div id="layout" style="display: flex; flex-direction: row; flex-wrap: wrap; flex:1;">
+<!--<table id="layout">
+<tr><td>-->
 <table style="margin-inline-start: 2rem; color: teal;">
       <tr>
         <td colspan="1" class="heading">Overview:</td>
@@ -886,9 +886,9 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
     <label>Details page?<input type="checkbox" id="summaryDetailsPage" 
     onChange="draftResult()
     "></label>
-    <label>Marked<input type="checkbox" id="summaryMarked" 
+    <!--<label>Marked<input type="checkbox" id="summaryMarked" 
     onChange="draftResult()
-    "></label>
+    "></label>-->
     &nbsp;
     </td>
 </tr>
@@ -934,6 +934,15 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
     ></textarea></td>
 </tr>
 
+    <tr>
+        <td>Intro:</td>
+        <td colspan="3"><textarea id="introIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
+      </tr>
+
+      <tr>
+        <td>Warnings:</td>
+        <td colspan="3"><textarea id="warningIn" class="wideInputBox" onInput="draftResult()" placeholder="If this is a provisional record, add details here, with any source references." style="color:brown; font-size: 120%;"></textarea></td>
+      </tr>
 
       <!--tr>
         <td>Places:</td>
@@ -954,72 +963,82 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
       </tr-->
 </table>
 
-</td>
-
-    <!--onInput="makeNotes(this.value,'fnote')-->
-
-
-
-
+<!--</td>
 
 
 <td>
-
-<table style="margin-inline-start: 2rem; color: teal;">
-      <tr>
-        <td colspan="4" class="heading">Metadata:</td></tr>
-
-      <tr>
-        <td>Places:</td>
-            <td>
-            <button title="Add a template for a new place" onClick="newline = ''
-                if (document.getElementById('gpsIn').value === '') {}
-                else newline = '\n'
-                document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
-                /*draftResult()*/">New</button>
-            <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:30em" onchange="
-                newline = ''
-                if (document.getElementById('gpsIn').value === '') {}
-                else newline = '\n'
-                document.getElementById('gpsIn').value += newline+this.value
-                /*draftResult()
-                this.value = ''*/">
-            <datalist id="gpsList"></datalist>
-            </td>
-        <!--td><select id="gpsList" onChange="
-            newline = ''
-            if (document.getElementById('gpsIn').value === '') {}
-            else newline = '\n'
-            document.getElementById('gpsIn').value += newline+this.value
-            draftResult()
-            "></select>
-            </td-->
-      </tr>
+-->
 
 
-    <tr>
-        <td>&nbsp;</td>
-        <td colspan="3"><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the above controls to create or find place names. Follow each placename with a link to Google maps."></textarea></td>
-      </tr>
-    <tr>
-        <td>Intro:</td>
-        <td colspan="3"><textarea id="introIn" onInput="draftResult()" class="wideInputBox"></textarea></td>
-      </tr>
+<div id="generateData" style="flex:1;">  
+    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="draftResult();">Generate data</button>  <label style="margin-inline-start:6rem; font-size:80%;">Include BMDC? <input type="checkbox" id="generateAll"></label></p>
 
-      <tr>
-        <td>Warnings:</td>
-        <td colspan="3"><textarea id="warningIn" class="wideInputBox" onInput="draftResult()" placeholder="If this is a provisional record, add details here, with any source references." style="color:brown; font-size: 120%;"></textarea></td>
-      </tr>
-</table>
+    <!--<p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>-->
+   
+   
+<div id="draft" style="margin:2rem; color: brown;" contenteditable="true">
+<!--summary info - NOTE: the layout of the code is important for copying-->
+<div><span id="idOut"></span>:{ <span id="provOut"></span></div>
+<div id="warningOut"></div>
+<div>g:"<span id="summaryGivenNamesOut"></span>", k:"<span id="summaryKnownAsOut"></span>", f:"<span id="summaryFamilyNameOut"></span>", <span id="summaryOtherNamesOut"></span> bdate:"<span id="summaryBirthDateOut"></span>", b:"<span id="summaryBirthYearOut"></span>", ddate:"<span id="summaryDeathDateOut"></span>", d:"<span id="summaryDeathYearOut"></span>", <span id="summaryUpto"></span></div>
+<div>bplace:"<span id="summaryBirthPlaceOut"></span>", dplace:"<span id="summaryDeathPlaceOut"></span>", thumb:<span id="summaryThumbOut"></span>, male:<span id="summaryGenderOut"></span>, p:<span id="summaryDetailsPageOut"></span><!--, tagged:<span id="summaryMarkedOut"></span>-->,</div>
+<div>father:"<span id="summaryFatherOut"></span>", mother:"<span id="summaryMotherOut"></span>", occ:"<span id="summaryOccOut"></span>",</div>
+<div id="summaryCStatusOut"></div>
+<div><span id="summaryFGOut"></span></div>
 
-</td>
-</tr>
-</table>
+<div id="introOut" style="white-space:pre-line"></div>
+
+<div id="birthOut" style="white-space:pre-line"></div>
+
+<div id="deathOut" style="white-space:pre-line"></div>
+
+<div id="marriageOut" style="white-space:pre-line"></div>
+
+<div><span id="eventsOut" style="white-space:pre-line"></span></div>
+
+<div><br><span id="placesOut"></span></div>
+<div><span id="end" style="white-space:pre-line"></span>},//p</div>
 
 
 
-<div id="references">
+<!--div id="end">events:{</div>
+<div id="eventsOut" style="white-space:pre-line"></div>
+<div id="end2">}},</div-->
 </div>
+
+
+
+<script>
+function prepCopy () {
+    draft = document.getElementById('draft')
+    copied = document.getElementById('draftCopy')
+    copied.value = ''
+    divs = draft.querySelectorAll('div')
+    for (i=0;i<divs.length;i++) {
+        if (divs[i].textContent.trim() !== '') copied.value += divs[i].textContent+'\n'
+        }
+    copied.focus()
+    copied.select()
+    document.execCommand('copy')
+    return false
+    }
+</script>
+<div style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>
+
+
+<!--div style="text-align: center;"><button  style="font-size: 2rem;" onClick="copied = document.getElementById('draftCopy'); copied.value = document.getElementById('draft').textContent; copied.focus(); copied.select(); document.execCommand('copy'); return false;">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div-->
+
+
+    <!--<pre id="places">
+    </pre>-->
+</div> <!--/generateData-->
+</div> <!-- /layout -->
+<!--</td>
+</tr>
+</table>-->
+
+
+
 
 
 <!--details><summary style="font-weight: bold; padding-top: 1em; font-size: 110%; color: teal;">BMD etc records</summary-->
@@ -1093,6 +1112,59 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 
 
 
+
+<table style="margin-inline-start: 2rem; color: teal;">
+      <tr>
+        <td colspan="4" class="heading">Metadata:</td></tr>
+
+      <tr>
+        <td style="width: 4%;">Places:</td>
+        <td style="width: 60%;">
+            <button title="Add a template for a new place" onClick="newline = ''
+                if (document.getElementById('gpsIn').value === '') {}
+                else newline = '\n'
+                document.getElementById('gpsIn').value += newline+`xxxx https://www.google.com/maps?q=xxx`
+                /*draftResult()*/">New</button>
+            <input id="findBlock" type="text" list="gpsList" placeholder="Search for known places" style="width:30em" onchange="
+                newline = ''
+                if (document.getElementById('gpsIn').value === '') {}
+                else newline = '\n'
+                document.getElementById('gpsIn').value += newline+this.value
+                /*draftResult()
+                this.value = ''*/">
+            <datalist id="gpsList"></datalist>
+            </td>
+        <!--td><select id="gpsList" onChange="
+            newline = ''
+            if (document.getElementById('gpsIn').value === '') {}
+            else newline = '\n'
+            document.getElementById('gpsIn').value += newline+this.value
+            draftResult()
+            "></select>
+            </td-->
+      </tr>
+
+
+    <tr>
+        <td>&nbsp;</td>
+        <td><textarea id="gpsIn" onInput="draftResult()" placeholder="Use the above controls to create or find place names. Follow each placename with a link to Google maps." style="width:80%;"></textarea></td>
+      </tr>
+</table>
+
+
+
+
+
+<div id="references" style="float: none; margin-inline-start: 10rem; padding-block-end: 3rem;">
+
+<p>&nbsp;</p>
+</div>
+
+
+
+
+
+
 <!-- items that get filled in by autoPropagate, but that are no longer used.
 Need to fix this properly at some point. -->
 <div style="display: none">
@@ -1145,67 +1217,7 @@ Need to fix this properly at some point. -->
         }
    </script>
     
-    
-    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="draftResult();">Generate data</button>  <label style="margin-inline-start:6rem">Include BMDC? <input type="checkbox" id="generateAll"></label></p>
 
-    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>
-   
-   
-<div id="draft" style="margin:2rem; color: brown;" contenteditable="true">
-<!--summary info - NOTE: the layout of the code is important for copying-->
-<div><span id="idOut"></span>:{ <span id="provOut"></span></div>
-<div id="warningOut"></div>
-<div>g:"<span id="summaryGivenNamesOut"></span>", k:"<span id="summaryKnownAsOut"></span>", f:"<span id="summaryFamilyNameOut"></span>", <span id="summaryOtherNamesOut"></span> bdate:"<span id="summaryBirthDateOut"></span>", b:"<span id="summaryBirthYearOut"></span>", ddate:"<span id="summaryDeathDateOut"></span>", d:"<span id="summaryDeathYearOut"></span>", <span id="summaryUpto"></span></div>
-<div>bplace:"<span id="summaryBirthPlaceOut"></span>", dplace:"<span id="summaryDeathPlaceOut"></span>", thumb:<span id="summaryThumbOut"></span>, male:<span id="summaryGenderOut"></span>, p:<span id="summaryDetailsPageOut"></span>, tagged:<span id="summaryMarkedOut"></span>,</div>
-<div>father:"<span id="summaryFatherOut"></span>", mother:"<span id="summaryMotherOut"></span>", occ:"<span id="summaryOccOut"></span>",</div>
-<div id="summaryCStatusOut"></div>
-<div><span id="summaryFGOut"></span></div>
-
-<div id="introOut" style="white-space:pre-line"></div>
-
-<div id="birthOut" style="white-space:pre-line"></div>
-
-<div id="deathOut" style="white-space:pre-line"></div>
-
-<div id="marriageOut" style="white-space:pre-line"></div>
-
-<div><span id="eventsOut" style="white-space:pre-line"></span></div>
-
-<div><br><span id="placesOut"></span></div>
-<div><span id="end" style="white-space:pre-line"></span>},//p</div>
-
-
-
-<!--div id="end">events:{</div>
-<div id="eventsOut" style="white-space:pre-line"></div>
-<div id="end2">}},</div-->
-</div>
-
-
-
-<script>
-function prepCopy () {
-    draft = document.getElementById('draft')
-    copied = document.getElementById('draftCopy')
-    copied.value = ''
-    divs = draft.querySelectorAll('div')
-    for (i=0;i<divs.length;i++) {
-        if (divs[i].textContent.trim() !== '') copied.value += divs[i].textContent+'\n'
-        }
-    copied.focus()
-    copied.select()
-    document.execCommand('copy')
-    return false
-    }
-</script>
-<div style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>
-
-
-<!--div style="text-align: center;"><button  style="font-size: 2rem;" onClick="copied = document.getElementById('draftCopy'); copied.value = document.getElementById('draft').textContent; copied.focus(); copied.select(); document.execCommand('copy'); return false;">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div-->
-
-
-    <pre id="places">
-    </pre>
 </div>
 </div>
 
