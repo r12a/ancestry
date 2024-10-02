@@ -26,11 +26,9 @@ db.async = false
 document.head.appendChild(db)
 
 
-// load the appropriate db file	
-if (! project) alert('Specify the project name in the URL, using ?project=...')
+// load the appropriate census file	
 var db = document.createElement('script')
-db.id = 'database'
-db.src = '../../'+project+'/db.js'
+db.src = '../../'+project+'/census.js'
 db.async = false
 document.head.appendChild(db)
 
@@ -177,7 +175,7 @@ function fillPlacesPulldownOLD () {
     }
 
 
-function fillPlacesPulldown () {
+function fillPlacesPulldownX () {
     // populate the places pulldown
     out = '<option value="">select one</option>\n'
     for (place in placesDB) {
@@ -188,6 +186,18 @@ function fillPlacesPulldown () {
 	}
     document.getElementById('gpsList').innerHTML = out
     }
+
+function fillPlacesPulldown () {
+    // populate the places pulldown
+    findallplaces()
+    out = ''
+    for (p=0;p<window.lines.length;p++) {
+        out += `<option value="${ window.lines[p] }">${ window.lines[p] }`
+        out += `</option>,\n`
+        }
+    document.getElementById('gpsList').innerHTML = out
+    }
+    
 
 
 function getDate (year) { 
