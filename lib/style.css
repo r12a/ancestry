@@ -285,16 +285,22 @@ article {
     margin: auto;
     padding: 2em;
     border: 1px solid rgb(204, 204, 204);
-    border-radius: 1em;
+    /* border-radius: 1em;*/
     max-width: 70%;
     max-height: 80vh;
-    bottom: 2em;
+    /* bottom: 2em; 
+    left: .5rem; */
     box-shadow: gray 10px 5px 5px;
-    left: .5rem;
     overflow-y: auto;
     scrollbar-color: tan transparent;
     scrollbar-width: thin;
     z-index: 1000;
+
+    border-top-right-radius: .25em;
+    border-top-left-radius: .25em;
+    left: 30%;
+    right: 18%;
+    bottom: 2.5rem;
     }
 
 #summaryWin::-webkit-scrollbar-thumb {
@@ -366,6 +372,12 @@ article {
 
 
 
+
+#summaryWin i {
+    font-size: 80%;
+    font-style: normal;
+    color: darkgray;
+    }
 
 
 
