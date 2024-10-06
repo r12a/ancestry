@@ -244,25 +244,38 @@ function filterDate (str) {
     var total = 0
     window.lines = []
     
-    for (name in dbOrdered) {        
+    for (name in dbOrdered) {
+        //console.log('NAME', name)
         found = ''
-        if (db[name].birth && db[name].birth.timestamp && db[name].birth.timestamp.includes(str)) lines.push(db[name].birth.timestamp+'§'+name+'§'+'born'+'§'+db[name].birth.place.split('http')[0])
+        place = db[name].birth && db[name].birth.place ? db[name].birth.place.split('http')[0] : 'Unknown place'
+        //if (db[name].birth && db[name].birth.timestamp && db[name].birth.timestamp.includes(str)) lines.push(db[name].birth.timestamp+'§'+name+'§'+'born'+'§'+db[name].birth.place.split('http')[0])
+        if (db[name].birth && db[name].birth.timestamp && db[name].birth.timestamp.includes(str)) lines.push(db[name].birth.timestamp+'§'+name+'§'+'born'+'§'+place)
         
         
         if (db[name].marriages) {
             for (mRec in db[name].marriages) {
-                found = ''
+                place = db[name].marriages[mRec].place ? db[name].marriages[mRec].place.split('http')[0] : 'Unknown place'
+
+                if (db[name].marriages[mRec].timestamp && db[name].marriages[mRec].timestamp.includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'married'+'§'+place)
+
+                if (db[name].marriages[mRec].timestamp && db[name].marriages[mRec].timestamp.includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+mRec+'§'+'married'+'§'+place)
+
+/*
                 if (db[name].marriages[mRec].timestamp && db[name].marriages[mRec].timestamp.includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+name+'§'+'married'+'§'+db[name].marriages[mRec].place.split('http')[0])
                 
                 if (db[name].marriages[mRec].timestamp && db[name].marriages[mRec].timestamp.includes(str)) lines.push(db[name].marriages[mRec].timestamp+'§'+mRec+'§'+'married'+'§'+db[name].marriages[mRec].place.split('http')[0])
+                */
                 }
             }
         
         found = ''
         if (db[name].death && db[name].death.timestamp && db[name].death.timestamp.includes(str)) {
-            console.log('NAME', name)
-            if (db[name].death.of) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+db[name].death.of.split('http')[0])
-            else if (db[name].death.place) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+db[name].death.place.split('http')[0])
+            of = db[name].death && db[name].death.of ? db[name].death.of.split('http')[0] : 'Unknown place'
+            place = db[name].death && db[name].death.place ? db[name].death.place.split('http')[0] : 'Unknown place'
+            if (db[name].death.of) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+of)
+            else if (db[name].death.place) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+place)
+            //if (db[name].death.of) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+db[name].death.of.split('http')[0])
+            //else if (db[name].death.place) lines.push(db[name].death.timestamp+'§'+name+'§'+'died'+'§'+db[name].death.place.split('http')[0])
             }
         }
     
@@ -385,7 +398,7 @@ function drawLines () {
 
 function getAgeTS (phrase1, event, birth, phrase2) {
     // get someone's age by comparing timestamps, with optional text around
-     console.log('getAgeTS(phrase1:'+phrase1, 'event:'+event, 'birth:'+birth, 'phrase2:'+phrase2,')')
+    //console.log('getAgeTS(phrase1:'+phrase1, 'event:'+event, 'birth:'+birth, 'phrase2:'+phrase2,')')
 
     if (typeof event === 'undefined' || typeof birth === 'undefined') {
         alert('Event or birth undefined in getAgeTS')
@@ -409,7 +422,7 @@ function getAgeTS (phrase1, event, birth, phrase2) {
     if (eDate < bDate) age--
 	if (age < 0) age = 0
 	
-    console.log('getAgeTS >>>:',phrase1+age+phrase2)
+    //console.log('getAgeTS >>>:',phrase1+age+phrase2)
 	return phrase1+age+phrase2
 	}
 
@@ -418,7 +431,7 @@ function getAgeTS (phrase1, event, birth, phrase2) {
 
 
 function getTimestamp (date, year) {
-    console.log('getTimestamp(date:'+date, 'year:'+year,')')
+    //console.log('getTimestamp(date:'+date, 'year:'+year,')')
 
     if (year.trim() === '?' || year.trim() === '') return ''
 	
@@ -440,7 +453,7 @@ function getTimestamp (date, year) {
     
     var dateObj = new Date(date.trim() +' '+ year.trim())
 
-    console.log('getTimestamp >>>:', dateObj.getFullYear()+'-'+eval(dateObj.getMonth()+1).toString().padStart(2, '0')+'-'+dateObj.getDate().toString().padStart(2, '0'))
+    //console.log('getTimestamp >>>:', dateObj.getFullYear()+'-'+eval(dateObj.getMonth()+1).toString().padStart(2, '0')+'-'+dateObj.getDate().toString().padStart(2, '0'))
 	return dateObj.getFullYear()+'-'+eval(dateObj.getMonth()+1).toString().padStart(2, '0')+'-'+dateObj.getDate().toString().padStart(2, '0')
 	}
 
@@ -466,7 +479,8 @@ function getTimestamp (date, year) {
     </div>
   </div>
   <div id="subbanner">
-    <div>Filter <input id="filter" type="text"  onChange="
+    <div>Filter <input id="filter" type="text" placeholder="Type a place, occupation, or year."
+        style="width: 15rem;" onChange="
         document.getElementById('listrecord').innerHTML = ''
         filterPlaces(document.getElementById('filter').value.trim().toLowerCase())
         drawLines()
