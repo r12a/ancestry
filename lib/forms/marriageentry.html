@@ -95,7 +95,7 @@ function openWindow (locn) {
 	}
 
 function openRecord (locn, ext) {
-	var newwindow = window.open('../../'+project+'/records/'+locn+ext, 'newwindow') 
+	var newwindow = window.open('../../'+project+'_records/'+locn+ext, 'newwindow') 
 	output.focus()
 	newwindow.focus()
 	}
@@ -356,6 +356,8 @@ function autoPropagate (person) {
         if (dataItems.bfocc) document.getElementById('bfoccIn').value = dataItems.bfocc.trim()
 
         if (dataItems.witnesses) document.getElementById('witnessesIn').value = dataItems.witnesses.trim()
+
+        if (dataItems.mentioned) document.getElementById('mentionedIn').value = dataItems.mentioned.trim()
 
         if (dataItems.by) document.getElementById('byIn').value = dataItems.by.trim()
 
@@ -666,6 +668,9 @@ function draftResult () {
     if (document.getElementById('witnessesIn').value.trim()) document.getElementById('witnesses').textContent = `witnesses: "${ document.getElementById('witnessesIn').value.trim() }",` 
     else document.getElementById('witnesses').textContent = ''
 
+    if (document.getElementById('mentionedIn').value.trim()) document.getElementById('mentioned').textContent = `mentioned: "${ document.getElementById('mentionedIn').value.trim() }",` 
+    else document.getElementById('mentioned').textContent = ''
+
     if (document.getElementById('byIn').value.trim()) document.getElementById('by').textContent = `by: "${ document.getElementById('byIn').value.trim() }",` 
     else document.getElementById('by').textContent = ''
 
@@ -731,7 +736,7 @@ function draftResult () {
             if (imagesArray[i].trim() === '') continue
             parts = imagesArray[i].split(' ')
             if (imagesArray[i].match('http')) {} //
-            else parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            else parts[parts.length-1] = 'url:../'+project+'_records/'+parts[parts.length-1]
             imagesOut += '"'+parts.join(' ').trim()+'"'
             if (i<imagesArray.length-1) imagesOut += ', '
             }
@@ -854,21 +859,21 @@ onChange="autoPropagate(this.value);"/>
 
 <div id="certificateTemplate" style="min-width: 10rem;">
 <h3>Certificate</h3>
-<textarea onClick="this.select()">When:
-At:
-When married:
-Name:
-Age:
-Condition:
-Rank/profession:
-Residence:
-Father: 
-Father occ: 
-By: 
-Signatures: 
-Witnesses: 
-Reg date: 
-Other:</textarea>
+<textarea onClick="this.select()">When:&nbsp;
+At:&nbsp;
+Name:&nbsp;
+Age:&nbsp;
+Condition:&nbsp;
+Rank/profession:&nbsp;
+Residence:&nbsp;
+Father:&nbsp;
+Father occ:&nbsp;
+By:&nbsp;
+Signatures:&nbsp;
+Witnesses:&nbsp;
+Reg date:&nbsp;
+Other:&nbsp;
+</textarea>
 </div>
 
 <div id="parishTemplate" style="min-width: 10rem;">
@@ -1268,17 +1273,22 @@ onInput="draftResult()">
 
 <tr>
 <td>Bride father id:</td>
-<td><input type="text" id="bfidIn" class="wideInputBox" onInput="draftResult()"/></td>
+<td><input type="text" id="bfidIn" class="wideInputBox" onInput="draftResult()"></td>
 </tr>
 <tr>
 
 <td>Bride father occ:</td>
-<td><input type="text" id="bfoccIn" class="wideInputBox" onInput="draftResult()"/></td>
+<td><input type="text" id="bfoccIn" class="wideInputBox" onInput="draftResult()"></td>
 </tr>
 
 <tr>
 <td>Witnesses:</td>
-<td><input type="text" id="witnessesIn" class="wideInputBox" onInput="draftResult()"/></td>
+<td><input type="text" id="witnessesIn" class="wideInputBox" onInput="draftResult()"></td>
+</tr>
+
+<tr>
+<td>Mentions:</td>
+<td><input type="text" id="mentionedIn" class="wideInputBox" onInput="draftResult()" placeholder="Comma-separated list of ids for people not mentioned elsewhere."></td>
 </tr>
 
 <tr>
@@ -1394,6 +1404,8 @@ onInput="draftResult()">
             
             else if (lines[i].startsWith('witnesses:')) outId = 'witnessesIn'
             
+            else if (lines[i].startsWith('mentioned:')) outId = 'mentionedIn'
+            
             else if (lines[i].startsWith('by:')) outId = 'byIn'
             
             else outId = ''
@@ -1466,6 +1478,7 @@ onInput="draftResult()">
       <div id="bfocc"></div>
       
       <div id="witnesses"></div>
+      <div id="mentioned"></div>
       <div id="by"></div>
       <div id="length"></div>
 

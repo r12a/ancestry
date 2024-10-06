@@ -58,7 +58,7 @@ function openWindow (locn) {
 	}
 
 function openRecord (locn, ext) {
-	var newwindow = window.open('../../'+project+'/records/'+locn+ext, 'newwindow') 
+	var newwindow = window.open('../../'+project+'_records/'+locn+ext, 'newwindow') 
 	output.focus()
 	newwindow.focus()
 	}
@@ -210,6 +210,8 @@ function autoPropagate (person) {
         if (dataItems.occ) document.getElementById('occIn').value = dataItems.occ.trim()
         
         if (dataItems.informant) document.getElementById('informantIn').value = dataItems.informant.trim()
+        
+        if (dataItems.mentioned) document.getElementById('mentionedIn').value = dataItems.mentioned.trim()
         
         if (dataItems.burplace) document.getElementById('burPlaceIn').value = dataItems.burplace.trim()
         
@@ -517,6 +519,10 @@ function draftResult () {
         document.getElementById('informant').textContent = `informant: "${ document.getElementById('informantIn').value.trim() }",`
     else document.getElementById('informant').textContent = ''
  
+    if (document.getElementById('mentionedIn').value.trim()) 
+        document.getElementById('mentioned').textContent = `mentioned: "${ document.getElementById('mentionedIn').value.trim() }",`
+    else document.getElementById('mentioned').textContent = ''
+ 
     if (document.getElementById('occIn').value.trim()) 
         document.getElementById('occ').textContent = `occ: "${ document.getElementById('occIn').value.trim() }",`
     else document.getElementById('occ').textContent = ''
@@ -592,7 +598,7 @@ function draftResult () {
             if (imagesArray[i].trim() === '') continue
             parts = imagesArray[i].split(' ')
             if (imagesArray[i].match('http')) {} //
-            else parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            else parts[parts.length-1] = 'url:../'+project+'_records/'+parts[parts.length-1]
             //if (! imagesArray[i].includes('url:records')) parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
             imagesOut += '"'+parts.join(' ').trim()+'"'
             if (i<imagesArray.length-1) imagesOut += ', '
@@ -745,25 +751,26 @@ speed up data entry.</p>
 
 <h3>Certificate</h3>
 <textarea onClick="this.select()">When:
-Where:
-Name:
-Age:
-Occupation:
-Cause:
-Informant:
-Reg date:
+Where:&nbsp;
+Name:&nbsp;
+Age:&nbsp;
+Occupation:&nbsp;
+Cause:&nbsp;
+Informant:&nbsp;
+Reg date:&nbsp;
 </textarea>
 </div>
 
 <div id="parishTemplate" style="min-width: 10rem;">
 <h3>Parish record</h3>
 <textarea onClick="this.select()">Parish:
-When:
-Name:
-Father:
-Mother:
-Abode:
-Father occ:</textarea>
+When:&nbsp;
+Name:&nbsp;
+Father:&nbsp;
+Mother:&nbsp;
+Abode:&nbsp;
+Father occ:&nbsp;
+</textarea>
 </div>
 
 
@@ -1157,7 +1164,13 @@ function makeTimestamp () {
 <tr>
 <td>Informant:</td>
 <td><input type="text" id="informantIn"  
-    placeholder="Name, relation, present at death?" class="wideInputBox"
+    placeholder="Name, relation, residence, present at death?" class="wideInputBox"
+    onInput="draftResult()"></td>
+</tr>
+<tr>
+<td>Mentions:</td>
+<td><input type="text" id="mentionedIn"  
+    placeholder="Comma-separated list of ids for people not mentioned elsewhere." class="wideInputBox"
     onInput="draftResult()"></td>
 </tr>
 <tr>
@@ -1292,6 +1305,8 @@ function makeTimestamp () {
             
             else if (lines[i].startsWith('informant:')) outId = 'informantIn'
             
+            else if (lines[i].startsWith('mentioned:')) outId = 'mentionedIn'
+            
             else outId = ''
             
             value = lines[i].split(':')
@@ -1332,6 +1347,7 @@ function makeTimestamp () {
       <div id="mother"></div>
       <div id="motherId"></div>
       <div id="informant"></div>
+      <div id="mentioned"></div>
       <div id="probateNames"></div>
       <div id="probateText" style="white-space: pre;"></div>
       <div id="graveText" style="white-space:pre-line"></div>

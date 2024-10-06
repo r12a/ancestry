@@ -53,7 +53,7 @@ function openWindow (locn) {
 	}
 
 function openRecord (locn, ext) {
-	var newwindow = window.open('../../'+project+'/records/'+locn+ext, 'newwindow') 
+	var newwindow = window.open('../../'+project+'_records/'+locn+ext, 'newwindow') 
 	output.focus()
 	newwindow.focus()
 	}
@@ -180,6 +180,7 @@ function autoPropagate (person) {
         var notes = ''
         var fnotes = ''
         var discussion = ''
+        console.log('dataItems', dataItems)
         
         if (dataItems.timestamp) document.getElementById('timestampIn').value = dataItems.timestamp.trim()
         
@@ -188,6 +189,8 @@ function autoPropagate (person) {
         if (dataItems.focc) document.getElementById('foccIn').value = dataItems.focc.trim()
         
         if (dataItems.informant) document.getElementById('informantIn').value = dataItems.informant.trim()
+        
+        if (dataItems.mentioned) document.getElementById('mentionedIn').value = dataItems.mentioned.trim()
         
         if (dataItems.bapplace) document.getElementById('bapPlaceIn').value = dataItems.bapplace.trim()
         
@@ -473,6 +476,10 @@ function draftResult () {
         document.getElementById('informant').textContent = `informant: "${ document.getElementById('informantIn').value.trim() }",`
     else document.getElementById('informant').textContent = ''
 
+    if (document.getElementById('mentionedIn').value.trim()) 
+        document.getElementById('mentioned').textContent = `mentioned: "${ document.getElementById('mentionedIn').value.trim() }",`
+    else document.getElementById('mentioned').textContent = ''
+
     if (document.getElementById('bapPlaceIn').value.trim()) 
         document.getElementById('bapPlace').textContent = `bapplace: "${ document.getElementById('bapPlaceIn').value.trim() }",`
     else document.getElementById('bapPlace').textContent = ''
@@ -542,7 +549,7 @@ function draftResult () {
             if (imagesArray[i].trim() === '') continue
             parts = imagesArray[i].split(' ')
             if (imagesArray[i].match('http')) {} //
-            else parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            else parts[parts.length-1] = 'url:../'+project+'_records/'+parts[parts.length-1]
             imagesOut += '"'+parts.join(' ').trim()+'"'
             if (i<imagesArray.length-1) imagesOut += ', '
             }
@@ -673,20 +680,21 @@ function getMonthOLD (dateValue) {
 speed up data entry.</p>
 
 <h3>Certificate</h3>
-<textarea onClick="this.select()">When:
-Where:
-Name:
-Father:
-Mother:
-Father occ:
-Informant:
-Reg date:
-Other:</textarea>
+<textarea onClick="this.select()">When:&nbsp;
+Where:&nbsp;
+Name:&nbsp;
+Father:&nbsp;
+Mother:&nbsp;
+Father occ:&nbsp;
+Informant:&nbsp;
+Reg date:&nbsp;
+Other:&nbsp;
+</textarea>
 </div>
 
 <div id="parishTemplate" style="min-width: 10rem;">
 <h3>Parish record</h3>
-<textarea onClick="this.select()">Parish:
+<textarea onClick="this.select()">Parish:&nbsp;
 When:&nbsp;
 Name:&nbsp;
 Parents:&nbsp;
@@ -1036,6 +1044,12 @@ function makeTimestamp () {
             placeholder="ID/name, relationship." class="wideInputBox"
             onInput="draftResult()"></td>
       </tr>
+      <tr>
+        <td>Mentions:</td>
+        <td colspan="3"><input type="text" id="mentionedIn"  
+            placeholder="Comma-separated list of ids for people mentioned." class="wideInputBox"
+            onInput="draftResult()"></td>
+      </tr>
 
       <tr>
         <td>Denomination:</td>
@@ -1146,6 +1160,8 @@ function makeTimestamp () {
             
             else if (lines[i].startsWith('informant:')) outId = 'informantIn'
             
+            else if (lines[i].startsWith('mentioned:')) outId = 'mentionedIn'
+            
             else if (lines[i].startsWith('denomination:')) outId = 'denominationIn'
             
             else outId = ''
@@ -1177,6 +1193,7 @@ function makeTimestamp () {
 <div id="mmn"></div>
 <div id="siblings"></div>
 <div id="informant"></div>
+<div id="mentioned"></div>
 <div id="bapPlace"></div>
 <div id="bapYear"></div>
 <div id="bapDate"></div>
