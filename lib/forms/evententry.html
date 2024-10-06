@@ -157,7 +157,7 @@ function openWindow (locn) {
 	}
 
 function openRecord (locn, ext) {
-	var newwindow = window.open('../../'+project+'/records/'+locn+ext, 'newwindow') 
+	var newwindow = window.open('../../'+project+'_records/'+locn+ext, 'newwindow') 
 	output.focus()
 	newwindow.focus()
 	}
@@ -677,7 +677,7 @@ hideShowFields()
         for (i=0;i<imagesArray.length;i++) {
             if (imagesArray[i].trim() === '') continue
             parts = imagesArray[i].split(' ')
-            parts[parts.length-1] = 'url:records/'+parts[parts.length-1]
+            parts[parts.length-1] = 'url:../'+project+'_records/'+parts[parts.length-1]
             imagesOut += '"'+parts.join(' ').trim()+'"'
             if (i<imagesArray.length-1) imagesOut += ', '
             }

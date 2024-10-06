@@ -395,7 +395,7 @@ function draftResult () {
         var scanOut = ''
         for (i=0;i<scans.length;i++) {
             if (scans[i].match('http')) scanOut += `"${ recordType } record ${ scans[i] }"`
-            else scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
+            else scanOut += `"${ recordType } record url:../${ project }_records/${ scans[i] }.jpg"`
             //scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
             if (i<scans.length-1) scanOut += ', '
             }
