@@ -39,14 +39,135 @@ document.head.appendChild(db)
 
 function draftNotes () {
     // writes stuff to the notes panel
-    var out = ''
-    var node = document.getElementById('censusNotes')
-    var headId = document.getElementById('headId').value
-    var wifeId = document.getElementById('wifeId').value
+    var out, node, headId, wifeId, children, others, servants, personName, personAge
+    
+    out = ''
+    node = document.getElementById('censusNotes')
+    headId = document.getElementById('headId').value
+    wifeId = document.getElementById('wifeId').value
     
     if (headId) out += `{${ headId }:kx0}`
-    else out +=  `${ document.getElementById('censusHeadName').value }, document.getElementById('censusHeadAge').value,`
-    //if (document.getElementById('censusHeadAge').value) out += `, ${ document.getElementById('censusHeadAge').value }`
+    else out +=  `${ document.getElementById('censusHeadName').value }<sup class="ageTag">${ document.getElementById('censusHeadAge').value }</sup>`
+    if (document.getElementById('censusOcc').value) out += ` was a ${ document.getElementById('censusOcc').value }`
+    else if (document.getElementById('censusHeadOcc').value) out += ` was a ${ document.getElementById('censusHeadOcc').value }`
+    out += '. '
+    
+    if (document.getElementById('censusWifeName').value 
+        && document.getElementById('censusWifeOcc').value) {
+        if (wifeId) out += `His wife {${ wifeId }:kx0}`
+        else out +=  `His wife ${ document.getElementById('censusWifeName').value }, ${ document.getElementById('censusWifeAge').value },`
+        if (document.getElementById('censusWifeOcc').value) out += ` was a ${ document.getElementById('censusWifeOcc').value }`
+        out += '.'
+        }
+    
+   else if (document.getElementById('censusWifeName').value 
+        && document.getElementById('wifeId').value == '') {
+        out +=  `His wife ${ document.getElementById('censusWifeName').value } was ${ document.getElementById('censusWifeAge').value }`
+        out += '.'
+        }
+    
+    children = document.getElementById('child').querySelectorAll('div')
+    
+    if (children && children.length>0) {
+        if (children.length === 1) out += `\nThe child was `
+        else out += `\nThe children were `
+        for (var i=0;i<children.length;i++) {
+            if (i>0) out += ','
+            if (i === children.length-1 && children.length > 1) out += ' and '
+            
+            // use the name if there is no id
+            if (children[i].querySelector('.inputID').value.trim()) personName = ` {${ children[i].querySelector('.inputID').value }:k}`
+            else personName = `${ children[i].querySelector('.inputName').value.trim() }<sup class="ageTag">${ children[i].querySelector('.inputAge').value }</sup>`
+            
+            personOcc = children[i].querySelector('.inputOcc').value.trim()
+            
+            out += personName
+            if (personOcc) out += `, ${ personOcc }`
+            }
+        out += '.'
+        }
+    
+    others = document.getElementById('other').querySelectorAll('div')
+    
+    if (others && others.length>0) {
+        if (others.length === 1) out += `\nAlso at the house was `
+        else out += `\nAlso at the house were `
+        for (var i=0;i<others.length;i++) {
+            if (i>0) out += ','
+            if (i === others.length-1 && others.length > 1) out += ' and '
+            
+            // use the name if there is no id
+            if (others[i].querySelector('.inputID').value.trim()) personName = ` {${ others[i].querySelector('.inputID').value }:kfm}`
+            else personName = `${ others[i].querySelector('.inputName').value.trim() }<sup class="ageTag">${ others[i].querySelector('.inputAge').value }</sup>`
+            
+            personOcc = others[i].querySelector('.inputOcc').value.trim()
+            
+            out += personName
+            if (personOcc) out += `, ${ personOcc }`
+            }
+        out += '.'
+        }
+    
+    visitors = document.getElementById('visitor').querySelectorAll('div')
+    
+    if (visitors && visitors.length>0) {
+        if (visitors.length === 1) out += `\nThere was also a boarder visitor, `
+        else out += `\nBoarders Visitors included `
+        for (var i=0;i<visitors.length;i++) {
+            if (i>0) out += ', '
+            if (i === visitors.length-1 && visitors.length > 1) out += ' and '
+            
+            // use the name if there is no id
+            if (visitors[i].querySelector('.inputID').value.trim()) personName = ` {${ visitors[i].querySelector('.inputID').value }:kfm}`
+            else personName = `${ visitors[i].querySelector('.inputName').value.trim() }<sup class="ageTag">${ visitors[i].querySelector('.inputAge').value }</sup>`
+            
+            personOcc = visitors[i].querySelector('.inputOcc').value.trim()
+            
+            out += personName
+            if (personOcc) out += `, ${ personOcc }`
+            }
+        out += '.'
+        }
+    
+    servants = document.getElementById('serv').querySelectorAll('div')
+    
+    if (servants && servants.length>0) {
+        if (servants.length === 1) out += `\nThe servant at the house was `
+        else out += `\nThe servants at the house were `
+        for (var i=0;i<servants.length;i++) {
+            if (i>0) out += ', '
+            if (i === servants.length-1 && servants.length > 1) out += ' and '
+            
+            // use the name if there is no id
+            if (servants[i].querySelector('.inputID').value.trim()) personName = ` {${ servants[i].querySelector('.inputID').value }:kfm}`
+            else personName = `${ servants[i].querySelector('.inputName').value.trim() }<sup class="ageTag">${ servants[i].querySelector('.inputAge').value }</sup>`
+            
+            personOcc = servants[i].querySelector('.inputOcc').value.trim()
+            
+            out += personName
+            if (personOcc) out += `, ${ personOcc }`
+            }
+        out += '.'
+        }
+
+    node.value = out
+    }
+
+
+
+
+
+function draftNotesX () {
+    // writes stuff to the notes panel
+    var out, node, headId, wifeId
+    
+    out = ''
+    node = document.getElementById('censusNotes')
+    headId = document.getElementById('headId').value
+    wifeId = document.getElementById('wifeId').value
+    
+    if (headId) out += `{${ headId }:kx0}`
+    else out +=  `${ document.getElementById('censusHeadName').value }<sup class="ageTag">${ document.getElementById('censusHeadAge').value }</sup>`
     if (document.getElementById('censusOcc').value) out += ` was a ${ document.getElementById('censusOcc').value }`
     else if (document.getElementById('censusHeadOcc').value) out += ` was a ${ document.getElementById('censusHeadOcc').value }`
     out += '. '
@@ -68,17 +189,27 @@ function draftNotes () {
     var children = document.getElementById('child').querySelectorAll('div')
     
     if (children && children.length>0) {
-        if (children.length === 1) out += ` The child was`
-        else out += ` The children were`
+        if (children.length === 1) out += `\nThe child was `
+        else out += `\nThe children were `
         for (var i=0;i<children.length;i++) {
             if (i>0) out += ','
-            if (i === children.length-1 && children.length > 1) out += ' and'
+            if (i === children.length-1 && children.length > 1) out += ' and '
+            
             // use the name if there is no id
-            var personName = ''
+            if (children[i].querySelector('.inputID').value.trim()) childName = ` {${ children[i].querySelector('.inputID').value }:k}`
+            else childName = `${ children[i].querySelector('.inputName').value.trim() }<sup class="ageTag">${ children[i].querySelector('.inputAge').value }</sup>`
+            
+            childOcc = children[i].querySelector('.inputOcc').value.trim()
+            
+            out += childName
+            if (childOcc) out += `, ${ childOcc }`
+            
+            /*
             if (children[i].querySelector('.inputID').value.trim()) out += ` {${ children[i].querySelector('.inputID').value }:k}`
-            else out += ` ${ children[i].querySelector('.inputName').value }`
+            else out += ` ${ children[i].querySelector('.inputName').value }<sup class="ageTag">${ children[i].querySelector('.inputAge').value }</sup>`
             //if (children[i].querySelector('.inputAge').value) out += `, ${ children[i].querySelector('.inputAge').value }`
             if (children[i].querySelector('.inputOcc').value) out += `, ${ children[i].querySelector('.inputOcc').value }`
+            */
             }
         out += '.'
         }
@@ -715,7 +846,7 @@ function draftResult () {
       <tr><td></td><td id="child">Children &nbsp; <button onClick="addField('child')">Add</button></td></tr>
       <tr><td></td><td id="other">Other &nbsp; <button onClick="addField('other')">Add</button></td></tr>
       <tr><td></td><td id="serv">Servants &nbsp; <button onClick="addField('serv')">Add</button></td></tr>
-      <tr><td></td><td id="visitor">Visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
+      <tr><td></td><td id="visitor">Boarders, lodgers, visitors &nbsp; <button onClick="addField('visitor')">Add</button></td></tr>
       <tr>
         <td>Occupation:</td>
         <td><input type="text" id="censusOcc" placeholder="of targeted individual (may be infant, etc.)" style="width:400px;" onInput="draftResult()"/></td>
@@ -812,13 +943,17 @@ function draftResult () {
    </table>
     
     
-    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>
 
-    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'recordData'.</p>
+    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">When all the data is entered, copy the text below to the census.js file.</p>
 
 
-    <div id="draft" style="margin:2em; color: brown;" contenteditable="true">
-    <div id="title"></div>
+     <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:80%; margin:auto;" onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy census.js data
+    <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
+    </div>
+   
+   
+   <div id="draft" style="margin:2em; color: brown;" contenteditable="true">
+      <div id="title"></div>
       <!--div id="year"></div-->
       <div id="place"></div>
       <div id="gps"></div>
@@ -840,8 +975,17 @@ function draftResult () {
       <div>},</div>
 
       <div id="break"><br></div>
+      </div>
+      
 
 
+    <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">Then copy the text below to the db.js file, under 'events'.</p>
+
+    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:80%; margin:auto;" onclick="console.log(prepCopyNote()); navigator.clipboard.writeText(prepCopyNote()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy event code
+    <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
+    </div>
+   
+    <div id="draftNote" style="margin:2em; color: brown;" contenteditable="true">
       <div id="date"></div>
       <div id="type">type: "census",</div>
       <div id="censusptr"></div>
@@ -857,7 +1001,7 @@ function draftResult () {
       
 
 <script>
-function prepCopy () {
+function prepCopyX () {
     draft = document.getElementById('draft')
     copied = document.getElementById('draftCopy')
     copied.value = ''
@@ -870,15 +1014,47 @@ function prepCopy () {
     document.execCommand('copy')
     return false
     }
+
+
+function prepCopy () {
+    var draft, copied, divs
+    
+    draft = document.getElementById('draft')
+    copied = ''
+    divs = draft.querySelectorAll('div')
+    for (i=0;i<divs.length;i++) {
+        if (divs[i].textContent.trim() !== '') copied += divs[i].textContent+'\n'
+        }
+    return copied
+    }
+
+
+function prepCopyNote () {
+    var draft, copied, divs
+    
+    draft = document.getElementById('draftNote')
+    copied = ''
+    divs = draft.querySelectorAll('div')
+    for (i=0;i<divs.length;i++) {
+        if (divs[i].textContent.trim() !== '') copied += divs[i].textContent+'\n'
+        }
+    return copied
+    }
+
+
 </script>
-<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>
+<!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
 
+    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Force redraft</button></p>
 
+    <p class="" style="margin: 0rem 0 0 0rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">Click on this to force the input form to fully draft the output data.</p>
 
     <pre id="places">
     </pre>
   </div>
 </div>
+
+<dialog id="copyNotice">Copied !</dialog>
 
 <script>
 document.getElementById('clearAll').href = document.location
