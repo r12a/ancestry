@@ -10,6 +10,7 @@ details { margin-left: 2em; }
 input, textarea {  }
 </style>
 <script src="formentrylookup.js"></script>
+<script src="getplacenames.js"></script>
 
 
 <script>
@@ -51,7 +52,8 @@ document.head.appendChild(db)
 
 
 if (theperson) {
-    setTimeout(() => autoPropagate(theperson), 1000)
+    //setTimeout(() => autoPropagate(theperson), 1000)
+    setTimeout(() => checkForEvents(theperson), 1000)
     }
 </script>
 
@@ -86,65 +88,6 @@ document.head.appendChild(db);
 
 
 
-function findallplaces () {
-    // makes a list of all 'place' fields in BMDC
-    
-    var uniqueSet, name, line
-    
-    window.lines = []
-    
-    for (name in db) {
-        if (db[name].birth && db[name].birth.place) lines.push(db[name].birth.place)
-        if (db[name].birth && db[name].birth.bapplace) lines.push(db[name].birth.bapplace)        
-        if (db[name].birth && db[name].birth.gps) for (i=0;i<db[name].birth.gps.length;i++) lines.push(db[name].birth.gps[i])
-        
-        
-        if (db[name].marriages) {
-            for (mRec in db[name].marriages) {
-                if (db[name].marriages[mRec].place) lines.push(db[name].marriages[mRec].place)
-                if (db[name].marriages[mRec].gparish) lines.push(db[name].marriages[mRec].gparish)
-                if (db[name].marriages[mRec].bparish) lines.push(db[name].marriages[mRec].bparish)
-                if (db[name].marriages[mRec].gps) for (i=0;i<db[name].marriages[mRec].gps.length;i++) lines.push(db[name].marriages[mRec].gps[i])
-                }
-            }
-
-
-        if (db[name].death && db[name].death.place) lines.push(db[name].death.place)
-        if (db[name].death && db[name].death.of) lines.push(db[name].death.of)
-        if (db[name].death && db[name].death.gps) for (i=0;i<db[name].death.gps.length;i++) lines.push(db[name].death.gps[i])
-         
-        
-        if (db[name].events) {
-            for (eRec in db[name].events) {
-                if (db[name].events[eRec].place) lines.push(db[name].events[eRec].place)
-                if (db[name].events[eRec].gps) for (i=0;i<db[name].events[eRec].gps.length;i++) lines.push(db[name].events[eRec].gps[i])
-                }
-            }
-        }
-   
-    
-    for (name in censi) {
-        if (censi[name].place) {
-            line = censi[name].place
-            if (censi[name].gps) {
-                gpsparts = censi[name].gps[0].split(' ')
-                gps = gpsparts[gpsparts.length-1]
-                line += " "+gps
-                lines.push(line)
-                }
-            }
-        }
-
-
-    uniqueSet = new Set(window.lines)
-    window.lines = [...uniqueSet]
-    
-    window.lines.sort()
-    
-    console.log('Places: ', window.lines.length)
-	}
-
-
 
 
 
@@ -173,10 +116,35 @@ function makeNotes (content, target) {
 
 
 
+function checkForEvents (person) {
+    if (person === '') {
+        alert('No id provided.')
+        return
+        }
+    
+    if (timestamp) autoPropagate(person)
+    
+    else if (document.getElementById('timestampIn').value.trim() === '') {        
+        // get any known event timestamps
+        document.getElementById('getEvent').style.display = 'block'
+        if (db[person] && db[person].events) {
+            tsList = 'Known timetamps:<br>'
+            for (tStamp in db[person].events) tsList += `<span style="cursor:pointer;" onclick="document.getElementById('tsPanelInput').value='${ tStamp }'">${ tStamp }</span><br>`
+            }
+        
+        document.getElementById('getEventList').innerHTML = tsList
+        
+        //autoPropagate() is triggered from the dialog box that pops up when you click on OK
+        }
+    }
+
+
 
 
 
 function autoPropagate (person) {
+
+/*
     // Pull up a list of ids for related people, and fill in some fields automatically
     if (person === '') {
         alert('No id provided.')
@@ -186,16 +154,30 @@ function autoPropagate (person) {
         //var ts = document.getElementById('timestampIn').value
         //if (ts === '') {
             // get any known event timestamps
-            if (db[person] && db[person].events) {
-                tsList = 'Known timetamps:\n'
-                for (tStamp in db[person].events) tsList += tStamp+'\n'
-                }
-            ts = prompt(tsList+'Provide a timestamp.')
+          //  if (db[person] && db[person].events) {
+            //    tsList = 'Known timetamps:\n'
+            //    for (tStamp in db[person].events) tsList += tStamp+'\n'
+            //    }
+            //ts = prompt(tsList+'Provide a timestamp.')
             //}
         document.getElementById('timestampIn').value = ts
+        
+        
+        
+        // get any known event timestamps
+        if (db[person] && db[person].events) {
+            tsList = 'Known timetamps:<br>'
+            for (tStamp in db[person].events) tsList += `<span style="cursor:pointer;" onclick="document.getElementById('tsPanelInput').value='${ tStamp }'">${ tStamp }</span><br>`
+            }
+        
+        document.getElementById('getEventList').innerHTML = tsList 
+        //document.getElementById('timestampIn').value = tsList
+        
+        
+        
         }
         
-
+*/
                 
                 
             
@@ -211,32 +193,10 @@ function autoPropagate (person) {
     // add id for parameter driven use
     document.getElementById('idIn').value = person
 
+
     // populate the places datalist
     findallplaces()
-    out = ''
-    for (p=0;p<window.lines.length;p++) {
-        out += `<option value="${ window.lines[p] }">${ window.lines[p] }`
-        out += `</option>,\n`
-        }
-    document.getElementById('gpsList').innerHTML = out
-
-    /*
-    // populate the places pulldown
-    out = '<option value="">select one</option>\n'
-    for (place in placesDB) {
-	out += `<option value="${ placesDB[place].p }, ${ placesDB[place].c } ${ placesDB[place].gps }">${ place }`
-    if (placesDB[place].gps) out += ' G'
-    if (placesDB[place].desc) out += ' I'
-    out += `</option>,\n`
-	}
-    document.getElementById('gpsList').innerHTML = out
-
-    out = '<option value="">select one</option>\n'
-    for (place in placesDB) {
-	out += `<option value="${ placesDB[place] }">${ placesDB[place].split(':')[0] }</option>,\n`
-	}
-    document.getElementById('gpsList').innerHTML = out
-    */
+    makePlacesDatalist()
 
     // make a list of relatives to the right
 	listRelations(person)
@@ -793,6 +753,21 @@ function getMonthOLD (dateValue) {
 
 
 <body>
+
+
+<dialog id="getEvent" style="display:none; position:fixed; top:0; border:1px solid gray; border-radius:.75rem; width:25%; padding: 1em; background: #fffbff;">
+<p style="font-weight: 500; font-size: 90%;">Choose or add an event timestamp</p>
+<p style="font-size: 75%; line-height: 1.4;">
+<span id="getEventList"></span><br>
+Provide a timestamp.
+</p>
+<p style="margin-block-start:0;"><input type="text" id="tsPanelInput" style="border:1.5px solid #9e5c47; border-radius:.5rem; height:2rem; width:98%;"></p>
+<p style="text-align: end;">
+<button style="border:1px solid #ffbba9; border-radius:2em;background:white;height:1.9rem; width:5rem; font-size:70%; color:chocolate;" onClick="document.getElementById('getEvent').style.display='none';">Cancel</button>
+<button style="border:1px solid chocolate; border-radius:2em;background:#9e5c47;height:1.9rem; width:5rem; font-size:70%; color:white;" onClick="document.getElementById('timestampIn').value = document.getElementById('tsPanelInput').value; document.getElementById('getEvent').style.display='none'; autoPropagate(theperson);">OK</button></p>
+</dialog>
+
+
 <div id="out">
 <div id="banner">
 <div id="pagetitle">Event record entry<br>
@@ -1300,11 +1275,15 @@ Need to fix this properly at some point. -->
    </script>
     
     
-    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>
+    <!--<p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>-->
 
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>
    
-   
+    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:60%; margin:auto;" onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
+    <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
+    </div>
+
+
 <div id="draft" style="margin:2rem; color: brown;">
 <div id="start">TIMESTAMP NEEDED</div>
 <div id="noteType"></div>
@@ -1394,13 +1373,16 @@ function prepCopy () {
     return false
     }
 </script>
-<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>
+<!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
+    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate to include timestamp</button></p>
 
 
     <pre id="places">
     </pre>
   </div>
 </div>
+
+<dialog id="copyNotice">Copied !</dialog>
 
 
 <script>
