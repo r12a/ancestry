@@ -226,7 +226,7 @@ article {
     top: 0;
     height: 10rem;
     width: 3rem;
-    margin-block-start: 16rem;
+    margin-block-start: 3rem;
     display:flex;
     flex-direction: column;
     /*justify-content: space-around;*/

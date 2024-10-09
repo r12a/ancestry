@@ -22,15 +22,20 @@ db.src = project+'/db.js'
 db.async = false
 document.head.appendChild(db);
 </script>
+
+
 <link href="lib/article.css" rel="stylesheet">
 <style>
+#out { margin-inline-end: 3rem; }
+
 #topMenu { bottom: 0; top:auto; text-align: start; padding-right: 2em; }
 img { max-width:40px; display:block; margin:auto; }
-.name { font-size: 100%; line-height: 1; }
-.gparent .name { font-size: 100%;}
+/*.name { font-size: 100%; line-height: 1; }*/
+.name { line-height: 1; }
+/*.gparent .name { font-size: 100%;}*/
 #ggparents { display:flex; flex-direction:row; flex-wrap:no-wrap; }
 .nodes { display: flex; flex-direction: row; flex-wrap:no-wrap; }
-.node {text-align: left;
+/*.node {text-align: left;
 	border: 1px solid #ccc;
 	margin: .5em;
 	padding: 0.2em;
@@ -46,6 +51,20 @@ img { max-width:40px; display:block; margin:auto; }
     font-family: raleway;
     background: azure;
     background: white;
+    font-family: arial;
+    font-weight: normal;
+    }*/
+.node {
+    text-align: left;
+	margin: .5em;
+	padding: 0.2em;
+	border-radius: 4px;
+	font-size: 16px;
+	flex: 1;
+	display: flex;
+	justify-content: center;
+    font-weight: bold;
+    font-family: raleway;
     font-family: arial;
     font-weight: normal;
     }
@@ -88,7 +107,7 @@ table { margin:auto; }
 .dates { font-size: 80%; }
 .thisPerson .data { font-size: 140%; }
 #buttons, #whois { text-align: center; }
-#floatingLinks {
+/*#floatingLinks {
     position: fixed; 
     right: 0; 
     top: 0; 
@@ -105,11 +124,53 @@ table { margin:auto; }
     height: 6rem;
     line-height: 1.4;
     align-content: center;
-    }
+    }*/
 #floatingLinks a {
     color: gray;
     margin:0;
     padding: 0;
+    }
+#floatingLinks {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 10rem;
+    width: 3rem;
+    margin-block-start: 3rem;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-around; */
+    text-align: center;
+    font-size: 1.8rem;
+    align-items: center;
+    line-height: 4rem;
+}
+
+
+.rootIndividual {
+    justify-content:center;
+    font-size: 1.5em;
+    }
+.maleName {
+    direction: rtl;
+    text-align:start; 
+    justify-content:start;
+    border-inline-start: 1px dotted;
+    }
+.femaleName {
+    direction: ltr;
+    text-align:start; 
+    justify-content:start;
+    border-inline-start: 1px dotted;
+    }
+.parentsRow {
+    font-size: 1.75rem;
+    }
+.grandparentsRow {
+    font-size: 1.5rem;
+    }
+.ggrandparentsRow {
+    font-size: 1.2rem;
     }
 </style>
 </head>
@@ -121,15 +182,47 @@ table { margin:auto; }
 	<!--a id="treeLink" href="tree.html#">Tree</a-->
 	<!--a href="index.html" style="margin-right: 2em;">Index</a-->
 	</div>
-    
+
+
 <div id="floatingLinks">
+<!--
 	<a id="treeLink" title="Show ancestors" href="">⏫</a>
     
     <a id="indexLink" title="Go to the Index" href="">📇</a>
 <script>
 document.getElementById('indexLink').href = 'index.html?project='+project
 </script>
+-->
 </div>
+
+<script>
+
+    // do the floating links
+    out = '<a title="Go to the Index." href="index.html?project='+project+'">&#x1F4C7;</a> '
+
+    out += '<a id="gotoTree" title="Show Relationships" href="tree.html?project='+window.project+'&person='+thisPerson+'">&#x23F3;</a>'
+     
+    out += '<a id="gotoPerson" title="Show details for this person" href="person.html?project='+window.project+'&person='+thisPerson+'">&#x1F4C4;</a>'
+     
+	out += '<a title="Show Ancestors" style="opacity:80%;" href="precedents.html?person='+thisPerson+'&project='+project+'">&#x23EB;</a> '
+   
+	out += '<a title="Show Descendants." style="opacity:80%;" href="descendants.html?person='+thisPerson+'&project='+project+'">&#x23EC;</a> '
+    
+	out += '<a title="Show Family Tree" href="ancestors.html?person='+thisPerson+'&project='+project+'">&#x1F333;</a> '
+    
+	out += '<a title="Search for entries containing a word" target="searchWindow" href="search.html?person='+thisPerson+'&project='+project+'">&#x1F50D;</a> '
+    
+	out += `<a title="Copy id to clipboard" style="opacity:80%;" href="javascript:void(0)"><img 
+                src="lib/i/copytiny.svg" 
+                style="height:1em; width:1em;" onclick="navigator.clipboard.writeText('${ thisPerson }'); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"></a> `
+
+    out += '</div>'
+
+document.getElementById('floatingLinks').innerHTML = out
+
+</script>
+
+
 
 	<div id="top"></div>
 <div id="out">
@@ -171,6 +264,20 @@ function whoIs (person) {
 
 
 function show (type) {
+	var nodes = document.querySelectorAll('.node')
+	var j
+	for (var i=0;i<nodes.length;i++) {
+		var defaults = nodes[i].querySelectorAll('.name')
+		//for (j=0;j<defaults.length;j++) defaults[j].style.visibility = 'hidden'
+		var defaults = nodes[i].querySelectorAll('.dates,.occ,.age,.bplace')
+		for (j=0;j<defaults.length;j++) defaults[j].style.display = 'none'
+		curr = nodes[i].querySelector(type)
+		if (curr) curr.style.display = 'block'
+		}	
+	}
+
+
+function showX (type) {
 	var nodes = document.querySelectorAll('.node')
 	var j
 	for (var i=0;i<nodes.length;i++) {
@@ -228,7 +335,63 @@ function getAge (birth, death) {
 function addMarkup (list) {
 	var out = ''
 	for (var i=0;i<list.length;i++) {
-		out += '<div class="node" onmouseover="whoIs(\''+list[i]+'\')">'
+		out += '<div class="node'
+        //if (list.length === 1) out += ' style="justify-content:center;"'
+        //else if (db[list[i]] && list.length<16 && db[list[i]].male) out += ' dir="rtl" style="text-align:start; justify-content:start;"'
+        //else if (list.length<16) out += ' style="text-align:start; justify-content:start;"'
+        if (list.length === 1) out += ' rootIndividual"'
+        else if (db[list[i]] && list.length<16 && db[list[i]].male) out += ' maleName'
+        else if (list.length<16) out += ' femaleName'
+        if (list.length === 2) out += ' parentsRow'
+        if (list.length === 4) out += ' grandparentsRow'
+        if (list.length === 8) out += ' ggrandparentsRow'
+        out += '" onmouseover="whoIs(\''+list[i]+'\')">'
+      	out += '<div class="data" title="'+list[i]+'">'
+		if (db[list[i]]) {
+			out += '<div class="name"><a href="ancestors.html?project='+window.project+'&amp;person='+list[i]+'">'
+			out += db[list[i]].f+', '
+			if (db[list[i]].k) out += db[list[i]].k
+			else out += db[list[i]].g
+			//out += '&nbsp;<a href="descendants.html?project='+window.project+'&amp;person='+list[i]+'">▽</a>'
+			//out += '&nbsp;<a href="ancestors.html?project='+window.project+'&amp;person='+list[i]+'">△</a>'
+			out += '</a></div>'
+			
+			out += '<div class="dates">'
+			out += db[list[i]].b+'- '+db[list[i]].d
+			//out += ' <span class="detaileddates">'+getAge(db[list[i]].b, db[list[i]].d)+'</span>'
+			out += '</div>'
+			
+			out += '<div class="age">'
+			out += getAge(db[list[i]].b, db[list[i]].d)
+			out += '</div>'
+			
+			out += '<div class="occ">'
+			if (db[list[i]].occ) out += db[list[i]].occ
+			else out += '-'
+			out += '</div>'
+			
+			out += '<div class="bplace">'
+			if (db[list[i]].bplace) out += db[list[i]].bplace
+			else out += '-'
+			out += '</div>'
+            }
+		else out += '<div class="name">&nbsp;</div>'
+		out += '</div>'
+		out += '</div>'
+		}
+	return out
+	}
+
+
+
+function addMarkupX (list) {
+	var out = ''
+	for (var i=0;i<list.length;i++) {
+		out += '<div class="node" onmouseover="whoIs(\''+list[i]+'\')"'
+        if (list.length === 1) out += ' style="justify-content:center;"'
+        else if (db[list[i]] && db[list[i]].male) out += ' dir="rtl" style="text-align:start; justify-content:start;"'
+        else out += ' style="text-align:start; justify-content:start;"'
+        out += '>'
       	out += '<div class="data" title="'+list[i]+'">'
 		if (db[list[i]]) {
 			out += '<div class="name"><a href="tree.html?project='+window.project+'&amp;person='+list[i]+'">'
@@ -270,7 +433,7 @@ function start () {
 		
 	document.getElementById('pagetitle').innerHTML = db[thisPerson].g+' '+db[thisPerson].f+'<br><span id="bannerdates">Family tree</span>'
 	
-	document.getElementById('treeLink').href = 'precedents.html?project='+project+'&person='+thisPerson
+	//document.getElementById('treeLink').href = 'precedents.html?project='+project+'&person='+thisPerson
 
 	var parents = getParents(window.thisPerson)
 	
