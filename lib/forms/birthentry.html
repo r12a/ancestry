@@ -9,6 +9,7 @@ td { vertical-align: top; padding-left: 1em; }
 details { margin-left: 2em; }
 </style>
 <script src="formentrylookup.js"></script>
+<script src="getplacenames.js"></script>
 <script>
 trace = false
 // read in project
@@ -68,63 +69,6 @@ function makeNotes (content, target) {
 
 
 
-function findallplaces () {
-    // makes a list of all 'place' fields in BMDC
-    
-    var uniqueSet, name, line
-    
-    window.lines = []
-    
-    for (name in db) {
-        if (db[name].birth && db[name].birth.place) lines.push(db[name].birth.place)
-        if (db[name].birth && db[name].birth.bapplace) lines.push(db[name].birth.bapplace)        
-        if (db[name].birth && db[name].birth.gps) for (i=0;i<db[name].birth.gps.length;i++) lines.push(db[name].birth.gps[i])
-        
-        
-        if (db[name].marriages) {
-            for (mRec in db[name].marriages) {
-                if (db[name].marriages[mRec].place) lines.push(db[name].marriages[mRec].place)
-                if (db[name].marriages[mRec].gparish) lines.push(db[name].marriages[mRec].gparish)
-                if (db[name].marriages[mRec].bparish) lines.push(db[name].marriages[mRec].bparish)
-                if (db[name].marriages[mRec].gps) for (i=0;i<db[name].marriages[mRec].gps.length;i++) lines.push(db[name].marriages[mRec].gps[i])
-                }
-            }
-
-
-        if (db[name].death && db[name].death.place) lines.push(db[name].death.place)
-        if (db[name].death && db[name].death.of) lines.push(db[name].death.of)
-        if (db[name].death && db[name].death.gps) for (i=0;i<db[name].death.gps.length;i++) lines.push(db[name].death.gps[i])
-         
-        
-        if (db[name].events) {
-            for (eRec in db[name].events) {
-                if (db[name].events[eRec].place) lines.push(db[name].events[eRec].place)
-                if (db[name].events[eRec].gps) for (i=0;i<db[name].events[eRec].gps.length;i++) lines.push(db[name].events[eRec].gps[i])
-                }
-            }
-        }
-   
-    
-    for (name in censi) {
-        if (censi[name].place) {
-            line = censi[name].place
-            if (censi[name].gps) {
-                gpsparts = censi[name].gps[0].split(' ')
-                gps = gpsparts[gpsparts.length-1]
-                line += " "+gps
-                lines.push(line)
-                }
-            }
-        }
-
-
-    uniqueSet = new Set(window.lines)
-    window.lines = [...uniqueSet]
-    
-    window.lines.sort()
-    
-    console.log('Places: ', window.lines.length)
-	}
 
 
 
@@ -139,35 +83,11 @@ function autoPropagate (person) {
     // add id for parameter driven use
     document.getElementById('idIn').value = person
 
-    /*/ populate the places pulldown OLD
-    out = '<option value="">select one</option>\n'
-    for (place in placeIndex) {
-	out += `<option value="${ placeIndex[place] }">${ placeIndex[place].split(':')[0] }</option>,\n`
-	}
-    document.getElementById('gpsList').innerHTML = out
-    */
 
     // populate the places datalist
     findallplaces()
-    out = ''
-    for (p=0;p<window.lines.length;p++) {
-        out += `<option value="${ window.lines[p] }">${ window.lines[p] }`
-        out += `</option>,\n`
-        }
-    document.getElementById('gpsList').innerHTML = out
-    
+    makePlacesDatalist()
 
-/*
-    // populate the places pulldown
-    out = '<option value="">select one</option>\n'
-    for (place in placesDB) {
-	out += `<option value="${ placesDB[place].p }, ${ placesDB[place].c } ${ placesDB[place].gps }">${ place }`
-    if (placesDB[place].gps) out += ' G'
-    if (placesDB[place].desc) out += ' I'
-    out += `</option>,\n`
-	}
-    document.getElementById('gpsList').innerHTML = out
-*/
     // make a list of relatives to the right
 	listRelations(person)
     
@@ -1176,10 +1096,15 @@ function makeTimestamp () {
         }
    </script>
     
-    
-    <p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>
 
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>
+    
+    <!--<p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>-->
+    
+    <div title="Copy data to clipboard" style="margin: auto; margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width: 60%;" 
+    onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
+    <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
+    </div>
    
    
 <div id="draft" contenteditable style="margin:2rem; color: brown;">
@@ -1272,7 +1197,23 @@ function makeTimestamp () {
 
 
 <script>
+
+
 function prepCopy () {
+    var draft, copied, divs
+    
+    draft = document.getElementById('draft')
+    copied = ''
+    divs = draft.querySelectorAll('div')
+    for (i=0;i<divs.length;i++) {
+        if (divs[i].textContent.trim() !== '') copied += divs[i].textContent+'\n'
+        }
+    return copied
+    }
+
+
+
+function prepCopyX () {
     draft = document.getElementById('draft')
     copied = document.getElementById('draftCopy')
     copied.value = ''
@@ -1286,13 +1227,18 @@ function prepCopy () {
     return false
     }
 </script>
-<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>
+    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate to include timestamp</button></p>
+
+
+<!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
 
 
     <pre id="places">
     </pre>
   </div>
 </div>
+
+<dialog id="copyNotice">Copied !</dialog>
 
 
 <script>
