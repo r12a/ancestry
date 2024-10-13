@@ -442,7 +442,7 @@ function draftResult () {
         var scanOut = ''
         for (i=0;i<scans.length;i++) {
             if (scans[i].match('http')) scanOut += `"${ recordType } record ${ scans[i] }"`
-            else scanOut += `"${ recordType } record url:../${ project }_records/${ scans[i] }.jpg"`
+            else scanOut += `"${ recordType } record url:../${ project }_records/${ scans[i] }"`
             //scanOut += `"${ recordType } record url:records/${ scans[i] }.jpg"`
             if (i<scans.length-1) scanOut += ', '
             }
@@ -812,6 +812,22 @@ function draftResult () {
      <tr>
         <td>Scans:</td>
         <td><input type="text" id="censusRecordURL" style="width:40em;" onInput="draftResult()" placeholder="A comma-separated list of filenames (no extension)"></td>
+      </tr>
+     <tr>
+        <td>&nbsp;</td>
+        <td><input type="file" multiple id="getFileName" style="width:40em;" onInput="draftResult()" placeholder="A comma-separated list of filenames (no extension)"></td>
+        <script>
+        document.getElementById('getFileName').addEventListener('change', function(event) {
+            const files = event.target.files
+            out = ''
+            for (let i = 0; i < files.length; i++) {
+                if (i>0) out += ', '
+                out += files[i].name
+                //console.log('File name:', files[i].name)
+                }
+            document.getElementById('censusRecordURL').value += out
+            })
+        </script>
       </tr>
      <tr>
         <td>Place:</td>

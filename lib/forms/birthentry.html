@@ -834,6 +834,22 @@ function removeBrackets (node) {
 </td>
 </tr>
 <tr>
+<td>&nbsp;</td>
+<td><input type="file" multiple id="getFileName" style="width:40em;" onInput="draftResult()" placeholder="A comma-separated list of filenames (no extension)"></td>
+<script>
+document.getElementById('getFileName').addEventListener('change', function(event) {
+    const files = event.target.files
+    out = ''
+    for (let i = 0; i < files.length; i++) {
+        if (i>0) out += '\n'
+        out += files[i].name
+        //console.log('File name:', files[i].name)
+        }
+    document.getElementById('recordsIn').value += out
+    })
+</script>
+</tr>
+<tr>
 <td>Test box:</td>
 <td><input type="text" id="recordTester" class="imageBox" 
     placeholder="Copy filename here & press GO to see the record.">
