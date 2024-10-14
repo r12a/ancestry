@@ -1377,7 +1377,8 @@ onInput="draftResult()">
 
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'marriage'.</p>
 
-    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
+    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" 
+    onclick="draftResult(); console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
     <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
     </div>
    
@@ -1510,7 +1511,7 @@ function prepCopyX () {
     return false
     }
 </script>
-    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate to include timestamp</button></p>
+    <!--<p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate to include timestamp</button></p>-->
 
 <!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
 

@@ -430,7 +430,7 @@ function draftResult () {
     if (document.getElementById('atHomeIn').value.trim()) {
         document.getElementById('atHome').textContent = `athome: "${ document.getElementById('atHomeIn').value.trim() }",`
         }
-    else document.getElementById('birthPlace').textContent = ''
+    else document.getElementById('atHome').textContent = ''
  
     if (document.getElementById('ageIn').value.trim()) 
         document.getElementById('age').textContent = `age: "${ document.getElementById('ageIn').value.trim() }",`
@@ -1289,7 +1289,7 @@ function makeTimestamp () {
     
     <!--<p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>-->
 
-    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
+    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onclick="draftResult(); console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
     <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
     </div>
 
@@ -1423,7 +1423,7 @@ function prepCopyX () {
 <!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
 
     
-    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate with timestamp</button></p>
+    <!--<p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate with timestamp</button></p>-->
 
 
       

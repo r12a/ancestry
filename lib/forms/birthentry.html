@@ -1157,7 +1157,7 @@ function makeTimestamp () {
     <!--<p style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Generate data</button></p>-->
     
     <div title="Copy data to clipboard" style="margin: auto; margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width: 60%;" 
-    onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
+    onclick="draftResult(); console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
     <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
     </div>
    
@@ -1283,7 +1283,7 @@ function prepCopyX () {
     return false
     }
 </script>
-    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate to include timestamp</button></p>
+    <!--<p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Regenerate to include timestamp</button></p>-->
 
 
 <!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->

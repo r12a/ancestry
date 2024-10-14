@@ -963,7 +963,13 @@ function draftResult () {
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">When all the data is entered, copy the text below to the census.js file.</p>
 
 
-     <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:80%; margin:auto;" onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy census.js data
+     <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:80%; margin:auto;" 
+     onclick="draftResult();
+     console.log(prepCopy());
+     navigator.clipboard.writeText(prepCopy());
+     document.getElementById('copyNotice').style.display = 'block';
+     setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')
+     ">Copy census.js data
     <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
     </div>
    
@@ -997,7 +1003,13 @@ function draftResult () {
 
     <p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">Then copy the text below to the db.js file, under 'events'.</p>
 
-    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:80%; margin:auto;" onclick="console.log(prepCopyNote()); navigator.clipboard.writeText(prepCopyNote()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy event code
+    <div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer; width:80%; margin:auto;" 
+    onclick="draftResult();
+        console.log(prepCopyNote()); 
+        navigator.clipboard.writeText(prepCopyNote());
+        document.getElementById('copyNotice').style.display = 'block';
+        setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')"
+        >Copy event code
     <img src="../../lib/i/copytiny.svg" alt="" style="height:1em; width:1em; vertical-align: middle;">
     </div>
    
@@ -1061,9 +1073,9 @@ function prepCopyNote () {
 </script>
 <!--<div style="text-align: center;"><button  style="font-size: 2rem;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
 
-    <p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Force redraft</button></p>
+    <!--<p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige;" onClick="draftResult();">Force redraft</button></p>
 
-    <p class="" style="margin: 0rem 0 0 0rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">Click on this to force the input form to fully draft the output data.</p>
+    <p class="" style="margin: 0rem 0 0 0rem; font-style:italic; color: teal; font-size: 80%; text-align: center;">Click on this to force the input form to fully draft the output data.</p>-->
 
     <pre id="places">
     </pre>

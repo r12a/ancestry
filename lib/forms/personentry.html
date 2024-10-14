@@ -900,7 +900,8 @@ fg:[["1943", "lakelin_robert_henry_1902", "lakelin_john_e_1945"]],
 <div id="generateData" style="flex:1;">  
 <!--<div style="text-align: center;"><button style="font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="prepCopy()">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div>-->
 
-<div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onclick="console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
+<div title="Copy data to clipboard" style="margin-block-start: 2rem; text-align: center; font-size: 2rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" 
+onclick="draftResult(); console.log(prepCopy()); navigator.clipboard.writeText(prepCopy()); document.getElementById('copyNotice').style.display = 'block'; setTimeout(() => { document.getElementById('copyNotice').style.display = 'none' }, '500')">Copy
 <img src="../../lib/i/copytiny.svg" style="height:1em; width:1em; vertical-align: middle;">
 </div>
     <!--<p class="" style="margin: 4rem 0 0 2rem; font-style:italic; color: teal;">When all the data is entered, copy the text below to the db.js file, under 'birth'.</p>-->
@@ -969,7 +970,15 @@ function prepCopyX () {
 
 </script>
 
-<p style="text-align: center;"><button style="font-size: 1.5rem; background-color: antiquewhite; border-radius: 1rem; padding-inline: .5rem; box-shadow: none; border: 1px solid beige; cursor: pointer;" onClick="draftResult();">Generate data</button>  <label style="margin-inline-start:6rem; font-size:80%;">Include BMDC? <input type="checkbox" id="generateAll"></label></p>
+<p style="text-align: center;"><button 
+    style="font-size: 1.2rem; 
+        background-color: antiquewhite; 
+        border-radius: 1rem; 
+        padding-inline: .5rem; 
+        box-shadow: none; border: 1px solid beige; 
+        cursor: pointer;" 
+        onClick="draftResult();">Regenerate data</button>
+        <label style="margin-inline-start:6rem; font-size:80%;">Include BMDC? <input type="checkbox" id="generateAll"></label></p>
 
 <!--div style="text-align: center;"><button  style="font-size: 2rem;" onClick="copied = document.getElementById('draftCopy'); copied.value = document.getElementById('draft').textContent; copied.focus(); copied.select(); document.execCommand('copy'); return false;">Copy</button> <textarea style="block-size:2rem;inline-size:1rem; vertical-align: bottom;" id="draftCopy"></textarea></div-->
 
