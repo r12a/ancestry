@@ -106,6 +106,8 @@ function autoPropagate (person) {
         
         if (dataItems.place) document.getElementById('birthPlaceIn').value = dataItems.place.trim()
         
+        if (dataItems.athome) document.getElementById('atHomeIn').value = dataItems.athome.trim()
+        
         if (dataItems.focc) document.getElementById('foccIn').value = dataItems.focc.trim()
         
         if (dataItems.informant) document.getElementById('informantIn').value = dataItems.informant.trim()
@@ -384,6 +386,11 @@ function draftResult () {
         }
     else document.getElementById('birthPlace').textContent = ''
 
+    if (document.getElementById('atHomeIn').value.trim()) {
+        document.getElementById('atHome').textContent = `athome: "${ document.getElementById('atHomeIn').value.trim() }",`
+        }
+    else document.getElementById('birthPlace').textContent = ''
+
     if (document.getElementById('foccIn').value.trim()) 
         document.getElementById('focc').textContent = `focc: "${ document.getElementById('foccIn').value.trim() }",`
     else document.getElementById('focc').textContent = ''
@@ -565,6 +572,12 @@ function getMonthOLD (dateValue) {
         }
     return month+'-'+parts[0]
     }
+
+
+function fillAtHome () {
+    if (db[theperson].father) document.getElementById('atHomeIn').value += db[theperson].father+' '
+    if (db[theperson].mother) document.getElementById('atHomeIn').value += db[theperson].mother+' '
+    }
 </script></head>
 
 
@@ -594,10 +607,27 @@ function getMonthOLD (dateValue) {
 <div id="references">
 </div>
 
-<div id="certificateTemplate" style="min-width: 10rem;">
+<div id="certificateTemplate" style="min-width: 14rem;">
 
 <p style="font-style: italic;">Use these templates to<br>
 speed up data entry.</p>
+
+<h3>General</h3>
+<textarea onClick="this.select()">Name:&nbsp;
+Father:&nbsp;
+Father occ:&nbsp;
+Mother:&nbsp;
+Residence:&nbsp;
+Place born:&nbsp;
+Baptism place:&nbsp;
+Birth date:&nbsp;
+Baptism date:&nbsp;
+Father occ:&nbsp;
+Mother née:&nbsp;
+Informant:&nbsp;
+Denomination:&nbsp;
+Reg details:&nbsp;
+</textarea>
 
 <h3>Certificate</h3>
 <textarea onClick="this.select()">When:&nbsp;
@@ -610,9 +640,7 @@ Informant:&nbsp;
 Reg date:&nbsp;
 Other:&nbsp;
 </textarea>
-</div>
 
-<div id="parishTemplate" style="min-width: 10rem;">
 <h3>Parish record</h3>
 <textarea onClick="this.select()">Parish:&nbsp;
 When:&nbsp;
@@ -654,7 +682,8 @@ The fields under "Data for building the page"  contain text snippets that will b
     
     <tr>
     <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('indexPastedIn').value = removeEmpty(document.getElementById('indexPastedIn').value)">Remove empty</button></td>
     <td><textarea id="indexPastedIn"  class="tallPasteBox"
         placeholder="Copy-paste lists here from transcript pages. (Each line should be [type: value]. Only lines with a colon are captured.)"
         onInput="draftResult()"></textarea></td>
@@ -697,7 +726,8 @@ The fields under "Data for building the page"  contain text snippets that will b
 </tr>
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('bapPastedIn').value = tabs2colons(document.getElementById('bapPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('bapPastedIn').value = tabs2colons(document.getElementById('bapPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('bapPastedIn').value = removeEmpty(document.getElementById('bapPastedIn').value)">Remove empty</button></td>
 <td><textarea id="bapPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -756,7 +786,8 @@ function removeBrackets (node) {
 </tr-->
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('bapPastedIn').value = removeEmpty(document.getElementById('secondPastedIn').value)">Remove empty</button></td>
 <td><textarea id="secondPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -806,7 +837,8 @@ function removeBrackets (node) {
 </tr-->
 <tr>
 <td>Key-value<br>pairs:<br>pairs:<br><button 
-        onClick="document.getElementById('thirdPastedIn').value = tabs2colons(document.getElementById('thirdPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('thirdPastedIn').value = tabs2colons(document.getElementById('thirdPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('thirdPastedIn').value = removeEmpty(document.getElementById('thirdPastedIn').value)">Remove empty</button></td>
 <td><textarea id="thirdPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -884,13 +916,20 @@ Need to fix this properly at some point. -->
             </td>
       </tr>
        <tr>
-        <td>Place of birth:</td>
+        <td>Family residence:</td>
         <td colspan="3">
             <input type="text" id="birthPlaceIn" list="gpsList"
             placeholder="Place where they lived." class="wideInputBox"
             onInput="draftResult();"
             onFocus="checkDB('birthPlaceIn', 'bplace', 'bplaceCheck')">
             <span class="instructions" id="bplaceCheck" style="color:red;"></span></td>
+     </tr>
+       <tr>
+        <td>At home: &nbsp; <button onclick="fillAtHome()">Fill</button></td>
+        <td colspan="3">
+            <input type="text" id="atHomeIn"
+            placeholder="Ids of resident parents & spouses." class="wideInputBox"
+            onInput="draftResult();"></td>
      </tr>
 <tr>
         <td>Baptism place:</td>
@@ -1130,6 +1169,7 @@ function makeTimestamp () {
 <div id="name"></div>
 <div id="birthDate"></div>
 <div id="birthPlace"></div>
+<div id="atHome"></div>
 <div id="focc"></div>
 <div id="mmn"></div>
 <div id="siblings"></div>

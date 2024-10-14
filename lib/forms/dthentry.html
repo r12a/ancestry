@@ -72,6 +72,11 @@ function makeNotes (content, target) {
 	document.getElementById(target).innerHTML = out
 	}
 
+function fillAtHome () {
+    if (db[theperson].fg) {
+        for (i=0;i<db[theperson].fg.length;i++) document.getElementById('atHomeIn').value += db[theperson].fg[i][1]+' '
+        } 
+    }
 
 
 
@@ -113,6 +118,8 @@ function autoPropagate (person) {
 
 
         if (dataItems.of) document.getElementById('ofIn').value = dataItems.of.trim()
+        
+        if (dataItems.athome) document.getElementById('atHomeIn').value = dataItems.athome.trim()
 
         if (dataItems.place) document.getElementById('deathPlaceIn').value = dataItems.place.trim()
 
@@ -419,6 +426,11 @@ function draftResult () {
     if (document.getElementById('deathPlaceIn').value.trim()) 
         document.getElementById('deathPlace').textContent = `place: "${ document.getElementById('deathPlaceIn').value.trim() }",`
     else document.getElementById('deathPlace').textContent = ''
+
+    if (document.getElementById('atHomeIn').value.trim()) {
+        document.getElementById('atHome').textContent = `athome: "${ document.getElementById('atHomeIn').value.trim() }",`
+        }
+    else document.getElementById('birthPlace').textContent = ''
  
     if (document.getElementById('ageIn').value.trim()) 
         document.getElementById('age').textContent = `age: "${ document.getElementById('ageIn').value.trim() }",`
@@ -657,10 +669,26 @@ onChange="autoPropagate(this.value);"/> <span class="redo" onClick="autoPropagat
 </div>
 
 
-<div id="certificateTemplate" style="min-width: 10rem;">
+<div id="certificateTemplate" style="min-width: 14rem;">
 
 <p style="font-style: italic;">Use these templates to<br>
 speed up data entry.</p>
+
+<h3>General</h3>
+<textarea onClick="this.select()">Name:&nbsp;
+Death date:&nbsp;
+Residence:&nbsp;
+Place died:&nbsp;
+Burial date:&nbsp;
+Burial place:&nbsp;
+Birth date:&nbsp;
+Age:&nbsp;
+Occupation:&nbsp;
+Cause:&nbsp;
+Informant:&nbsp;
+Denomination:&nbsp;
+Reg details:&nbsp;
+</textarea>
 
 <h3>Certificate</h3>
 <textarea onClick="this.select()">When:&nbsp;
@@ -672,9 +700,7 @@ Cause:&nbsp;
 Informant:&nbsp;
 Reg date:&nbsp;
 </textarea>
-</div>
 
-<div id="parishTemplate" style="min-width: 10rem;">
 <h3>Parish record</h3>
 <textarea onClick="this.select()">Parish:&nbsp;
 When:&nbsp;
@@ -712,7 +738,8 @@ The fields under "Data for building the page"  contain text snippets that will b
 </tr>
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('indexPastedIn').value = removeEmpty(document.getElementById('indexPastedIn').value)">Remove empty</button></td>
 <td><textarea id="indexPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -767,7 +794,8 @@ The fields under "Data for building the page"  contain text snippets that will b
 </tr-->
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('secondPastedIn').value = removeEmpty(document.getElementById('secondPastedIn').value)">Remove empty</button></td>
 <td><textarea id="secondPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -819,7 +847,8 @@ The fields under "Data for building the page"  contain text snippets that will b
 </tr-->
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('burPastedIn').value = tabs2colons(document.getElementById('burPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('burPastedIn').value = tabs2colons(document.getElementById('burPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('burPastedIn').value = removeEmpty(document.getElementById('burPastedIn').value)">Remove empty</button></td>
 <td><textarea id="burPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -871,7 +900,8 @@ The fields under "Data for building the page"  contain text snippets that will b
 </tr-->
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('fourthPastedIn').value = tabs2colons(document.getElementById('fourthPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('fourthPastedIn').value = tabs2colons(document.getElementById('fourthPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('fourthPastedIn').value = removeEmpty(document.getElementById('fourthPastedIn').value)">Remove empty</button></td>
 <td><textarea id="fourthPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -1002,6 +1032,13 @@ document.getElementById('getFileName').addEventListener('change', function(event
     onInput="draftResult()">
     <span class="instructions" id="dplaceCheck" style="color:red;"></span>
     </td>
+</tr>
+<tr>
+<td>At home: &nbsp; <button onclick="fillAtHome()">Fill</button></td>
+<td colspan="3">
+    <input type="text" id="atHomeIn"
+    placeholder="Ids of resident spouse and parents." class="wideInputBox"
+    onInput="draftResult();"></td>
 </tr>
 <tr>
 <td>Place of death:</td>
@@ -1266,6 +1303,7 @@ function makeTimestamp () {
       <div id="name"></div>
       <div id="of"></div>
       <div id="deathPlace"></div>
+      <div id="atHome"></div>
       <div id="age"></div>
       <div id="cause"></div>
       <div id="occ"></div>
