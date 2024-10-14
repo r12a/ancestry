@@ -204,6 +204,7 @@ function getPersonDetails (id, type, loc) {
 		//out += `<div class="name"><a href="tree.html?person=${ id }&project=${ window.project }"`
         if (markList.has(id)) out += ` style="color: chocolate;"`
         out += `>`
+        if (loc === '') out += '<span style="font-size:160%;">📄</span> '
 		//out += db[id].g+' '
 		if (db[id].k) out += db[id].k+' ('+db[id].g+') '
 		else out += db[id].g+' '
