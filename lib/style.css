@@ -310,7 +310,7 @@ article {
     background-color:#eee; color:darkgray; font-size: 1.4em; padding: .5em; border:0; border-radius: 1em; float: right;
     }*/
 .summaryClose {
-    color:#ccc; background-color: transparent; font-size: 2em; border:0; float: right; cursor: pointer;
+    color:#ccc; background-color: transparent; font-size: 2em; border:0; /*float: right;*/ cursor: pointer; text-align: end;
     }
 
 
