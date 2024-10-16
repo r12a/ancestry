@@ -834,7 +834,8 @@ Witnesses:&nbsp;
     
     <tr>
     <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('indexPastedIn').value = tabs2colons(document.getElementById('indexPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('indexPastedIn').value = removeEmpty(document.getElementById('indexPastedIn').value)">Remove empty</button></td>
     <td><textarea id="indexPastedIn"  class="tallPasteBox"
         placeholder="Copy-paste lists here from transcript pages. (Each line should be [type: value]. Only lines with a colon are captured.)"
         onInput="draftResult()"></textarea></td>
@@ -877,7 +878,8 @@ Witnesses:&nbsp;
 
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('bapPastedIn').value = tabs2colons(document.getElementById('bapPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('bapPastedIn').value = tabs2colons(document.getElementById('bapPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('bapPastedIn').value = removeEmpty(document.getElementById('bapPastedIn').value)">Remove empty</button></td>
 <td><textarea id="bapPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -928,7 +930,8 @@ function removeBrackets (node) {
 
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('secondPastedIn').value = tabs2colons(document.getElementById('secondPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('secondPastedIn').value = removeEmpty(document.getElementById('secondPastedIn').value)">Remove empty</button></td>
 <td><textarea id="secondPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
@@ -969,7 +972,8 @@ function removeBrackets (node) {
 
 <tr>
 <td>Key-value<br>pairs:<br><button 
-        onClick="document.getElementById('thirdPastedIn').value = tabs2colons(document.getElementById('thirdPastedIn').value)">Add colons</button></td>
+        onClick="document.getElementById('thirdPastedIn').value = tabs2colons(document.getElementById('thirdPastedIn').value)">Add colons</button><br><button 
+        onClick="document.getElementById('thirdPastedIn').value = removeEmpty(document.getElementById('thirdPastedIn').value)">Remove empty</button></td>
 <td><textarea id="thirdPastedIn" class="tallPasteBox"
     placeholder="Copy-paste lists here from transcript pages. (Only lines with a colon are captured.)"
     onInput="draftResult()"></textarea>
