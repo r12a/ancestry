@@ -414,8 +414,9 @@ function start () {
     //console.log("mark",mark,"marklist",markList)
 
     // set tagged flags from localstorage
-    if (localStorage.ancestryflags) {
-        flagList = localStorage.ancestryflags.split('\n')
+    projectFlags= project+'flags'
+    if (localStorage[projectFlags]) {
+        flagList = localStorage[projectFlags].split('\n')
         for (i=0;i<flagList.length;i++) db[flagList[i]].tagged = true 
         }
 	
